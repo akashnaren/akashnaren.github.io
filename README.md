@@ -1,2 +1,1 @@
-# akashnaren.github.io
-Personal site
+https://akashnaren.github.io/
