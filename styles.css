@@ -45,7 +45,9 @@ header {
 }
 
 h1,
-p {
+h2,
+p,
+li {
   font-size: 14px;
   line-height: 20px;
   letter-spacing: -0.09px;
@@ -54,6 +56,13 @@ p {
 h1 {
   font-weight: 500;
   font-variation-settings: "wght" 500;
+}
+
+h2 {
+  font-weight: 460;
+  font-variation-settings: "wght" 460;
+  color: rgba(0, 0, 0, 0.4);
+  padding: 20px 0 6px;
 }
 
 .meta {
@@ -66,6 +75,15 @@ p {
 
 header p {
   padding-top: 0;
+}
+
+ul {
+  list-style: disc;
+  padding-left: 1.15em;
+}
+
+li {
+  padding-top: 6px;
 }
 
 a {
