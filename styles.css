@@ -20,27 +20,24 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-main {
-  position: relative;
-  max-width: 36.375rem;
-  margin: 0 auto;
-  padding: 5rem 1rem 2.5rem;
+#holder {
+  display: flex;
+  margin: 25px 0;
 }
 
-main::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 8rem;
-  background: linear-gradient(
-    to bottom,
-    #fdfdfc 20%,
-    rgba(253, 253, 252, 0)
-  );
-  pointer-events: none;
-  z-index: 9;
+#left,
+#right {
+  flex-grow: 100;
+  min-width: 1em;
+}
+
+#left {
+  max-width: 4em;
+}
+
+main {
+  max-width: 31em;
+  padding: 3rem 0 2.5rem;
 }
 
 header {
@@ -48,8 +45,7 @@ header {
 }
 
 h1,
-p,
-footer {
+p {
   font-size: 14px;
   line-height: 20px;
   letter-spacing: -0.09px;
@@ -99,21 +95,4 @@ a:focus-visible {
   border-radius: 2px;
   padding: 0 2px;
   margin: 0 -2px;
-}
-
-footer {
-  margin-top: 2.375rem;
-  padding-top: 0;
-  font-size: 13px;
-  letter-spacing: -0.04px;
-  color: rgba(0, 0, 0, 0.4);
-}
-
-footer::before {
-  content: "";
-  display: block;
-  width: 3.125rem;
-  height: 1px;
-  background: #ededed;
-  margin-bottom: 2.375rem;
 }
