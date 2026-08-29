@@ -1,6 +1,11 @@
-*,
-*::before,
-*::after {
+:root {
+  --text: #111;
+  --muted: #6b6b6b;
+  --bg: #fff;
+  --link: #111;
+}
+
+* {
   box-sizing: border-box;
 }
 
@@ -11,30 +16,74 @@ body {
 }
 
 body {
-  background: #fff;
-  color: #000;
-  font-family: Times, "Times New Roman", Georgia, serif;
-  font-size: 16px;
-  line-height: 1.45;
-  padding: 2.5rem 1.5rem 4rem;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 460;
+  line-height: 20px;
+  letter-spacing: -0.09px;
+  -webkit-font-smoothing: antialiased;
 }
 
 main {
-  max-width: 40rem;
+  max-width: 34rem;
+  padding: 4.5rem 1.25rem 6rem;
+}
+
+h1 {
+  margin: 0 0 0.15rem;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.09px;
+}
+
+.role {
+  margin: 0 0 1.75rem;
+  color: var(--muted);
+}
+
+section {
+  margin: 0 0 1.5rem;
+}
+
+h2 {
+  margin: 0 0 0.45rem;
+  font-size: 14px;
+  font-weight: 560;
+  line-height: 20px;
+  letter-spacing: -0.09px;
+  color: var(--muted);
 }
 
 p {
-  margin: 0 0 1em;
+  margin: 0 0 0.55rem;
+}
+
+section p:last-child {
+  margin-bottom: 0;
 }
 
 a {
-  color: #00e;
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: #c8c8c8;
 }
 
-a:visited {
-  color: #551a8b;
+a:hover {
+  text-decoration-color: currentColor;
 }
 
 .links {
+  margin-top: 1.75rem;
   font-style: italic;
+  color: var(--muted);
+}
+
+.links a {
+  color: var(--muted);
 }
