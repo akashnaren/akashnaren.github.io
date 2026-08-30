@@ -5,11 +5,11 @@
 }
 
 html {
-  background: #f9f8f6;
+  background: #0a0a0a;
 }
 
 body {
-  color: #0a0a0a;
+  color: #fafaf7;
   font-family: Geist, ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
   font-weight: 400;
@@ -85,15 +85,15 @@ a::before {
   bottom: 0;
   height: 1px;
   border-radius: 2px;
-  background: #d5d9e2;
+  background: rgba(255, 255, 255, 0.22);
 }
 
 a:hover::before {
-  background: #7d8187;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 a:focus-visible {
-  outline: 1px solid #0a0a0a;
+  outline: 1px solid #fafaf7;
   border-radius: 8px;
   padding: 0 2px;
   margin: 0 -2px;
