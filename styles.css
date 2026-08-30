@@ -5,17 +5,16 @@
 }
 
 html {
-  background: #fdfdfc;
+  background: #f9f8f6;
 }
 
 body {
-  color: #111;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #0a0a0a;
+  font-family: Geist, ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
-  font-weight: 460;
-  font-variation-settings: "wght" 460;
+  font-weight: 400;
   line-height: 20px;
-  letter-spacing: -0.09px;
+  letter-spacing: -0.01em;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -41,31 +40,26 @@ main {
 }
 
 header {
-  padding-bottom: 4px;
+  padding-bottom: 8px;
 }
 
 h1,
-h2,
-p,
-li {
+p {
   font-size: 14px;
   line-height: 20px;
-  letter-spacing: -0.09px;
 }
 
 h1 {
-  font-weight: 500;
-  font-variation-settings: "wght" 500;
-}
-
-h2 {
-  font-weight: 460;
-  font-variation-settings: "wght" 460;
-  padding: 16px 0 4px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
 }
 
 .meta {
-  color: rgba(0, 0, 0, 0.4);
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  color: #7d8187;
 }
 
 p {
@@ -73,16 +67,7 @@ p {
 }
 
 header p {
-  padding-top: 0;
-}
-
-ul {
-  list-style: disc;
-  padding: 2px 0 0 1.15em;
-}
-
-li {
-  padding-top: 4px;
+  padding-top: 2px;
 }
 
 a {
@@ -100,16 +85,16 @@ a::before {
   bottom: 0;
   height: 1px;
   border-radius: 2px;
-  background: #d9d9d9;
+  background: #d5d9e2;
 }
 
 a:hover::before {
-  background: #666;
+  background: #7d8187;
 }
 
 a:focus-visible {
-  outline: 2px solid #111;
-  border-radius: 2px;
+  outline: 1px solid #0a0a0a;
+  border-radius: 8px;
   padding: 0 2px;
   margin: 0 -2px;
 }
