@@ -42,6 +42,12 @@ const required = [
   'src="/marks/linkedin.svg"',
   'src="/marks/x.svg"',
   'src="/marks/cursor.svg"',
+  'class="contact-marks"',
+  'class="human-mail"',
+  'class="mail-label"',
+  "email",
+  "mailto:akashnaren@gmail.com",
+  "akashnaren@gmail.com",
   "mailto:apn@agentmail.to",
   "apn@agentmail.to",
   "bots' inbox",
@@ -51,6 +57,7 @@ const required = [
   "https://x.ai/bot",
   "grok bot",
   'class="managed-copy"',
+  'class="scope"',
   'src="/fleet/05.png"',
   'class="grok-bot-mark"',
   'class="grok-bot-eyes"',
@@ -65,7 +72,6 @@ const required = [
 const forbidden = [
   "AI engineer",
   "AI Engineer",
-  "gmail.com",
   "usage stats",
   "https://grok.com/bot",
   "https://x.ai/grok-bot",
@@ -95,6 +101,9 @@ const forbidden = [
   "software engineer",
   "product engineer",
   "bygrok",
+  "mailto:gmail",
+  "/marks/gmail",
+  "/marks/email",
 ];
 
 const missing = required.filter((needle) => !html.includes(needle));
@@ -117,6 +126,11 @@ if (!hasManagedSpace) {
   console.error(
     "dist/index.html must keep a real space in managed-by (by grok or by <a), never bygrok",
   );
+  process.exit(1);
+}
+
+if (html.includes("bygrok")) {
+  console.error("dist/index.html contains bygrok");
   process.exit(1);
 }
 
@@ -143,6 +157,21 @@ if (html.includes("og:image") && /og:image[\s\S]{0,80}akash/i.test(html)) {
 
 if (!/\/assets\/index-[^"]+\.js/.test(html)) {
   console.error("dist/index.html must reference hashed /assets/index-*.js");
+  process.exit(1);
+}
+
+if (/class="inbox"[\s\S]{0,500}akashnaren@gmail\.com/.test(html)) {
+  console.error("Gmail must not sit in the bots' inbox line");
+  process.exit(1);
+}
+
+if (/class="human-mail"[\s\S]{0,400}apn@agentmail\.to/.test(html)) {
+  console.error("Agent inbox must not sit in the human mail line");
+  process.exit(1);
+}
+
+if (/class="contact-link"[\s\S]{0,220}mailto:akashnaren@gmail\.com/.test(html)) {
+  console.error("Gmail must not be a fifth contact mark");
   process.exit(1);
 }
 
@@ -183,6 +212,14 @@ if (root.includes("/src/main.ts")) {
   console.error("root index.html must not be a blank /src/main.ts Vite shell");
   process.exit(1);
 }
+if (!root.includes("mailto:akashnaren@gmail.com") || !root.includes("akashnaren@gmail.com")) {
+  console.error("root index.html must include mailto:akashnaren@gmail.com");
+  process.exit(1);
+}
+if (!root.includes("mailto:apn@agentmail.to") || !root.includes("apn@agentmail.to")) {
+  console.error("root index.html must include mailto:apn@agentmail.to");
+  process.exit(1);
+}
 if (!root.includes("by grok") && !root.includes("by <a")) {
   console.error("root index.html must keep a real space before grok bot");
   process.exit(1);
@@ -193,5 +230,5 @@ if (root.includes("bygrok")) {
 }
 
 console.log(
-  "dist/index.html has the locked copy, spaced managed-by line, nine unlabeled faces, agent inbox chip, and hashed Pages assets.",
+  "dist/index.html has the locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, and hashed Pages assets.",
 );
