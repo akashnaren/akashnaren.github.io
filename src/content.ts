@@ -7,6 +7,10 @@ export type Phrase = string | Link;
 
 export type Paragraph = readonly Phrase[];
 
+export type Contact = Link & {
+  readonly mark: string;
+};
+
 export const name = "Akash Premkumar";
 export const description =
   "Engineer at Tesla in Redwood City. CS and Math, UC San Diego.";
@@ -49,49 +53,56 @@ export const body: readonly Paragraph[] = [
   ],
 ];
 
-export const reachOut: Paragraph = [
-  "Feel free to reach out to me on ",
-  { href: "https://github.com/akashnaren", label: "github" },
-  ", ",
+export const contact: readonly Contact[] = [
+  {
+    href: "https://github.com/akashnaren",
+    label: "github",
+    mark: "/marks/github.ico",
+  },
   {
     href: "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
     label: "linkedin",
+    mark: "/marks/linkedin.ico",
   },
-  ", ",
-  { href: "https://x.com/akashpn", label: "x" },
-  ", or ",
-  { href: "https://cursor.com/@akashpn", label: "cursor" },
-  ".",
+  {
+    href: "https://x.com/akashpn",
+    label: "x",
+    mark: "/marks/x.ico",
+  },
+  {
+    href: "https://cursor.com/@akashpn",
+    label: "cursor",
+    mark: "/marks/cursor.svg",
+  },
 ];
 
-/** Public Grok Bot fleet. One-line edit here refreshes the page. */
-export const grokBots = [
-  "chief of staff",
-  "profile assistant",
-  "job assistant",
-  "research advisor",
-  "professor",
-  "software engineer",
-  "product engineer",
-  "startup advisor",
+/** Unlabeled sidebar faces. Filenames are numbers only. */
+export const fleetMarks = [
+  "/fleet/01.png",
+  "/fleet/02.png",
+  "/fleet/03.png",
+  "/fleet/04.png",
+  "/fleet/05.png",
+  "/fleet/06.png",
+  "/fleet/07.png",
+  "/fleet/08.png",
+  "/fleet/09.png",
 ] as const;
 
-export type GrokBot = (typeof grokBots)[number];
+export const fleetMarkSize = 24;
 
-export const grokBotMark = {
-  src: "/icon.png",
+export const managedMark = {
+  src: "/fleet/05.png",
   width: 14,
   height: 14,
 } as const;
+
+export const fleetLine = "nine grok bots keep this page.";
 
 export const managedBy: Paragraph = [
   "this site is managed by ",
   { href: "https://x.ai/bot", label: "grok bot" },
   ".",
-];
-
-export const botRoster: Paragraph = [
-  `the grok bots on this are ${grokBots.join(", ")}.`,
 ];
 
 export const agentInbox = {

@@ -83,15 +83,68 @@ header p {
   padding-top: 20px;
 }
 
-.grok-bot-mark {
+.contact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding-top: 16px;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.contact-link::before {
+  left: calc(14px + 0.35em);
+}
+
+.contact-mark,
+.grok-bot-mark,
+.fleet-mark {
   display: inline-block;
-  width: 14px;
-  height: 14px;
-  margin-right: 0.4em;
-  vertical-align: -0.15em;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
+  flex-shrink: 0;
+}
+
+.contact-mark,
+.grok-bot-mark {
+  width: 14px;
+  height: 14px;
+}
+
+.contact-mark {
+  vertical-align: middle;
+}
+
+.grok-bot-mark {
+  vertical-align: -0.15em;
+}
+
+.managed .grok-bot-mark {
+  margin-right: 0.4em;
+}
+
+.fleet {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.fleet-mark {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.fleet-line {
+  color: #c4c4bf;
 }
 
 a {

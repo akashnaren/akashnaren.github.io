@@ -1,12 +1,14 @@
 import {
   agentNote,
   body,
-  botRoster,
-  grokBotMark,
+  contact,
+  fleetLine,
+  fleetMarkSize,
+  fleetMarks,
   isLink,
   managedBy,
+  managedMark,
   name,
-  reachOut,
   role,
   type Phrase,
 } from "./content.ts";
@@ -30,8 +32,30 @@ function renderParagraph(paragraph: readonly Phrase[]): string {
   return `<p>${paragraph.map(renderPhrase).join("")}</p>`;
 }
 
+function renderMark(src: string, size: number, className: string): string {
+  return `<img class="${className}" src="${escapeHtml(src)}" alt="" width="${String(size)}" height="${String(size)}" decoding="async" />`;
+}
+
 function renderManagedBy(): string {
-  return `<p class="managed"><img class="grok-bot-mark" src="${escapeHtml(grokBotMark.src)}" alt="" width="${String(grokBotMark.width)}" height="${String(grokBotMark.height)}" decoding="async" /> ${managedBy.map(renderPhrase).join("")}</p>`;
+  return `<p class="managed">${renderMark(managedMark.src, managedMark.width, "grok-bot-mark")} ${managedBy.map(renderPhrase).join("")}</p>`;
+}
+
+function renderContact(): string {
+  const links = contact
+    .map(
+      (item) =>
+        `<a class="contact-link" href="${escapeHtml(item.href)}"><img class="contact-mark" src="${escapeHtml(item.mark)}" alt="" width="14" height="14" decoding="async" /><span>${escapeHtml(item.label)}</span></a>`,
+    )
+    .join("");
+  return `<p class="contact">${links}</p>`;
+}
+
+function renderFleet(): string {
+  const marks = fleetMarks
+    .map((src) => renderMark(src, fleetMarkSize, "fleet-mark"))
+    .join("");
+  return `<p class="fleet" aria-hidden="true">${marks}</p>
+          <p class="fleet-line">${escapeHtml(fleetLine)}</p>`;
 }
 
 export function renderSite(): string {
@@ -45,10 +69,10 @@ export function renderSite(): string {
           <p class="meta">${escapeHtml(role.prefix)}<a href="${escapeHtml(role.company.href)}">${escapeHtml(role.company.label)}</a></p>
         </header>
         ${paragraphs}
-        ${renderParagraph(reachOut)}
+        ${renderContact()}
         <div class="site-stack">
           ${renderManagedBy()}
-          ${renderParagraph(botRoster)}
+          ${renderFleet()}
           ${renderParagraph(agentNote)}
         </div>
       </main>
