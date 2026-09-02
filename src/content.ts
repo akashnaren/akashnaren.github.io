@@ -89,7 +89,7 @@ export const fleetMarks = [
   "/fleet/09.png",
 ] as const;
 
-export const fleetMarkSize = 16;
+export const fleetMarkSize = 18;
 
 export const managedMarkSize = 15;
 
@@ -100,6 +100,12 @@ export const managedBy: Paragraph = [
   { href: "https://x.ai/bot", label: "grok bot" },
   ".",
 ];
+
+export const personalMail = {
+  address: "akashnaren@gmail.com",
+  href: "mailto:akashnaren@gmail.com",
+  label: "email",
+} as const;
 
 export const agentInbox = {
   address: "apn@agentmail.to",

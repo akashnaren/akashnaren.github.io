@@ -9,6 +9,7 @@ import {
   managedBy,
   managedMarkSize,
   name,
+  personalMail,
   role,
   type Phrase,
 } from "./content.ts";
@@ -52,7 +53,10 @@ function renderContact(): string {
         `<a class="contact-link" href="${escapeHtml(item.href)}"><img class="contact-mark" src="${escapeHtml(item.mark)}" alt="" width="14" height="14" decoding="async" /><span>${escapeHtml(item.label)}</span></a>`,
     )
     .join("");
-  return `<p class="contact">${links}</p>`;
+  return `<div class="contact">
+          <p class="contact-marks">${links}</p>
+          <p class="human-mail"><span class="mail-label">${escapeHtml(personalMail.label)}</span><a class="mail-address" href="${escapeHtml(personalMail.href)}">${escapeHtml(personalMail.address)}</a></p>
+        </div>`;
 }
 
 function renderFleet(): string {
@@ -75,7 +79,7 @@ export function renderSite(): string {
       <main>
         <div class="bio">
           <header>
-            <h1>${escapeHtml(name)}</h1>
+            <h1>${escapeHtml(name)}<span class="scope" aria-hidden="true"></span></h1>
             <p class="meta">${escapeHtml(role.prefix)}<a href="${escapeHtml(role.company.href)}">${escapeHtml(role.company.label)}</a></p>
           </header>
           ${paragraphs}

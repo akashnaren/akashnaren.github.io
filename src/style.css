@@ -20,13 +20,13 @@ body {
 }
 
 ::selection {
-  background: #2c2c2a;
+  background: rgba(255, 107, 0, 0.28);
   color: #fafaf7;
 }
 
 #holder {
   display: flex;
-  margin: 25px 0;
+  margin: 28px 0;
 }
 
 #left,
@@ -41,11 +41,12 @@ body {
 
 main {
   max-width: 31em;
-  padding: 3.25rem 0 3rem;
+  padding: 3.75rem 0 4rem;
 }
 
 header {
-  padding-bottom: 6px;
+  position: relative;
+  padding-bottom: 8px;
 }
 
 h1,
@@ -55,8 +56,49 @@ p {
 }
 
 h1 {
+  position: relative;
+  display: inline-block;
   font-weight: 400;
   letter-spacing: -0.016em;
+}
+
+.scope {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scope::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 18%;
+  height: 1px;
+  background: #ff6b00;
+  opacity: 0.72;
+  animation: scope-sweep 10s linear infinite;
+}
+
+@keyframes scope-sweep {
+  0% {
+    transform: translateX(-140%);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.72;
+  }
+  88% {
+    opacity: 0.72;
+  }
+  100% {
+    transform: translateX(620%);
+    opacity: 0;
+  }
 }
 
 .meta {
@@ -73,16 +115,20 @@ h1 {
 }
 
 header p {
-  padding-top: 3px;
+  padding-top: 6px;
 }
 
 .contact {
+  margin-top: 3.4rem;
+  padding-top: 1.45rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.contact-marks {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 18px;
-  margin-top: 2.65rem;
-  padding-top: 0;
 }
 
 .contact-link {
@@ -91,15 +137,21 @@ header p {
   gap: 0.4em;
 }
 
-.contact-link::before {
+.contact-link::before,
+.mail-address::before,
+.inbox-address::before {
   content: none;
 }
 
-.contact-link span {
+.contact-link span,
+.mail-address,
+.inbox-address {
   position: relative;
 }
 
-.contact-link span::after {
+.contact-link span::after,
+.mail-address::after,
+.inbox-address::after {
   content: "";
   position: absolute;
   left: 0;
@@ -110,7 +162,9 @@ header p {
   background: rgba(255, 255, 255, 0.16);
 }
 
-.contact-link:hover span::after {
+.contact-link:hover span::after,
+.mail-address:hover::after,
+.inbox-address:hover::after {
   background: rgba(255, 255, 255, 0.82);
 }
 
@@ -131,8 +185,40 @@ header p {
   vertical-align: middle;
 }
 
+.human-mail,
+.inbox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45em 0.85em;
+}
+
+.human-mail {
+  margin-top: 1.05rem;
+}
+
+.mail-label,
+.inbox-label,
+.inbox-aside {
+  color: #7d8187;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 0.04em;
+}
+
+.mail-address,
+.inbox-address {
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: 0.01em;
+  color: #fafaf7;
+}
+
 .site-stack {
-  margin-top: 2.85rem;
+  margin-top: 3.75rem;
+  padding-top: 1.7rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
   color: #c4c4bf;
 }
 
@@ -203,65 +289,78 @@ header p {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .grok-bot-body,
-  .grok-bot-eyes {
-    animation: none;
-  }
-}
-
 .fleet {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  padding-top: 12px;
+  justify-content: flex-start;
+  height: 56px;
+  margin-top: 1.15rem;
+  padding: 10px 10px 6px 4px;
+  overflow: visible;
+  gap: 8px;
 }
 
 .fleet-mark {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   padding: 0;
   background: none;
-  opacity: 0.88;
+  opacity: 0.9;
+  overflow: visible;
+}
+
+.fleet-mark:nth-child(1) {
+  transform: translate(1px, -11px);
+}
+
+.fleet-mark:nth-child(2) {
+  transform: translate(4px, 8px);
+}
+
+.fleet-mark:nth-child(3) {
+  transform: translate(0, -3px);
+}
+
+.fleet-mark:nth-child(4) {
+  transform: translate(7px, 11px);
+}
+
+.fleet-mark:nth-child(5) {
+  transform: translate(2px, -13px);
+}
+
+.fleet-mark:nth-child(6) {
+  transform: translate(5px, 6px);
+}
+
+.fleet-mark:nth-child(7) {
+  transform: translate(1px, 1px);
+}
+
+.fleet-mark:nth-child(8) {
+  transform: translate(6px, -8px);
+}
+
+.fleet-mark:nth-child(9) {
+  transform: translate(2px, 9px);
 }
 
 .fleet-line {
-  padding-top: 8px;
+  padding-top: 10px;
   color: #7d8187;
   font-size: 12px;
   line-height: 16px;
 }
 
 .inbox {
-  display: inline-flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.45em 0.9em;
-  margin-top: 14px;
-  padding: 7px 15px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
+  margin-top: 1.2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
 }
 
 .site-stack .inbox {
-  padding-top: 7px;
-}
-
-.inbox-label,
-.inbox-aside {
-  color: #7d8187;
-  font-size: 11px;
-  line-height: 16px;
-  letter-spacing: 0.04em;
-}
-
-.inbox-address {
-  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 0.01em;
-  color: #fafaf7;
+  padding-top: 0;
 }
 
 a {
@@ -286,17 +385,23 @@ a:hover::before {
   background: rgba(255, 255, 255, 0.82);
 }
 
-.inbox-address::before {
-  background: rgba(255, 255, 255, 0.22);
-}
-
-.inbox-address:hover::before {
-  background: rgba(255, 255, 255, 0.82);
-}
-
 a:focus-visible {
   outline: 1px solid #fafaf7;
   border-radius: 8px;
   padding: 0 2px;
   margin: 0 -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grok-bot-body,
+  .grok-bot-eyes,
+  .scope::after {
+    animation: none;
+  }
+
+  .scope::after {
+    transform: none;
+    opacity: 0.45;
+    width: 100%;
+  }
 }
