@@ -40,7 +40,7 @@ function renderMark(src: string, size: number, className: string): string {
 
 function renderGrokBotMark(): string {
   const size = String(managedMarkSize);
-  return `<svg class="grok-bot-mark" viewBox="0 0 32 32" width="${size}" height="${size}" aria-hidden="true" focusable="false"><g class="grok-bot-body"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><g class="grok-bot-eyes"><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></g></g></svg>`;
+  return `<span class="grok-bot-wrap" aria-hidden="true"><svg class="grok-bot-photon" viewBox="0 0 32 32" width="22" height="22" focusable="false"><circle class="grok-bot-photon-halo" cx="16" cy="16" r="15.2" fill="none" stroke="#ff6b00" stroke-width="0.85" opacity="0.34"/><circle class="grok-bot-photon-arc" cx="16" cy="16" r="15.2" fill="none" stroke="#ff6b00" stroke-width="1.35" stroke-linecap="round" stroke-dasharray="15 80" opacity="0.58"/></svg><svg class="grok-bot-mark" viewBox="0 0 32 32" width="${size}" height="${size}" focusable="false"><g class="grok-bot-body"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><g class="grok-bot-eyes"><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></g></g></svg></span>`;
 }
 
 function renderManagedBy(): string {
@@ -69,7 +69,7 @@ function renderFleet(): string {
 }
 
 function renderInbox(): string {
-  return `<p class="inbox"><span class="inbox-label">${escapeHtml(agentInbox.label)}</span><a class="inbox-address" href="${escapeHtml(agentInbox.href)}">${escapeHtml(agentInbox.address)}</a><span class="inbox-aside">${escapeHtml(agentInbox.aside)}</span></p>`;
+  return `<p class="inbox"><span class="inbox-label">${escapeHtml(agentInbox.label)}</span><a class="inbox-address" href="${escapeHtml(agentInbox.href)}">${escapeHtml(agentInbox.address)}</a></p>`;
 }
 
 function renderFact(): string {
@@ -79,7 +79,8 @@ function renderFact(): string {
 export function renderSite(): string {
   const paragraphs = body.map(renderParagraph).join("\n          ");
 
-  return `<div id="holder">
+  return `<div class="page" id="holder">
+      <div class="stage">
       <main class="him">
         <div class="bio">
           <header>
@@ -96,5 +97,10 @@ export function renderSite(): string {
         ${renderManagedBy()}
         ${renderInbox()}
       </aside>
+      </div>
+      <div class="well" aria-hidden="true">
+        <div class="well-static"></div>
+        <canvas class="well-canvas"></canvas>
+      </div>
     </div>`;
 }

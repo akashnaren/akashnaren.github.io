@@ -1,6 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <circle cx="16" cy="16" r="16" fill="#0a0a0a"/>
-  <circle cx="16" cy="16" r="14.5" fill="#ff6b00"/>
-  <rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/>
-  <rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="A">
+  <title>A</title>
+  <rect width="32" height="32" fill="#0a0a0a"/>
+  <path fill="#e3925a" d="M16 6.2 25.4 26h-3.25l-2.1-5.85h-8.1L9.85 26H6.6L16 6.2zm0 5.2 2.55 6.15h-5.1L16 11.4z"/>
 </svg>

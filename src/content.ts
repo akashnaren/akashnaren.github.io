@@ -112,8 +112,7 @@ export const personalMail = {
 export const agentInbox = {
   address: "apn@agentmail.to",
   href: "mailto:apn@agentmail.to",
-  label: "bots' inbox",
-  aside: "(not me)",
+  label: "bots' email",
 } as const;
 
 export function isLink(part: Phrase): part is Link {
