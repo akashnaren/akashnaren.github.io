@@ -38,9 +38,9 @@ const required = [
   "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
   "https://x.com/akashpn",
   "https://cursor.com/@akashpn",
-  'src="/marks/github.ico"',
-  'src="/marks/linkedin.ico"',
-  'src="/marks/x.ico"',
+  'src="/marks/github.svg"',
+  'src="/marks/linkedin.svg"',
+  'src="/marks/x.svg"',
   'src="/marks/cursor.svg"',
   "mailto:apn@agentmail.to",
   "apn@agentmail.to",
@@ -50,6 +50,7 @@ const required = [
   "this site is managed by",
   "https://x.ai/bot",
   "grok bot",
+  'class="managed-copy"',
   'src="/fleet/05.png"',
   'class="grok-bot-mark"',
   'class="grok-bot-eyes"',
@@ -93,6 +94,7 @@ const forbidden = [
   "research advisor",
   "software engineer",
   "product engineer",
+  "bygrok",
 ];
 
 const missing = required.filter((needle) => !html.includes(needle));
@@ -107,6 +109,14 @@ if (missing.length > 0 || leaked.length > 0) {
     console.error("dist/index.html contains forbidden copy:");
     for (const needle of leaked) console.error(`  - ${needle}`);
   }
+  process.exit(1);
+}
+
+const hasManagedSpace = html.includes("by grok") || html.includes("by <a");
+if (!hasManagedSpace) {
+  console.error(
+    "dist/index.html must keep a real space in managed-by (by grok or by <a), never bygrok",
+  );
   process.exit(1);
 }
 
@@ -131,12 +141,18 @@ if (html.includes("og:image") && /og:image[\s\S]{0,80}akash/i.test(html)) {
   process.exit(1);
 }
 
+if (!/\/assets\/index-[^"]+\.js/.test(html)) {
+  console.error("dist/index.html must reference hashed /assets/index-*.js");
+  process.exit(1);
+}
+
 const assets = [
   ...fleetSrcs.map((src) => `dist${src}`),
-  "dist/marks/github.ico",
-  "dist/marks/linkedin.ico",
-  "dist/marks/x.ico",
+  "dist/marks/github.svg",
+  "dist/marks/linkedin.svg",
+  "dist/marks/x.svg",
   "dist/marks/cursor.svg",
+  "dist/favicon.svg",
 ];
 const absent = assets.filter((path) => !existsSync(path));
 if (absent.length > 0) {
@@ -145,6 +161,37 @@ if (absent.length > 0) {
   process.exit(1);
 }
 
+const favicon = readFileSync("dist/favicon.svg", "utf8");
+if (!favicon.includes("#ff6b00") || !favicon.includes("circle")) {
+  console.error("dist/favicon.svg must be the orange grok circle mark");
+  process.exit(1);
+}
+
+if (!existsSync("index.html")) {
+  console.error("root index.html is missing; Files Pages would serve nothing");
+  process.exit(1);
+}
+
+const root = readFileSync("index.html", "utf8");
+if (!/\/assets\/index-[^"]+\.js/.test(root)) {
+  console.error(
+    "root index.html must contain hashed /assets/index-*.js so Files Pages is not a Vite shell",
+  );
+  process.exit(1);
+}
+if (root.includes("/src/main.ts")) {
+  console.error("root index.html must not be a blank /src/main.ts Vite shell");
+  process.exit(1);
+}
+if (!root.includes("by grok") && !root.includes("by <a")) {
+  console.error("root index.html must keep a real space before grok bot");
+  process.exit(1);
+}
+if (root.includes("bygrok")) {
+  console.error("root index.html contains bygrok");
+  process.exit(1);
+}
+
 console.log(
-  "dist/index.html has the locked copy, quiet grok footnote, nine unlabeled faces, and agent inbox chip.",
+  "dist/index.html has the locked copy, spaced managed-by line, nine unlabeled faces, agent inbox chip, and hashed Pages assets.",
 );

@@ -57,17 +57,17 @@ export const contact: readonly Contact[] = [
   {
     href: "https://github.com/akashnaren",
     label: "github",
-    mark: "/marks/github.ico",
+    mark: "/marks/github.svg",
   },
   {
     href: "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
     label: "linkedin",
-    mark: "/marks/linkedin.ico",
+    mark: "/marks/linkedin.svg",
   },
   {
     href: "https://x.com/akashpn",
     label: "x",
-    mark: "/marks/x.ico",
+    mark: "/marks/x.svg",
   },
   {
     href: "https://cursor.com/@akashpn",
@@ -89,9 +89,9 @@ export const fleetMarks = [
   "/fleet/09.png",
 ] as const;
 
-export const fleetMarkSize = 17;
+export const fleetMarkSize = 16;
 
-export const managedMarkSize = 16;
+export const managedMarkSize = 15;
 
 export const fleetLine = "nine grok bots, more coming.";
 
