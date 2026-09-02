@@ -66,8 +66,8 @@ body {
 
 .well-static {
   background:
-    radial-gradient(circle at 50% 44%, #000 0 15%, transparent 34%),
-    radial-gradient(ellipse 46% 16% at 50% 46%, rgba(255, 107, 0, 0.16) 0%, rgba(255, 107, 0, 0.05) 28%, transparent 52%),
+    radial-gradient(circle at 50% 50%, #000 0 18%, transparent 38%),
+    radial-gradient(ellipse 52% 18% at 50% 52%, rgba(255, 107, 0, 0.28) 0%, rgba(255, 107, 0, 0.08) 32%, transparent 58%),
     radial-gradient(ellipse at 50% 100%, #050505 0%, transparent 58%);
 }
 
@@ -248,7 +248,7 @@ header p {
   flex-direction: column;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 0.28em 0.85em;
+  gap: 0.38em 0.85em;
 }
 
 .human-mail {

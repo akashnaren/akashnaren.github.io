@@ -32,12 +32,12 @@ export function mountWell(): void {
   let live = false;
 
   const seedStars = (): void => {
-    const count = Math.round(Math.min(88, Math.max(28, (width * height) / 16000)));
+    const count = Math.round(Math.min(110, Math.max(40, (width * height) / 12000)));
     stars = Array.from({ length: count }, (_, i) => ({
       x: hash(i, 1),
       y: hash(i, 2),
-      r: 0.35 + hash(i, 3) * 1.05,
-      a: 0.16 + hash(i, 4) * 0.42,
+      r: 0.4 + hash(i, 3) * 1.15,
+      a: 0.22 + hash(i, 4) * 0.48,
       phase: hash(i, 5) * Math.PI * 2,
     }));
   };
@@ -55,10 +55,10 @@ export function mountWell(): void {
   };
 
   const hole = () => {
-    const radius = Math.min(width, height) * 0.28;
+    const radius = Math.min(width, height) * 0.34;
     return {
       cx: width * 0.5,
-      cy: height * 0.46,
+      cy: height * 0.5,
       radius,
     };
   };
@@ -76,13 +76,13 @@ export function mountWell(): void {
     context.rotate(animate ? time * 0.07 : 0.18);
     context.scale(1.18, 0.3);
 
-    for (let i = 0; i < 6; i += 1) {
-      const ring = radius * (1.08 + i * 0.16);
-      const start = (animate ? time * 0.35 : 0.4) + i * 0.55;
-      context.strokeStyle = `rgba(255,107,0,${0.028 + i * 0.01})`;
-      context.lineWidth = radius * (0.1 - i * 0.008);
+    for (let i = 0; i < 7; i += 1) {
+      const ring = radius * (1.06 + i * 0.15);
+      const start = (animate ? time * 0.32 : 0.4) + i * 0.5;
+      context.strokeStyle = `rgba(255,107,0,${0.05 + i * 0.014})`;
+      context.lineWidth = radius * (0.12 - i * 0.008);
       context.beginPath();
-      context.arc(0, 0, ring, start, start + Math.PI * 1.15);
+      context.arc(0, 0, ring, start, start + Math.PI * 1.2);
       context.stroke();
     }
 
@@ -157,17 +157,17 @@ export function mountWell(): void {
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
     ctx.fill();
 
-    const ringR = radius * (1.07 + pulse * 0.035);
-    ctx.strokeStyle = `rgba(255,107,0,${0.2 + pulse * 0.1})`;
-    ctx.lineWidth = Math.max(1, radius * 0.032);
+    const ringR = radius * (1.08 + pulse * 0.04);
+    ctx.strokeStyle = `rgba(255,107,0,${0.34 + pulse * 0.14})`;
+    ctx.lineWidth = Math.max(1.25, radius * 0.042);
     ctx.beginPath();
-    ctx.ellipse(cx, cy + radius * 0.035, ringR * 1.04, ringR * 0.3, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx, cy + radius * 0.04, ringR * 1.08, ringR * 0.32, 0, 0, Math.PI * 2);
     ctx.stroke();
 
-    ctx.strokeStyle = `rgba(255,107,0,${0.1 + pulse * 0.07})`;
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = `rgba(255,180,90,${0.16 + pulse * 0.08})`;
+    ctx.lineWidth = 1.15;
     ctx.beginPath();
-    ctx.ellipse(cx, cy + radius * 0.035, ringR * 0.97, ringR * 0.26, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx, cy + radius * 0.04, ringR * 1.02, ringR * 0.27, 0, 0, Math.PI * 2);
     ctx.stroke();
   };
 
