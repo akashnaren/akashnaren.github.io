@@ -53,6 +53,7 @@ syncDir("dist/marks", "marks");
 for (const file of [
   "favicon.svg",
   "favicon.ico",
+  "favicon-32.png",
   "site.webmanifest",
   ".nojekyll",
 ]) {

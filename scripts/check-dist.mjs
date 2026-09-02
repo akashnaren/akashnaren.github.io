@@ -50,8 +50,7 @@ const required = [
   "akashnaren@gmail.com",
   "mailto:apn@agentmail.to",
   "apn@agentmail.to",
-  "bots' inbox",
-  "(not me)",
+  "bots' email",
   'class="inbox"',
   "this site is managed by",
   "https://x.ai/bot",
@@ -108,6 +107,10 @@ const forbidden = [
   "mailto:gmail",
   "/marks/gmail",
   "/marks/email",
+  "inboxapn",
+  "inboxapn@",
+  "to(not",
+  "emailapn",
 ];
 
 const missing = required.filter((needle) => !html.includes(needle));
@@ -195,8 +198,16 @@ if (absent.length > 0) {
 }
 
 const favicon = readFileSync("dist/favicon.svg", "utf8");
-if (!favicon.includes("#ff6b00") || !favicon.includes("circle")) {
-  console.error("dist/favicon.svg must be the orange grok circle mark");
+if (!favicon.includes("<title>A</title>") || !favicon.includes('aria-label="A"')) {
+  console.error("dist/favicon.svg must be the letter A mark");
+  process.exit(1);
+}
+if (favicon.includes("rotate(-26") || (favicon.includes("#ff6b00") && favicon.includes("circle"))) {
+  console.error("dist/favicon.svg must not be the grok bot face");
+  process.exit(1);
+}
+if (!existsSync("dist/favicon-32.png")) {
+  console.error("dist is missing favicon-32.png");
   process.exit(1);
 }
 
@@ -290,6 +301,27 @@ if (!css.includes("position:sticky") && !css.includes("position: sticky")) {
   process.exit(1);
 }
 
+const overflowHidden =
+  /html\s*,\s*body\s*\{[^}]*overflow:\s*hidden/.test(css) ||
+  (/html\s*\{[^}]*overflow:\s*hidden/.test(css) &&
+    /body\s*\{[^}]*overflow:\s*hidden/.test(css));
+if (!overflowHidden) {
+  console.error("stylesheet must keep overflow hidden on html and body");
+  process.exit(1);
+}
+
+if (!css.includes("100dvh")) {
+  console.error("stylesheet must size the document to 100dvh");
+  process.exit(1);
+}
+
+for (const page of [html, root]) {
+  if (page.includes("inboxapn") || page.includes("inboxapn@") || page.includes("to(not")) {
+    console.error("built HTML must not concatenate the bots' email line");
+    process.exit(1);
+  }
+}
+
 console.log(
-  "dist/index.html has the two-column split, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, and hashed Pages assets.",
+  "dist/index.html has the two-column split, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets.",
 );
