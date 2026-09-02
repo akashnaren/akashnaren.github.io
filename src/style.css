@@ -26,22 +26,24 @@ body {
 
 #holder {
   display: flex;
-  margin: 28px 0;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  max-width: 92rem;
+  margin: 0 auto;
+  padding: 3.25rem 1.4rem 4.25rem;
+  gap: 2.75rem;
 }
 
-#left,
-#right {
-  flex-grow: 100;
-  min-width: 1em;
+.him {
+  min-width: 0;
 }
 
-#left {
-  max-width: 4em;
-}
-
-main {
-  max-width: 31em;
-  padding: 3.75rem 0 4rem;
+.panel {
+  min-width: 0;
+  color: #c4c4bf;
+  padding-top: 2.15rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 header {
@@ -119,8 +121,8 @@ header p {
 }
 
 .contact {
-  margin-top: 3.4rem;
-  padding-top: 1.45rem;
+  margin-top: 3.2rem;
+  padding-top: 1.4rem;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 
@@ -213,17 +215,15 @@ header p {
   line-height: 18px;
   letter-spacing: 0.01em;
   color: #fafaf7;
+  overflow-wrap: anywhere;
 }
 
-.site-stack {
-  margin-top: 3.75rem;
-  padding-top: 1.7rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-  color: #c4c4bf;
-}
-
-.site-stack p {
-  padding-top: 0;
+.fact {
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.14em;
+  color: #7d8187;
 }
 
 .managed {
@@ -232,12 +232,14 @@ header p {
   flex-wrap: wrap;
   column-gap: 0.45em;
   row-gap: 0.15em;
+  margin-top: 1.35rem;
   font-size: 13px;
   line-height: 18px;
 }
 
 .managed-copy {
   min-width: 0;
+  white-space: normal;
 }
 
 .grok-bot-mark {
@@ -290,19 +292,18 @@ header p {
 }
 
 .fleet {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  height: 56px;
+  position: relative;
+  width: 100%;
+  max-width: 17.5rem;
+  height: 10.25rem;
   margin-top: 1.15rem;
-  padding: 10px 10px 6px 4px;
   overflow: visible;
-  gap: 8px;
 }
 
 .fleet-mark {
-  width: 18px;
-  height: 18px;
+  position: absolute;
+  width: 22px;
+  height: 22px;
   padding: 0;
   background: none;
   opacity: 0.9;
@@ -310,57 +311,59 @@ header p {
 }
 
 .fleet-mark:nth-child(1) {
-  transform: translate(1px, -11px);
+  left: 4%;
+  top: 10%;
 }
 
 .fleet-mark:nth-child(2) {
-  transform: translate(4px, 8px);
+  left: 36%;
+  top: 42%;
 }
 
 .fleet-mark:nth-child(3) {
-  transform: translate(0, -3px);
+  left: 68%;
+  top: 8%;
 }
 
 .fleet-mark:nth-child(4) {
-  transform: translate(7px, 11px);
+  left: 14%;
+  top: 62%;
 }
 
 .fleet-mark:nth-child(5) {
-  transform: translate(2px, -13px);
+  left: 52%;
+  top: 18%;
 }
 
 .fleet-mark:nth-child(6) {
-  transform: translate(5px, 6px);
+  left: 76%;
+  top: 48%;
 }
 
 .fleet-mark:nth-child(7) {
-  transform: translate(1px, 1px);
+  left: 6%;
+  top: 84%;
 }
 
 .fleet-mark:nth-child(8) {
-  transform: translate(6px, -8px);
+  left: 42%;
+  top: 72%;
 }
 
 .fleet-mark:nth-child(9) {
-  transform: translate(2px, 9px);
+  left: 78%;
+  top: 78%;
 }
 
 .fleet-line {
-  padding-top: 10px;
+  margin-top: 0.85rem;
   color: #7d8187;
   font-size: 12px;
   line-height: 16px;
 }
 
 .inbox {
-  margin-top: 1.2rem;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-}
-
-.site-stack .inbox {
-  padding-top: 0;
+  margin-top: 1.25rem;
 }
 
 a {
@@ -390,6 +393,34 @@ a:focus-visible {
   border-radius: 8px;
   padding: 0 2px;
   margin: 0 -2px;
+}
+
+@media (min-width: 880px) {
+  #holder {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 0;
+    row-gap: 0;
+    padding: 4.5rem 3.25rem 5.5rem;
+  }
+
+  .him {
+    padding-right: 3.6rem;
+  }
+
+  .bio {
+    max-width: 38em;
+  }
+
+  .panel {
+    position: sticky;
+    top: 3.25rem;
+    padding-top: 0.15rem;
+    padding-left: 3rem;
+    border-top: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

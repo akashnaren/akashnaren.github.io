@@ -1,8 +1,7 @@
 import { defineConfig } from "vite";
 import { renderSite } from "./src/render.ts";
 
-const holderPattern =
-  /<div id="holder">[\s\S]*?<div id="right"><\/div>\s*<\/div>/;
+const holderPattern = /<div id="holder"><\/div>/;
 
 export default defineConfig({
   base: "/",

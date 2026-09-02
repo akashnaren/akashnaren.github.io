@@ -2,6 +2,7 @@ import {
   agentInbox,
   body,
   contact,
+  fleetFact,
   fleetLine,
   fleetMarkSize,
   fleetMarks,
@@ -71,12 +72,15 @@ function renderInbox(): string {
   return `<p class="inbox"><span class="inbox-label">${escapeHtml(agentInbox.label)}</span><a class="inbox-address" href="${escapeHtml(agentInbox.href)}">${escapeHtml(agentInbox.address)}</a><span class="inbox-aside">${escapeHtml(agentInbox.aside)}</span></p>`;
 }
 
+function renderFact(): string {
+  return `<p class="fact">${escapeHtml(fleetFact)}</p>`;
+}
+
 export function renderSite(): string {
   const paragraphs = body.map(renderParagraph).join("\n          ");
 
   return `<div id="holder">
-      <div id="left"></div>
-      <main>
+      <main class="him">
         <div class="bio">
           <header>
             <h1>${escapeHtml(name)}<span class="scope" aria-hidden="true"></span></h1>
@@ -85,12 +89,12 @@ export function renderSite(): string {
           ${paragraphs}
         </div>
         ${renderContact()}
-        <div class="site-stack">
-          ${renderManagedBy()}
-          ${renderFleet()}
-          ${renderInbox()}
-        </div>
       </main>
-      <div id="right"></div>
+      <aside class="panel">
+        ${renderFact()}
+        ${renderFleet()}
+        ${renderManagedBy()}
+        ${renderInbox()}
+      </aside>
     </div>`;
 }

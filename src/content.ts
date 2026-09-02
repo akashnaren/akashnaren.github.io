@@ -89,9 +89,11 @@ export const fleetMarks = [
   "/fleet/09.png",
 ] as const;
 
-export const fleetMarkSize = 18;
+export const fleetMarkSize = 22;
 
 export const managedMarkSize = 15;
+
+export const fleetFact = "nine";
 
 export const fleetLine = "nine grok bots, more coming.";
 

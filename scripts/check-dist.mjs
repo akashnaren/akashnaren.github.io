@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 const html = readFileSync("dist/index.html", "utf8");
 
@@ -63,6 +63,9 @@ const required = [
   'class="grok-bot-eyes"',
   'class="fleet"',
   "nine grok bots, more coming.",
+  'class="him"',
+  'class="panel"',
+  'class="fact"',
   'name="twitter:card"',
   'property="og:url" content="https://akashnaren.github.io/"',
   'name="theme-color" content="#0a0a0a"',
@@ -85,6 +88,7 @@ const forbidden = [
   "work on this page",
   "Write my grok bots at",
   "job assistant",
+  "Job Assistant",
   "job search",
   "looking for a job",
   "hiring",
@@ -229,6 +233,63 @@ if (root.includes("bygrok")) {
   process.exit(1);
 }
 
+if (!root.includes("mailto:akashnaren@gmail.com") || !html.includes("mailto:akashnaren@gmail.com")) {
+  console.error("both built pages must keep mailto:akashnaren@gmail.com");
+  process.exit(1);
+}
+
+if (!root.includes("mailto:apn@agentmail.to") || !html.includes("mailto:apn@agentmail.to")) {
+  console.error("both built pages must keep mailto:apn@agentmail.to");
+  process.exit(1);
+}
+
+if (/job assistant/i.test(html) || /job assistant/i.test(root)) {
+  console.error("pages must not mention Job Assistant");
+  process.exit(1);
+}
+
+if (/looking for a job/i.test(html) || /looking for a job/i.test(root)) {
+  console.error("pages must not mention looking for a job");
+  process.exit(1);
+}
+
+if (!/class="him"[\s\S]{0,8000}mailto:akashnaren@gmail\.com/.test(html)) {
+  console.error("Gmail must stay in the him column");
+  process.exit(1);
+}
+
+if (!/class="panel"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(html)) {
+  console.error("Agent inbox must stay in the fleet panel");
+  process.exit(1);
+}
+
+if (/class="panel"[\s\S]{0,4000}akashnaren@gmail\.com/.test(html)) {
+  console.error("Gmail must not sit in the fleet panel");
+  process.exit(1);
+}
+
+const cssName = existsSync("dist/assets")
+  ? readdirSync("dist/assets").find((name) => name.endsWith(".css"))
+  : undefined;
+if (!cssName) {
+  console.error("dist/assets is missing the hashed stylesheet");
+  process.exit(1);
+}
+const css = readFileSync(`dist/assets/${cssName}`, "utf8");
+if (
+  !css.includes("min-width:880px") &&
+  !css.includes("min-width: 880px") &&
+  !css.includes("width>=880px") &&
+  !css.includes("width >= 880px")
+) {
+  console.error("stylesheet must keep the 880px two-column breakpoint");
+  process.exit(1);
+}
+if (!css.includes("position:sticky") && !css.includes("position: sticky")) {
+  console.error("stylesheet must keep the sticky fleet panel");
+  process.exit(1);
+}
+
 console.log(
-  "dist/index.html has the locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, and hashed Pages assets.",
+  "dist/index.html has the two-column split, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, and hashed Pages assets.",
 );
