@@ -89,15 +89,11 @@ export const fleetMarks = [
   "/fleet/09.png",
 ] as const;
 
-export const fleetMarkSize = 24;
+export const fleetMarkSize = 17;
 
-export const managedMark = {
-  src: "/fleet/05.png",
-  width: 14,
-  height: 14,
-} as const;
+export const managedMarkSize = 16;
 
-export const fleetLine = "nine grok bots keep this page.";
+export const fleetLine = "nine grok bots, more coming.";
 
 export const managedBy: Paragraph = [
   "this site is managed by ",
@@ -108,13 +104,9 @@ export const managedBy: Paragraph = [
 export const agentInbox = {
   address: "apn@agentmail.to",
   href: "mailto:apn@agentmail.to",
+  label: "bots' inbox",
+  aside: "(not me)",
 } as const;
-
-export const agentNote: Paragraph = [
-  "Write my grok bots at ",
-  { href: agentInbox.href, label: agentInbox.address },
-  " — that’s their inbox, not mine.",
-];
 
 export function isLink(part: Phrase): part is Link {
   return typeof part === "object";

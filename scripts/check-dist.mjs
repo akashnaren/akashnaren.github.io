@@ -44,15 +44,17 @@ const required = [
   'src="/marks/cursor.svg"',
   "mailto:apn@agentmail.to",
   "apn@agentmail.to",
-  "Write my grok bots at",
-  "their inbox, not mine",
+  "bots' inbox",
+  "(not me)",
+  'class="inbox"',
   "this site is managed by",
   "https://x.ai/bot",
   "grok bot",
   'src="/fleet/05.png"',
   'class="grok-bot-mark"',
+  'class="grok-bot-eyes"',
   'class="fleet"',
-  "nine grok bots keep this page.",
+  "nine grok bots, more coming.",
   'name="twitter:card"',
   'property="og:url" content="https://akashnaren.github.io/"',
   'name="theme-color" content="#0a0a0a"',
@@ -72,6 +74,9 @@ const forbidden = [
   'src="/grok-bot-mark.png"',
   "the grok bots on this are",
   "a dozen grok bots",
+  "keep this page",
+  "work on this page",
+  "Write my grok bots at",
   "job assistant",
   "job search",
   "looking for a job",
@@ -141,5 +146,5 @@ if (absent.length > 0) {
 }
 
 console.log(
-  "dist/index.html has the locked copy, nine unlabeled grok bot faces, agent inbox, and contact marks.",
+  "dist/index.html has the locked copy, quiet grok footnote, nine unlabeled faces, and agent inbox chip.",
 );
