@@ -42,7 +42,7 @@ function renderGrokBotMark(): string {
 }
 
 function renderManagedBy(): string {
-  return `<p class="managed">${renderGrokBotMark()} ${managedBy.map(renderPhrase).join("")}</p>`;
+  return `<p class="managed">${renderGrokBotMark()}<span class="managed-copy">${managedBy.map(renderPhrase).join("")}</span></p>`;
 }
 
 function renderContact(): string {

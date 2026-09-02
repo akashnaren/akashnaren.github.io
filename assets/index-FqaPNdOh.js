@@ -1,0 +1,21 @@
+(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),t.credentials=e.crossOrigin===`use-credentials`?`include`:e.crossOrigin===`anonymous`?`omit`:`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();var e=`Akash Premkumar`,t={prefix:`engineer @ `,company:{href:`https://www.tesla.com/`,label:`tesla`}},n=[[`I live in Redwood City.`],[`At `,{href:`https://www.tesla.com/`,label:`Tesla`},` I work on diagnostics, telemetry, and data analysis for service engineering.`],[`Previously I worked on vehicle engineering: bill of materials, full stack applications, `,{href:`https://www.tesla.com/robotaxi`,label:`robotaxi`},`, `,{href:`https://www.tesla.com/AI`,label:`optimus`},`, and `,{href:`https://grok.com`,label:`grok`},` integrations.`],[`I interned at `,{href:`https://www.rtx.com/raytheon`,label:`Raytheon`},` on an avionics networking test suite.`],[`I was a project engineer on NASA L’SPACE. I did `,{href:`https://asanchez.ucsd.edu/research/reactive-flows/`,label:`fire-whirl research`},` at UC San Diego, and studied CS and Math there.`]],r=[{href:`https://github.com/akashnaren`,label:`github`,mark:`/marks/github.svg`},{href:`https://www.linkedin.com/in/akash-premkumar-39826b1b7/`,label:`linkedin`,mark:`/marks/linkedin.svg`},{href:`https://x.com/akashpn`,label:`x`,mark:`/marks/x.svg`},{href:`https://cursor.com/@akashpn`,label:`cursor`,mark:`/marks/cursor.svg`}],i=[`/fleet/01.png`,`/fleet/02.png`,`/fleet/03.png`,`/fleet/04.png`,`/fleet/05.png`,`/fleet/06.png`,`/fleet/07.png`,`/fleet/08.png`,`/fleet/09.png`],a=`nine grok bots, more coming.`,o=[`this site is managed by `,{href:`https://x.ai/bot`,label:`grok bot`},`.`],s={address:`apn@agentmail.to`,href:`mailto:apn@agentmail.to`,label:`bots' inbox`,aside:`(not me)`};function c(e){return typeof e==`object`}function l(e){return e.replaceAll(`&`,`&amp;`).replaceAll(`<`,`&lt;`).replaceAll(`>`,`&gt;`).replaceAll(`"`,`&quot;`)}function u(e){return c(e)?`<a href="${l(e.href)}">${l(e.label)}</a>`:l(e)}function d(e){return`<p>${e.map(u).join(``)}</p>`}function f(e,t,n){return`<img class="${n}" src="${l(e)}" alt="" width="${String(t)}" height="${String(t)}" decoding="async" />`}function p(){return`<svg class="grok-bot-mark" viewBox="0 0 32 32" width="15" height="15" aria-hidden="true" focusable="false"><g class="grok-bot-body"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><g class="grok-bot-eyes"><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></g></g></svg>`}function m(){return`<p class="managed">${p()}<span class="managed-copy">${o.map(u).join(``)}</span></p>`}function h(){return`<p class="contact">${r.map(e=>`<a class="contact-link" href="${l(e.href)}"><img class="contact-mark" src="${l(e.mark)}" alt="" width="14" height="14" decoding="async" /><span>${l(e.label)}</span></a>`).join(``)}</p>`}function g(){return`<p class="fleet" aria-hidden="true">${i.map(e=>f(e,16,`fleet-mark`)).join(``)}</p>
+          <p class="fleet-line">${l(a)}</p>`}function _(){return`<p class="inbox"><span class="inbox-label">${l(s.label)}</span><a class="inbox-address" href="${l(s.href)}">${l(s.address)}</a><span class="inbox-aside">${l(s.aside)}</span></p>`}function v(){let r=n.map(d).join(`
+          `);return`<div id="holder">
+      <div id="left"></div>
+      <main>
+        <div class="bio">
+          <header>
+            <h1>${l(e)}</h1>
+            <p class="meta">${l(t.prefix)}<a href="${l(t.company.href)}">${l(t.company.label)}</a></p>
+          </header>
+          ${r}
+        </div>
+        ${h()}
+        <div class="site-stack">
+          ${m()}
+          ${g()}
+          ${_()}
+        </div>
+      </main>
+      <div id="right"></div>
+    </div>`}var y=document.getElementById(`holder`);y&&(y.outerHTML=v());
