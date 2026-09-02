@@ -315,6 +315,21 @@ if (!css.includes("100dvh")) {
   process.exit(1);
 }
 
+if (!css.includes("position:fixed") && !css.includes("position: fixed")) {
+  console.error("stylesheet must pin the well canvas behind the type");
+  process.exit(1);
+}
+
+if (html.includes("well-static") || root.includes("well-static")) {
+  console.error("built HTML must not paint a second well-static rectangle");
+  process.exit(1);
+}
+
+if (!html.includes('class="well-canvas"') || !root.includes('class="well-canvas"')) {
+  console.error("built HTML must keep the well canvas");
+  process.exit(1);
+}
+
 for (const page of [html, root]) {
   if (page.includes("inboxapn") || page.includes("inboxapn@") || page.includes("to(not")) {
     console.error("built HTML must not concatenate the bots' email line");
