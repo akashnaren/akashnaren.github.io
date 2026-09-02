@@ -1,6 +1,18 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 const html = readFileSync("dist/index.html", "utf8");
+
+const fleetSrcs = [
+  "/fleet/01.png",
+  "/fleet/02.png",
+  "/fleet/03.png",
+  "/fleet/04.png",
+  "/fleet/05.png",
+  "/fleet/06.png",
+  "/fleet/07.png",
+  "/fleet/08.png",
+  "/fleet/09.png",
+];
 
 const required = [
   "Akash Premkumar",
@@ -26,6 +38,10 @@ const required = [
   "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
   "https://x.com/akashpn",
   "https://cursor.com/@akashpn",
+  'src="/marks/github.ico"',
+  'src="/marks/linkedin.ico"',
+  'src="/marks/x.ico"',
+  'src="/marks/cursor.svg"',
   "mailto:apn@agentmail.to",
   "apn@agentmail.to",
   "Write my grok bots at",
@@ -33,20 +49,14 @@ const required = [
   "this site is managed by",
   "https://x.ai/bot",
   "grok bot",
-  'src="/icon.png"',
+  'src="/fleet/05.png"',
   'class="grok-bot-mark"',
-  "the grok bots on this are",
-  "chief of staff",
-  "profile assistant",
-  "job assistant",
-  "research advisor",
-  "professor",
-  "software engineer",
-  "product engineer",
-  "startup advisor",
+  'class="fleet"',
+  "nine grok bots keep this page.",
   'name="twitter:card"',
   'property="og:url" content="https://akashnaren.github.io/"',
   'name="theme-color" content="#0a0a0a"',
+  ...fleetSrcs.map((src) => `src="${src}"`),
 ];
 
 const forbidden = [
@@ -58,13 +68,26 @@ const forbidden = [
   "https://x.ai/grok-bot",
   "https://x.ai/icon.png",
   "https://x.ai/favicon.ico",
+  'src="/icon.png"',
+  'src="/grok-bot-mark.png"',
+  "the grok bots on this are",
+  "a dozen grok bots",
+  "job assistant",
+  "job search",
+  "looking for a job",
+  "hiring",
+  "startup advisor",
   "Money Engineer",
   "Personal CFO",
   "New Bot",
   "secretary",
   "article writer",
   "Systems Engineer",
-  "QA",
+  "chief of staff",
+  "profile assistant",
+  "research advisor",
+  "software engineer",
+  "product engineer",
 ];
 
 const missing = required.filter((needle) => !html.includes(needle));
@@ -82,6 +105,17 @@ if (missing.length > 0 || leaked.length > 0) {
   process.exit(1);
 }
 
+if (/\bprofessor\b/i.test(html)) {
+  console.error("dist/index.html must not name bots");
+  process.exit(1);
+}
+
+const fleetHits = fleetSrcs.filter((src) => html.includes(`src="${src}"`));
+if (fleetHits.length !== 9) {
+  console.error("dist/index.html must include all nine unlabeled fleet marks");
+  process.exit(1);
+}
+
 if (!html.includes('href="/favicon.svg"') && !html.includes("favicon.svg")) {
   console.error("dist/index.html is missing the favicon");
   process.exit(1);
@@ -92,6 +126,20 @@ if (html.includes("og:image") && /og:image[\s\S]{0,80}akash/i.test(html)) {
   process.exit(1);
 }
 
+const assets = [
+  ...fleetSrcs.map((src) => `dist${src}`),
+  "dist/marks/github.ico",
+  "dist/marks/linkedin.ico",
+  "dist/marks/x.ico",
+  "dist/marks/cursor.svg",
+];
+const absent = assets.filter((path) => !existsSync(path));
+if (absent.length > 0) {
+  console.error("dist is missing required marks:");
+  for (const path of absent) console.error(`  - ${path}`);
+  process.exit(1);
+}
+
 console.log(
-  "dist/index.html has the locked copy, public grok bot roster, agent inbox, and local grok bot mark.",
+  "dist/index.html has the locked copy, nine unlabeled grok bot faces, agent inbox, and contact marks.",
 );
