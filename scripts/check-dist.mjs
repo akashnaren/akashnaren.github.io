@@ -276,7 +276,12 @@ if (!cssName) {
   process.exit(1);
 }
 const css = readFileSync(`dist/assets/${cssName}`, "utf8");
-if (!css.includes("min-width:880px") && !css.includes("min-width: 880px")) {
+if (
+  !css.includes("min-width:880px") &&
+  !css.includes("min-width: 880px") &&
+  !css.includes("width>=880px") &&
+  !css.includes("width >= 880px")
+) {
   console.error("stylesheet must keep the 880px two-column breakpoint");
   process.exit(1);
 }

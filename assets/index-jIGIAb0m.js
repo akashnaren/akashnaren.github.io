@@ -1,0 +1,23 @@
+(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),t.credentials=e.crossOrigin===`use-credentials`?`include`:e.crossOrigin===`anonymous`?`omit`:`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();var e=`Akash Premkumar`,t={prefix:`engineer @ `,company:{href:`https://www.tesla.com/`,label:`tesla`}},n=[[`I live in Redwood City.`],[`At `,{href:`https://www.tesla.com/`,label:`Tesla`},` I work on diagnostics, telemetry, and data analysis for service engineering.`],[`Previously I worked on vehicle engineering: bill of materials, full stack applications, `,{href:`https://www.tesla.com/robotaxi`,label:`robotaxi`},`, `,{href:`https://www.tesla.com/AI`,label:`optimus`},`, and `,{href:`https://grok.com`,label:`grok`},` integrations.`],[`I interned at `,{href:`https://www.rtx.com/raytheon`,label:`Raytheon`},` on an avionics networking test suite.`],[`I was a project engineer on NASA L’SPACE. I did `,{href:`https://asanchez.ucsd.edu/research/reactive-flows/`,label:`fire-whirl research`},` at UC San Diego, and studied CS and Math there.`]],r=[{href:`https://github.com/akashnaren`,label:`github`,mark:`/marks/github.svg`},{href:`https://www.linkedin.com/in/akash-premkumar-39826b1b7/`,label:`linkedin`,mark:`/marks/linkedin.svg`},{href:`https://x.com/akashpn`,label:`x`,mark:`/marks/x.svg`},{href:`https://cursor.com/@akashpn`,label:`cursor`,mark:`/marks/cursor.svg`}],i=[`/fleet/01.png`,`/fleet/02.png`,`/fleet/03.png`,`/fleet/04.png`,`/fleet/05.png`,`/fleet/06.png`,`/fleet/07.png`,`/fleet/08.png`,`/fleet/09.png`],a=`nine`,o=`nine grok bots, more coming.`,s=[`this site is managed by `,{href:`https://x.ai/bot`,label:`grok bot`},`.`],c={address:`akashnaren@gmail.com`,href:`mailto:akashnaren@gmail.com`,label:`email`},l={address:`apn@agentmail.to`,href:`mailto:apn@agentmail.to`,label:`bots' inbox`,aside:`(not me)`};function u(e){return typeof e==`object`}function d(e){return e.replaceAll(`&`,`&amp;`).replaceAll(`<`,`&lt;`).replaceAll(`>`,`&gt;`).replaceAll(`"`,`&quot;`)}function f(e){return u(e)?`<a href="${d(e.href)}">${d(e.label)}</a>`:d(e)}function p(e){return`<p>${e.map(f).join(``)}</p>`}function m(e,t,n){return`<img class="${n}" src="${d(e)}" alt="" width="${String(t)}" height="${String(t)}" decoding="async" />`}function h(){return`<svg class="grok-bot-mark" viewBox="0 0 32 32" width="15" height="15" aria-hidden="true" focusable="false"><g class="grok-bot-body"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><g class="grok-bot-eyes"><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></g></g></svg>`}function g(){return`<p class="managed">${h()}<span class="managed-copy">${s.map(f).join(``)}</span></p>`}function _(){return`<div class="contact">
+          <p class="contact-marks">${r.map(e=>`<a class="contact-link" href="${d(e.href)}"><img class="contact-mark" src="${d(e.mark)}" alt="" width="14" height="14" decoding="async" /><span>${d(e.label)}</span></a>`).join(``)}</p>
+          <p class="human-mail"><span class="mail-label">${d(c.label)}</span><a class="mail-address" href="${d(c.href)}">${d(c.address)}</a></p>
+        </div>`}function v(){return`<p class="fleet" aria-hidden="true">${i.map(e=>m(e,22,`fleet-mark`)).join(``)}</p>
+          <p class="fleet-line">${d(o)}</p>`}function y(){return`<p class="inbox"><span class="inbox-label">${d(l.label)}</span><a class="inbox-address" href="${d(l.href)}">${d(l.address)}</a><span class="inbox-aside">${d(l.aside)}</span></p>`}function b(){return`<p class="fact">${d(a)}</p>`}function x(){let r=n.map(p).join(`
+          `);return`<div id="holder">
+      <main class="him">
+        <div class="bio">
+          <header>
+            <h1>${d(e)}<span class="scope" aria-hidden="true"></span></h1>
+            <p class="meta">${d(t.prefix)}<a href="${d(t.company.href)}">${d(t.company.label)}</a></p>
+          </header>
+          ${r}
+        </div>
+        ${_()}
+      </main>
+      <aside class="panel">
+        ${b()}
+        ${v()}
+        ${g()}
+        ${y()}
+      </aside>
+    </div>`}var S=document.getElementById(`holder`);S&&(S.outerHTML=x());
