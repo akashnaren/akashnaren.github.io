@@ -1,0 +1,14 @@
+{
+  "name": "Akash Premkumar",
+  "short_name": "Akash",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "display": "browser"
+}
