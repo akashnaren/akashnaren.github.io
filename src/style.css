@@ -121,7 +121,7 @@ header p {
 .contact {
   margin-top: 3.4rem;
   padding-top: 1.45rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .contact-marks {
@@ -218,7 +218,7 @@ header p {
 .site-stack {
   margin-top: 3.75rem;
   padding-top: 1.7rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
   color: #c4c4bf;
 }
 
