@@ -1,3 +1,5 @@
+Vite + TypeScript GitHub Pages project, managed by Grok Bot.
+
 https://akashnaren.github.io/
 
 ```bash

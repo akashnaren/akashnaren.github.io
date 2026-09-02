@@ -47,27 +47,62 @@ export const body: readonly Paragraph[] = [
     },
     " at UC San Diego, and studied CS and Math there.",
   ],
-  [
-    "Feel free to reach out to me on ",
-    { href: "https://github.com/akashnaren", label: "github" },
-    ", ",
-    {
-      href: "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
-      label: "linkedin",
-    },
-    ", ",
-    { href: "https://x.com/akashpn", label: "x" },
-    ", ",
-    { href: "https://cursor.com/@akashpn", label: "cursor" },
-    ", or ",
-    { href: "mailto:apn@agentmail.to", label: "agentmail" },
-    ".",
-  ],
-  [
-    "this site is managed by ",
-    { href: "https://x.ai/bot", label: "grok bot" },
-    ".",
-  ],
+];
+
+export const reachOut: Paragraph = [
+  "Feel free to reach out to me on ",
+  { href: "https://github.com/akashnaren", label: "github" },
+  ", ",
+  {
+    href: "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
+    label: "linkedin",
+  },
+  ", ",
+  { href: "https://x.com/akashpn", label: "x" },
+  ", or ",
+  { href: "https://cursor.com/@akashpn", label: "cursor" },
+  ".",
+];
+
+/** Public Grok Bot fleet. One-line edit here refreshes the page. */
+export const grokBots = [
+  "chief of staff",
+  "profile assistant",
+  "job assistant",
+  "research advisor",
+  "professor",
+  "software engineer",
+  "product engineer",
+  "startup advisor",
+] as const;
+
+export type GrokBot = (typeof grokBots)[number];
+
+export const grokBotMark = {
+  src: "/icon.png",
+  width: 14,
+  height: 14,
+} as const;
+
+export const managedBy: Paragraph = [
+  "this site is managed by ",
+  { href: "https://x.ai/bot", label: "grok bot" },
+  ".",
+];
+
+export const botRoster: Paragraph = [
+  `the grok bots on this are ${grokBots.join(", ")}.`,
+];
+
+export const agentInbox = {
+  address: "apn@agentmail.to",
+  href: "mailto:apn@agentmail.to",
+} as const;
+
+export const agentNote: Paragraph = [
+  "Write my grok bots at ",
+  { href: agentInbox.href, label: agentInbox.address },
+  " — that’s their inbox, not mine.",
 ];
 
 export function isLink(part: Phrase): part is Link {
