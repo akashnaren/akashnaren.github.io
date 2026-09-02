@@ -19,6 +19,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+::selection {
+  background: #2c2c2a;
+  color: #fafaf7;
+}
+
 #holder {
   display: flex;
   margin: 25px 0;
@@ -68,6 +73,25 @@ p {
 
 header p {
   padding-top: 2px;
+}
+
+.site-stack p {
+  padding-top: 6px;
+}
+
+.site-stack p:first-child {
+  padding-top: 20px;
+}
+
+.grok-bot-mark {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 0.4em;
+  vertical-align: -0.15em;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
 
 a {

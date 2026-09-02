@@ -27,10 +27,26 @@ const required = [
   "https://x.com/akashpn",
   "https://cursor.com/@akashpn",
   "mailto:apn@agentmail.to",
-  "agentmail",
+  "apn@agentmail.to",
+  "Write my grok bots at",
+  "their inbox, not mine",
   "this site is managed by",
   "https://x.ai/bot",
   "grok bot",
+  'src="/icon.png"',
+  'class="grok-bot-mark"',
+  "the grok bots on this are",
+  "chief of staff",
+  "profile assistant",
+  "job assistant",
+  "research advisor",
+  "professor",
+  "software engineer",
+  "product engineer",
+  "startup advisor",
+  'name="twitter:card"',
+  'property="og:url" content="https://akashnaren.github.io/"',
+  'name="theme-color" content="#0a0a0a"',
 ];
 
 const forbidden = [
@@ -40,6 +56,15 @@ const forbidden = [
   "usage stats",
   "https://grok.com/bot",
   "https://x.ai/grok-bot",
+  "https://x.ai/icon.png",
+  "https://x.ai/favicon.ico",
+  "Money Engineer",
+  "Personal CFO",
+  "New Bot",
+  "secretary",
+  "article writer",
+  "Systems Engineer",
+  "QA",
 ];
 
 const missing = required.filter((needle) => !html.includes(needle));
@@ -62,4 +87,11 @@ if (!html.includes('href="/favicon.svg"') && !html.includes("favicon.svg")) {
   process.exit(1);
 }
 
-console.log("dist/index.html has the locked copy, cursor, grok bot, and agentmail.");
+if (html.includes("og:image") && /og:image[\s\S]{0,80}akash/i.test(html)) {
+  console.error("dist/index.html must not invent a photo og:image of Akash");
+  process.exit(1);
+}
+
+console.log(
+  "dist/index.html has the locked copy, public grok bot roster, agent inbox, and local grok bot mark.",
+);
