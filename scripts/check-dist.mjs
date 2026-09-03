@@ -315,8 +315,21 @@ if (!css.includes("100dvh")) {
   process.exit(1);
 }
 
-if (!css.includes("position:fixed") && !css.includes("position: fixed")) {
-  console.error("stylesheet must pin the well canvas behind the type");
+if (
+  !css.includes("flex-direction:column") &&
+  !css.includes("flex-direction: column")
+) {
+  console.error("stylesheet must stack the type stage above the well");
+  process.exit(1);
+}
+
+if (!/min-height:\s*20vh/.test(css)) {
+  console.error("stylesheet must keep a well band at the bottom");
+  process.exit(1);
+}
+
+if (!css.includes("24px") || !css.includes("linear-gradient")) {
+  console.error("stylesheet must keep a short soft fade at the type/well join");
   process.exit(1);
 }
 
@@ -330,6 +343,24 @@ if (!html.includes('class="well-canvas"') || !root.includes('class="well-canvas"
   process.exit(1);
 }
 
+if (!/class="stage"[\s\S]+class="well"/.test(html) || /class="well"[\s\S]+class="stage"/.test(html)) {
+  console.error("type stage must sit above the well, never behind it");
+  process.exit(1);
+}
+
+const jsName = existsSync("dist/assets")
+  ? readdirSync("dist/assets").find((name) => name.endsWith(".js"))
+  : undefined;
+if (!jsName) {
+  console.error("dist/assets is missing the hashed script");
+  process.exit(1);
+}
+const js = readFileSync(`dist/assets/${jsName}`, "utf8");
+if (/getContext\(\s*["']webgl/i.test(js) || js.includes("GL_FRAGMENT_PRECISION")) {
+  console.error("well must stay a small Canvas 2D module; no WebGL shader path");
+  process.exit(1);
+}
+
 for (const page of [html, root]) {
   if (page.includes("inboxapn") || page.includes("inboxapn@") || page.includes("to(not")) {
     console.error("built HTML must not concatenate the bots' email line");
@@ -338,5 +369,5 @@ for (const page of [html, root]) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets.",
+  "dist/index.html has the two-column split, type above a quiet canvas well, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets.",
 );
