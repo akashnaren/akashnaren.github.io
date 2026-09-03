@@ -74,6 +74,16 @@ export const contact: readonly Contact[] = [
     label: "cursor",
     mark: "/marks/cursor.svg",
   },
+  {
+    href: "https://huggingface.co/akashnaren",
+    label: "huggingface",
+    mark: "/marks/huggingface.svg",
+  },
+  {
+    href: "https://www.kaggle.com/akashpnaren",
+    label: "kaggle",
+    mark: "/marks/kaggle.svg",
+  },
 ];
 
 /** Unlabeled sidebar faces. Filenames are numbers only. */
