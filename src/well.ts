@@ -24,9 +24,9 @@ function holeLayout(width: number, height: number): {
 } {
   const portrait = height > width * 1.05;
   return {
-    cx: width * (portrait ? 0.5 : 0.56),
-    cy: height * (portrait ? 0.78 : 0.72),
-    rs: Math.min(width, height) * (portrait ? 0.145 : 0.168),
+    cx: width * (portrait ? 0.5 : 0.62),
+    cy: height * (portrait ? 0.84 : 0.78),
+    rs: Math.min(width, height) * (portrait ? 0.112 : 0.108),
   };
 }
 
@@ -54,13 +54,13 @@ float hash21(vec2 p) {
 float stars(vec2 uv) {
   float s = 0.0;
   for (int k = 0; k < 3; k++) {
-    float scale = 52.0 + float(k) * 38.0;
+    float scale = 42.0 + float(k) * 34.0;
     vec2 id = floor(uv * scale);
     vec2 f = fract(uv * scale) - 0.5;
     float n = hash21(id + float(k) * 19.0);
-    if (n > 0.972) {
+    if (n > 0.958) {
       float d = length(f);
-      s += smoothstep(0.055, 0.0, d) * (0.3 + 0.7 * hash21(id + 4.2));
+      s += smoothstep(0.07, 0.0, d) * (0.35 + 0.65 * hash21(id + 4.2));
     }
   }
   return s;
@@ -71,66 +71,58 @@ void main() {
   vec2 uv = (gl_FragCoord.xy - 0.5 * res) / min(res.x, res.y);
   float portrait = step(res.x * 1.05, res.y);
 
-  vec2 hole = mix(vec2(0.10, -0.24), vec2(0.0, -0.30), portrait);
-  float rs = mix(0.168, 0.142, portrait);
+  vec2 hole = mix(vec2(0.16, -0.30), vec2(0.0, -0.36), portrait);
+  float rs = mix(0.108, 0.112, portrait);
   vec2 p = uv - hole;
   float r = length(p);
   float phi = atan(p.y, p.x);
-  float spin = u_time * 0.07;
+  float spin = u_time * 0.06;
 
-  float warp = 0.78 * rs / max(r, 0.016);
-  float shear = smoothstep(rs * 4.0, rs * 1.12, r);
-  float ang = phi + shear * shear * 0.62;
-  vec2 lensed = hole + vec2(cos(ang), sin(ang)) * (r * (1.0 + warp * 0.55));
+  float warp = 0.7 * rs / max(r, 0.014);
+  float shear = smoothstep(rs * 3.6, rs * 1.08, r);
+  float ang = phi + shear * shear * 0.7;
+  vec2 lensed = hole + vec2(cos(ang), sin(ang)) * (r * (1.0 + warp * 0.5));
 
   vec3 col = vec3(0.0392157);
-  col += vec3(0.76, 0.76, 0.72) * stars(lensed) * mix(1.0, 0.12, shear);
-
-  float flatten = 0.27;
-  vec2 dsk = vec2(p.x, p.y / flatten);
-  float rho = length(dsk);
-  float rIn = rs * 1.68;
-  float rOut = rs * 5.55;
-  float annulus = smoothstep(rIn, rIn + rs * 0.14, rho) * smoothstep(rOut, rOut - rs * 1.05, rho);
-  annulus *= smoothstep(rs * 0.96, rs * 1.12, r);
-
-  float far = smoothstep(-rs * 0.02, rs * 0.28, p.y);
-  float occluded = far * (1.0 - smoothstep(rs * 1.02, rs * 1.7, abs(p.x)));
-  annulus *= 1.0 - occluded * 0.94;
-
-  float dphi = atan(dsk.y, dsk.x) + spin;
-  float spiral = 0.6 + 0.4 * sin(dphi * 3.0 + log(max(rho, 0.03)) * 7.2 - spin * 1.8);
-  float approach = clamp(0.5 - p.x / (rs * 3.15), 0.0, 1.0);
-  float temp = pow(clamp(rIn / max(rho, rIn), 0.0, 1.0), 0.62);
+  col += vec3(0.8, 0.8, 0.76) * stars(lensed) * mix(1.0, 0.18, shear);
 
   vec3 hot = vec3(1.0, 0.96, 0.86);
-  vec3 warm = vec3(1.0, 0.5, 0.12);
-  vec3 red = vec3(0.4, 0.055, 0.018);
-  vec3 dcol = mix(red, warm, clamp(temp * 1.35, 0.0, 1.0));
-  dcol = mix(dcol, hot, pow(approach, 1.2) * (0.4 + 0.6 * temp));
+  vec3 warm = vec3(1.0, 0.52, 0.14);
+  vec3 red = vec3(0.38, 0.05, 0.016);
+  float approach = clamp(0.5 + p.x / (rs * 2.6), 0.0, 1.0);
+  vec3 dcol = mix(red, warm, approach);
+  dcol = mix(dcol, hot, pow(approach, 1.35));
 
-  float dbright = annulus * spiral * (0.3 + 1.5 * pow(approach, 1.05)) * (0.42 + 0.72 * temp);
-  col += dcol * dbright * 0.84;
+  // Wide equatorial fire: optically thick band crossing in front of the hole.
+  float a = rs * 3.55;
+  float b = rs * 0.46;
+  float ell = (p.x * p.x) / (a * a) + (p.y * p.y) / (b * b);
+  float band = smoothstep(1.12, 0.7, ell) * smoothstep(0.07, 0.2, ell);
+  float spiral = 0.9 + 0.1 * sin(atan(p.y, p.x) * 2.0 + log(max(length(p), 0.02)) * 5.0 - spin * 2.0);
+  float temp = pow(clamp(1.2 * rs / max(length(vec2(p.x, p.y / 0.46)), 1.2 * rs), 0.0, 1.0), 0.7);
+  float dbright = band * spiral * (0.7 + 1.25 * pow(approach, 1.05)) * (0.6 + 0.65 * temp);
+  col += dcol * dbright;
 
-  float isco = smoothstep(rIn + rs * 0.5, rIn, rho) * annulus;
-  col += mix(warm, hot, approach) * isco * 0.5;
+  float isco = band * smoothstep(0.42, 0.18, ell);
+  col += mix(warm, hot, approach) * isco * 0.7;
 
-  float wrapR = rs * 1.36;
-  float wrap = exp(-pow((r - wrapR) / (rs * 0.155), 2.0));
-  float polar = pow(abs(p.y) / max(r, 1e-4), 1.65);
-  wrap *= 0.2 + 1.5 * polar;
-  wrap *= 0.36 + 1.18 * approach;
-  col += mix(red, hot, pow(approach, 0.88)) * wrap * 0.98;
+  // Lensed far side: vertical photon wrap over and under the horizon.
+  float wrapR = rs * 1.2;
+  float wrap = exp(-pow((r - wrapR) / (rs * 0.26), 2.0));
+  float polar = pow(abs(p.y) / max(r, 1e-4), 1.05);
+  wrap *= 0.4 + 1.45 * polar;
+  wrap *= 0.42 + 1.15 * approach;
+  col += mix(red, hot, pow(approach, 0.8)) * wrap * 1.25;
 
-  float wrap2 = exp(-pow((r - rs * 1.82) / (rs * 0.2), 2.0));
-  wrap2 *= pow(abs(sin(phi)), 2.15);
-  wrap2 *= 0.22 + 0.95 * approach;
-  col += mix(warm, hot, approach) * wrap2 * 0.4;
+  float wrap2 = exp(-pow((r - rs * 1.48) / (rs * 0.18), 2.0));
+  wrap2 *= pow(abs(sin(phi)), 1.35);
+  wrap2 *= 0.3 + 0.9 * approach;
+  col += mix(warm, hot, approach) * wrap2 * 0.6;
 
-  float pring = exp(-pow((r - rs * 1.07) / (rs * 0.026), 2.0));
-  col += vec3(1.0, 0.8, 0.52) * pring * (0.5 + 0.55 * approach);
+  float pring = exp(-pow((r - rs * 1.04) / (rs * 0.03), 2.0));
+  col += vec3(1.0, 0.84, 0.58) * pring * (0.55 + 0.6 * approach);
 
-  float hz = smoothstep(rs * 1.03, rs * 0.88, r);
+  float hz = smoothstep(rs * 1.02, rs * 0.9, r);
   col = mix(col, vec3(0.0), hz);
 
   gl_FragColor = vec4(col, 1.0);
@@ -208,7 +200,7 @@ function mountGL(canvas: HTMLCanvasElement): ((time: number) => void) | null {
 }
 
 function seedStars(width: number, height: number): Star[] {
-  const count = Math.round(Math.min(130, Math.max(48, (width * height) / 14000)));
+    const count = Math.round(Math.min(160, Math.max(64, (width * height) / 11000)));
   return Array.from({ length: count }, (_, i) => ({
     x: hash(i, 1),
     y: hash(i, 2),
@@ -227,8 +219,9 @@ function paint2D(
   animate: boolean,
 ): void {
   const { cx, cy, rs } = holeLayout(width, height);
-  const spin = animate ? time * 0.07 : 0.2;
-  const approachX = cx - rs * 1.15;
+  const spin = animate ? time * 0.06 : 0.18;
+  const rx = rs * 3.55;
+  const ry = rs * 0.46;
 
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.fillStyle = "#0a0a0a";
@@ -240,116 +233,90 @@ function paint2D(
     const dx = x - cx;
     const dy = y - cy;
     const dist = Math.hypot(dx, dy);
-    const influence = Math.max(0, 1 - dist / (rs * 4.1));
-    const angle = Math.atan2(dy, dx) + influence * influence * 0.64;
-    const pull = 1 - influence * 0.28;
+    const influence = Math.max(0, 1 - dist / (rs * 3.8));
+    const angle = Math.atan2(dy, dx) + influence * influence * 0.7;
+    const pull = 1 - influence * 0.26;
     x = cx + Math.cos(angle) * dist * pull;
     y = cy + Math.sin(angle) * dist * pull;
-    if (dist < rs * 1.05) continue;
-    const stretch = 1 + influence * 2.2;
+    if (dist < rs * 1.02) continue;
+    const stretch = 1 + influence * 2.1;
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(Math.atan2(y - cy, x - cx) + Math.PI / 2);
-    ctx.fillStyle = `rgba(220,220,214,${star.a * (1 - influence * 0.55)})`;
+    ctx.fillStyle = `rgba(224,224,218,${star.a * (1 - influence * 0.5)})`;
     ctx.beginPath();
-    ctx.ellipse(0, 0, star.r * stretch, star.r * (1 - influence * 0.48), 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, star.r * stretch, star.r * (1 - influence * 0.45), 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
 
-  const glow = ctx.createRadialGradient(cx, cy, rs * 0.4, cx, cy, rs * 4.4);
-  glow.addColorStop(0, "rgba(255,120,30,0.1)");
-  glow.addColorStop(0.35, "rgba(255,90,16,0.04)");
+  const glow = ctx.createRadialGradient(cx, cy, rs * 0.3, cx, cy, rs * 3.2);
+  glow.addColorStop(0, "rgba(255,130,36,0.08)");
+  glow.addColorStop(0.45, "rgba(255,90,16,0.03)");
   glow.addColorStop(1, "rgba(10,10,10,0)");
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, width, height);
 
-  const rx = rs * 5.4;
-  const ry = rs * 1.46;
-  const rIn = 0.32;
+  const doppler = ctx.createLinearGradient(cx - rx, cy, cx + rx, cy);
+  doppler.addColorStop(0, "rgba(64,8,5,0.16)");
+  doppler.addColorStop(0.2, "rgba(120,24,8,0.32)");
+  doppler.addColorStop(0.45, "rgba(220,84,16,0.58)");
+  doppler.addColorStop(0.72, "rgba(255,170,64,0.88)");
+  doppler.addColorStop(1, "rgba(255,246,220,0.95)");
 
   ctx.save();
   ctx.beginPath();
   ctx.ellipse(cx, cy + rs * 0.02, rx, ry, 0, 0, Math.PI * 2);
-  ctx.ellipse(cx, cy + rs * 0.02, rx * rIn, ry * rIn, 0, 0, Math.PI * 2);
+  ctx.ellipse(cx, cy + rs * 0.02, rs * 1.15, rs * 0.16, 0, 0, Math.PI * 2);
   ctx.clip("evenodd");
-
-  const doppler = ctx.createLinearGradient(cx - rx, cy, cx + rx, cy);
-  doppler.addColorStop(0, "rgba(255,246,220,0.92)");
-  doppler.addColorStop(0.22, "rgba(255,176,72,0.82)");
-  doppler.addColorStop(0.5, "rgba(230,92,18,0.52)");
-  doppler.addColorStop(0.78, "rgba(140,28,8,0.32)");
-  doppler.addColorStop(1, "rgba(72,10,6,0.18)");
   ctx.fillStyle = doppler;
   ctx.fillRect(cx - rx, cy - ry, rx * 2, ry * 2);
+  ctx.restore();
 
-  ctx.globalCompositeOperation = "lighter";
   ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate(spin * 0.35);
-  ctx.scale(1, 0.27);
-  for (let i = 0; i < 5; i += 1) {
-    const ring = rs * (1.95 + i * 0.62);
-    ctx.strokeStyle = `rgba(255,210,140,${0.08 + i * 0.015})`;
-    ctx.lineWidth = rs * 0.16;
-    ctx.beginPath();
-    ctx.arc(0, 0, ring, spin + i * 0.7, spin + i * 0.7 + Math.PI * 1.15);
-    ctx.stroke();
-  }
-  ctx.restore();
-  ctx.restore();
-
-  const hideFar = ctx.createRadialGradient(cx, cy - rs * 0.15, rs * 0.2, cx, cy - rs * 0.2, rs * 1.15);
-  hideFar.addColorStop(0, "#0a0a0a");
-  hideFar.addColorStop(0.72, "rgba(10,10,10,0.92)");
-  hideFar.addColorStop(1, "rgba(10,10,10,0)");
-  ctx.fillStyle = hideFar;
+  ctx.globalAlpha = 0.22;
+  ctx.translate(cx, cy + rs * 0.04);
+  ctx.rotate(spin * 0.4);
+  ctx.scale(1, 0.22);
+  ctx.strokeStyle = "rgba(255,230,180,0.9)";
+  ctx.lineWidth = rs * 0.12;
   ctx.beginPath();
-  ctx.ellipse(cx, cy - rs * 0.05, rs * 1.2, rs * 0.95, 0, Math.PI, 0);
-  ctx.fill();
+  ctx.arc(0, 0, rs * 2.4, spin, spin + Math.PI * 1.1);
+  ctx.stroke();
+  ctx.restore();
 
-  const wrapGrad = ctx.createLinearGradient(approachX, cy, cx + rs * 1.4, cy);
-  wrapGrad.addColorStop(0, "rgba(255,244,214,0.9)");
-  wrapGrad.addColorStop(0.45, "rgba(255,150,48,0.55)");
-  wrapGrad.addColorStop(1, "rgba(120,22,8,0.22)");
-
+  const wrapGrad = ctx.createLinearGradient(cx - rs * 1.6, cy, cx + rs * 1.6, cy);
+  wrapGrad.addColorStop(0, "rgba(110,18,8,0.24)");
+  wrapGrad.addColorStop(0.55, "rgba(255,150,48,0.6)");
+  wrapGrad.addColorStop(1, "rgba(255,244,214,0.92)");
   ctx.strokeStyle = wrapGrad;
   ctx.lineCap = "round";
-  ctx.lineWidth = rs * 0.2;
+  ctx.lineWidth = rs * 0.28;
   ctx.beginPath();
-  ctx.arc(cx, cy, rs * 1.36, Math.PI + 0.28, -0.28);
+  ctx.arc(cx, cy, rs * 1.22, Math.PI + 0.18, -0.18);
   ctx.stroke();
-  ctx.lineWidth = rs * 0.17;
+  ctx.lineWidth = rs * 0.24;
   ctx.beginPath();
-  ctx.arc(cx, cy, rs * 1.36, 0.28, Math.PI - 0.28);
-  ctx.stroke();
-
-  ctx.lineWidth = rs * 0.1;
-  ctx.strokeStyle = "rgba(255,200,120,0.28)";
-  ctx.beginPath();
-  ctx.arc(cx, cy, rs * 1.78, Math.PI + 0.55, -0.55);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(cx, cy, rs * 1.78, 0.55, Math.PI - 0.55);
+  ctx.arc(cx, cy, rs * 1.22, 0.18, Math.PI - 0.18);
   ctx.stroke();
 
-  const horizon = ctx.createRadialGradient(cx, cy, rs * 0.2, cx, cy, rs);
+  const horizon = ctx.createRadialGradient(cx, cy, rs * 0.15, cx, cy, rs);
   horizon.addColorStop(0, "#000000");
-  horizon.addColorStop(0.82, "#000000");
-  horizon.addColorStop(1, "rgba(0,0,0,0.15)");
+  horizon.addColorStop(0.86, "#000000");
+  horizon.addColorStop(1, "rgba(0,0,0,0.2)");
   ctx.fillStyle = horizon;
   ctx.beginPath();
   ctx.arc(cx, cy, rs, 0, Math.PI * 2);
   ctx.fill();
 
   const ring = ctx.createLinearGradient(cx - rs, cy, cx + rs, cy);
-  ring.addColorStop(0, "rgba(255,236,200,0.85)");
-  ring.addColorStop(0.5, "rgba(255,150,50,0.45)");
-  ring.addColorStop(1, "rgba(180,40,12,0.28)");
+  ring.addColorStop(0, "rgba(170,36,10,0.3)");
+  ring.addColorStop(0.5, "rgba(255,150,50,0.48)");
+  ring.addColorStop(1, "rgba(255,236,200,0.9)");
   ctx.strokeStyle = ring;
-  ctx.lineWidth = Math.max(1.4, rs * 0.045);
+  ctx.lineWidth = Math.max(1.5, rs * 0.055);
   ctx.beginPath();
-  ctx.arc(cx, cy, rs * 1.07, 0, Math.PI * 2);
+  ctx.arc(cx, cy, rs * 1.04, 0, Math.PI * 2);
   ctx.stroke();
 }
 
