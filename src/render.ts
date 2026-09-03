@@ -99,6 +99,13 @@ export function renderSite(): string {
       </aside>
       </div>
       <div class="well" aria-hidden="true">
+        <div class="well-hole">
+          <span class="well-disk"></span>
+          <svg class="well-ring" viewBox="0 0 100 100" focusable="false">
+            <circle class="well-ring-halo" cx="50" cy="50" r="38.4" fill="none" stroke="#ff6b00" stroke-width="0.7" opacity="0.3"/>
+            <circle class="well-ring-arc" cx="50" cy="50" r="38.4" fill="none" stroke="#ff6b00" stroke-width="1.15" stroke-linecap="round" stroke-dasharray="15 226" opacity="0.5"/>
+          </svg>
+        </div>
         <canvas class="well-canvas"></canvas>
       </div>
     </div>`;
