@@ -13,10 +13,9 @@ export function fitStage(): void {
   root.style.setProperty("--fit", "1");
 
   const pageH = Math.min(page.clientHeight, viewportHeight());
-  const wellFloor = Math.max(88, Math.round(pageH * 0.2));
   const stageH = stage.scrollHeight;
-  if (stageH + wellFloor <= pageH) return;
+  if (stageH <= pageH) return;
 
-  const fit = Math.max(0.68, (pageH - wellFloor) / stageH);
+  const fit = Math.max(0.68, pageH / stageH);
   root.style.setProperty("--fit", fit.toFixed(3));
 }

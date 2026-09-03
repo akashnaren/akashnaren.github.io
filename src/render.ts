@@ -80,6 +80,9 @@ export function renderSite(): string {
   const paragraphs = body.map(renderParagraph).join("\n          ");
 
   return `<div class="page" id="holder">
+      <div class="well" aria-hidden="true">
+        <canvas class="well-canvas"></canvas>
+      </div>
       <div class="stage">
       <main class="him">
         <div class="bio">
@@ -97,10 +100,6 @@ export function renderSite(): string {
         ${renderManagedBy()}
         ${renderInbox()}
       </aside>
-      </div>
-      <div class="well" aria-hidden="true">
-        <div class="well-static"></div>
-        <canvas class="well-canvas"></canvas>
       </div>
     </div>`;
 }

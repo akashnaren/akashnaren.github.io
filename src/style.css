@@ -12,10 +12,11 @@ html {
 }
 
 body {
+  background: #0a0a0a;
   height: 100vh;
   overflow: hidden;
   overscroll-behavior: none;
-  color: #fafaf7;
+  color: #fffaf2;
   font-family: Geist, ui-sans-serif, system-ui, sans-serif;
   font-size: calc(14px * var(--fit));
   font-weight: 400;
@@ -31,31 +32,20 @@ body {
 }
 
 .page {
-  display: flex;
-  flex-direction: column;
+  position: relative;
   width: 100%;
   height: 100%;
-  max-width: 92rem;
-  margin: 0 auto;
   overflow: hidden;
-}
-
-.stage {
-  flex: 0 1 auto;
-  min-width: 0;
-  min-height: 0;
-  padding: calc(2.1rem * var(--fit)) 1.4rem calc(0.45rem * var(--fit));
+  background: #0a0a0a;
 }
 
 .well {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 20vh;
-  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
 }
 
-.well-static,
 .well-canvas {
   position: absolute;
   inset: 0;
@@ -64,30 +54,36 @@ body {
   pointer-events: none;
 }
 
-.well-static {
-  background:
-    radial-gradient(circle at 50% 50%, #000 0 18%, transparent 38%),
-    radial-gradient(ellipse 52% 18% at 50% 52%, rgba(255, 107, 0, 0.28) 0%, rgba(255, 107, 0, 0.08) 32%, transparent 58%),
-    radial-gradient(ellipse at 50% 100%, #050505 0%, transparent 58%);
+.stage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  max-width: 92rem;
+  margin: 0 auto;
+  min-width: 0;
+  overflow: hidden;
+  padding: calc(2.4rem * var(--fit)) 1.5rem calc(1.6rem * var(--fit));
 }
 
-.well-static::before {
+.stage::before {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.55;
-  background-image:
-    radial-gradient(1px 1px at 14% 18%, rgba(255, 255, 255, 0.32), transparent),
-    radial-gradient(1px 1px at 78% 14%, rgba(255, 255, 255, 0.2), transparent),
-    radial-gradient(1px 1px at 62% 28%, rgba(255, 255, 255, 0.16), transparent),
-    radial-gradient(1.2px 1.2px at 22% 36%, rgba(255, 255, 255, 0.22), transparent),
-    radial-gradient(1px 1px at 88% 42%, rgba(255, 255, 255, 0.18), transparent),
-    radial-gradient(1px 1px at 8% 58%, rgba(255, 255, 255, 0.14), transparent),
-    radial-gradient(1px 1px at 70% 62%, rgba(255, 255, 255, 0.12), transparent);
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 10, 10, 0.28) 0%,
+    rgba(10, 10, 10, 0.1) 30%,
+    rgba(10, 10, 10, 0) 58%
+  );
 }
 
-.well-live .well-static {
-  visibility: hidden;
+.him,
+.panel {
+  position: relative;
+  z-index: 1;
 }
 
 .him {
@@ -98,7 +94,7 @@ body {
   min-width: 0;
   color: #c4c4bf;
   padding-top: calc(1.35rem * var(--fit));
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 header {
@@ -166,9 +162,14 @@ h1 {
   color: #7d8187;
 }
 
+.bio {
+  color: #fffaf2;
+  text-shadow: 0 1px 10px rgba(10, 10, 10, 0.55);
+}
+
 .bio > p {
-  padding-top: calc(12px * var(--fit));
-  line-height: calc(22px * var(--fit));
+  padding-top: calc(16px * var(--fit));
+  line-height: calc(23px * var(--fit));
 }
 
 header p {
@@ -176,9 +177,9 @@ header p {
 }
 
 .contact {
-  margin-top: calc(1.55rem * var(--fit));
-  padding-top: calc(1.05rem * var(--fit));
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  margin-top: calc(2rem * var(--fit));
+  padding-top: calc(1.25rem * var(--fit));
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .contact-marks {
@@ -216,7 +217,7 @@ header p {
   bottom: 0;
   height: 1px;
   border-radius: 1px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.09);
 }
 
 .contact-link:hover span::after,
@@ -465,7 +466,7 @@ a::before {
   bottom: 0;
   height: 1px;
   border-radius: 1px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.09);
 }
 
 a:hover::before {
@@ -482,15 +483,15 @@ a:focus-visible {
 @media (min-width: 880px) {
   .stage {
     display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     align-items: start;
     column-gap: 0;
     row-gap: 0;
-    padding: calc(4.5rem * var(--fit)) 3.25rem calc(1rem * var(--fit));
+    padding: calc(4.75rem * var(--fit)) 3.5rem calc(3.25rem * var(--fit));
   }
 
   .him {
-    padding-right: 3.6rem;
+    padding-right: 4rem;
   }
 
   .bio {
@@ -501,20 +502,20 @@ a:focus-visible {
     position: sticky;
     top: 3.25rem;
     padding-top: 0.15rem;
-    padding-left: 3rem;
+    padding-left: 3.4rem;
     border-top: 0;
-    border-left: 1px solid rgba(255, 255, 255, 0.14);
+    border-left: 1px solid rgba(255, 255, 255, 0.07);
   }
 
   .fleet {
     max-width: calc(17.5rem * var(--fit));
     height: calc(10.25rem * var(--fit));
-    margin-top: calc(1.15rem * var(--fit));
+    margin-top: calc(1.35rem * var(--fit));
   }
 
   .contact {
-    margin-top: calc(2.4rem * var(--fit));
-    padding-top: calc(1.2rem * var(--fit));
+    margin-top: calc(2.8rem * var(--fit));
+    padding-top: calc(1.4rem * var(--fit));
   }
 }
 
