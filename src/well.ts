@@ -1,120 +1,151 @@
-const PAGE = "#0a0a0a";
-const PERIOD = 7;
+const PAGE = 10 / 255;
 
-function prefersReducedMotion(): boolean {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function clamp(value: number, lo: number, hi: number): number {
+  return Math.min(hi, Math.max(lo, value));
 }
 
-function easeInOut(t: number): number {
-  return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+function smoothstep(edge0: number, edge1: number, x: number): number {
+  const t = clamp((x - edge0) / (edge1 - edge0), 0, 1);
+  return t * t * (3 - 2 * t);
 }
 
-/** Idle envelope like the grok-bot glance: rest, a look, rest. */
-function idle(time: number): { glow: number; glance: number } {
-  const u = ((time % PERIOD) + PERIOD) % PERIOD / PERIOD;
-  let glow = 0;
-  let glance = 0;
-
-  if (u >= 0.18 && u < 0.34) {
-    const k = easeInOut((u - 0.18) / 0.16);
-    const tri = k < 0.5 ? k * 2 : (1 - k) * 2;
-    glow = easeInOut(tri);
-    glance = 0.22 * k;
-  } else if (u >= 0.34 && u < 0.5) {
-    glow = 0.12 * (1 - easeInOut((u - 0.34) / 0.16));
-    glance = 0.22 * (1 - easeInOut((u - 0.34) / 0.16));
-  } else if (u >= 0.52 && u < 0.68) {
-    const k = easeInOut((u - 0.52) / 0.16);
-    const tri = k < 0.5 ? k * 2 : (1 - k) * 2;
-    glow = 0.85 * easeInOut(tri);
-    glance = -0.18 * k;
-  } else if (u >= 0.68 && u < 0.82) {
-    glow = 0.1 * (1 - easeInOut((u - 0.68) / 0.14));
-    glance = -0.18 * (1 - easeInOut((u - 0.68) / 0.14));
-  }
-
-  return { glow, glance };
+function mix(a: number, b: number, t: number): number {
+  return a + (b - a) * t;
 }
 
-function holeLayout(width: number, height: number): {
+function hash(i: number, salt: number): number {
+  const x = Math.sin(i * 127.1 + salt * 311.7) * 43758.5453123;
+  return x - Math.floor(x);
+}
+
+/** Horizon size in CSS px: scales with the art band, capped so desktop stays quiet. */
+function holeLayout(cssW: number, cssH: number): {
   cx: number;
   cy: number;
   rs: number;
 } {
-  const pad = Math.max(28, Math.min(48, height * 0.16));
-  const innerH = Math.max(24, height - pad * 2);
-  const innerW = Math.max(24, width - pad * 2);
-  const rs = Math.min(innerW, innerH) * 0.34;
+  const pad = Math.max(20, Math.min(36, cssH * 0.14));
+  const innerW = Math.max(24, cssW - pad * 2);
+  const innerH = Math.max(24, cssH - pad * 2);
+  let rs = clamp(innerH * 0.34, 34, 52);
+  rs = Math.min(rs, innerW / 3.6, innerH / 2.55);
   return {
-    cx: width * 0.5,
-    cy: pad + innerH * 0.52,
+    cx: cssW * 0.5,
+    cy: cssH * 0.5,
     rs,
   };
 }
 
-function paint(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  time: number,
-  animate: boolean,
+function paintStars(
+  data: Uint8ClampedArray,
+  dw: number,
+  dh: number,
+  dpr: number,
+  cx: number,
+  cy: number,
+  rs: number,
+  cssW: number,
+  cssH: number,
 ): void {
-  ctx.fillStyle = PAGE;
-  ctx.fillRect(0, 0, width, height);
+  const count = Math.round(Math.min(36, Math.max(14, (cssW * cssH) / 16000)));
+  for (let i = 0; i < count; i += 1) {
+    const x = hash(i, 1) * cssW;
+    const y = hash(i, 2) * cssH;
+    if (Math.hypot(x - cx, y - cy) < rs * 1.85) continue;
+    const px = Math.round(x * dpr);
+    const py = Math.round(y * dpr);
+    if (px < 0 || py < 0 || px >= dw || py >= dh) continue;
+    const a = 0.14 + hash(i, 4) * 0.28;
+    const i4 = (py * dw + px) * 4;
+    data[i4] = Math.round(mix(data[i4] / 255, 0.88, a) * 255);
+    data[i4 + 1] = Math.round(mix(data[i4 + 1] / 255, 0.88, a) * 255);
+    data[i4 + 2] = Math.round(mix(data[i4 + 2] / 255, 0.85, a) * 255);
+  }
+}
 
-  const { cx, cy, rs } = holeLayout(width, height);
-  const { glow, glance } = animate ? idle(time) : { glow: 0, glance: 0 };
+function paintHorizon(
+  ctx: CanvasRenderingContext2D,
+  cssW: number,
+  cssH: number,
+  dpr: number,
+): void {
+  const dw = Math.max(1, Math.floor(cssW * dpr));
+  const dh = Math.max(1, Math.floor(cssH * dpr));
+  const { cx, cy, rs } = holeLayout(cssW, cssH);
+  const img = ctx.createImageData(dw, dh);
+  const data = img.data;
+  const a = rs * 2.05;
+  const b = rs * 0.5;
 
-  const disk = ctx.createRadialGradient(cx, cy, rs * 0.15, cx, cy, rs);
-  disk.addColorStop(0, "#000000");
-  disk.addColorStop(0.84, "#000000");
-  disk.addColorStop(1, "rgba(0,0,0,0.45)");
-  ctx.fillStyle = disk;
-  ctx.beginPath();
-  ctx.arc(cx, cy, rs, 0, Math.PI * 2);
-  ctx.fill();
+  for (let y = 0; y < dh; y += 1) {
+    const py = (y + 0.5) / dpr - cy;
+    for (let x = 0; x < dw; x += 1) {
+      const px = (x + 0.5) / dpr - cx;
+      const r = Math.hypot(px, py);
+      const phi = Math.atan2(py, px);
+      const ell = (px * px) / (a * a) + (py * py) / (b * b);
+      const band = smoothstep(1.16, 0.62, ell) * smoothstep(0.04, 0.16, ell);
+      const fiber =
+        0.82 + 0.18 * Math.sin(phi * 2.1 + Math.log(Math.max(r, 0.02)) * 5.4);
+      const rust =
+        0.5 + 0.5 * Math.sin(phi * 5.8 - Math.log(Math.max(r, 0.02)) * 7.2);
+      const near = Math.pow(
+        clamp(1.2 * rs / Math.max(Math.hypot(px, py / 0.52), 1.2 * rs), 0, 1),
+        0.7,
+      );
+      const rim = Math.pow(clamp(Math.abs(px) / (a * 0.88), 0, 1), 1.2);
 
-  const ringR = rs * 1.04;
-  const ringAlpha = 0.14 + glow * 0.12;
-  ctx.strokeStyle = `rgba(255,107,0,${ringAlpha})`;
-  ctx.lineWidth = Math.max(1.1, rs * 0.026);
-  ctx.beginPath();
-  ctx.arc(cx, cy, ringR, 0, Math.PI * 2);
-  ctx.stroke();
+      let cr = mix(0.42, 0.86, clamp(0.25 + near * 0.4 + rim * 0.28, 0, 1));
+      let cg = mix(0.14, 0.4, clamp(0.18 + near * 0.32 + rim * 0.16, 0, 1));
+      let cb = mix(0.04, 0.12, clamp(near * 0.2, 0, 1));
+      cr = mix(cr, 0.96, Math.pow(near, 1.3) * 0.28 + rim * 0.12);
+      cg = mix(cg, 0.7, Math.pow(near, 1.2) * 0.2);
+      cr = mix(cr, 0.38, rust * rust * band * 0.22);
+      cg = mix(cg, 0.14, rust * rust * band * 0.16);
 
-  if (glow > 0.04) {
-    ctx.save();
-    ctx.strokeStyle = `rgba(255,107,0,${0.16 + glow * 0.22})`;
-    ctx.lineWidth = Math.max(1.15, rs * 0.03);
-    ctx.lineCap = "round";
-    const start = -Math.PI * 0.12 + glance;
-    ctx.beginPath();
-    ctx.arc(cx, cy, ringR, start, start + Math.PI * 0.42);
-    ctx.stroke();
-    ctx.restore();
+      const dbright = band * fiber * (0.38 + 0.28 * near) * (0.55 + 0.3 * rim);
+      const wrap = Math.exp(-(((r - rs * 1.16) / (rs * 0.3)) ** 2));
+      const polar = Math.pow(Math.abs(py) / Math.max(r, 1e-4), 1.1);
+      const wrapAmt = wrap * (0.22 + 0.85 * polar) * 0.55;
+      const wrap2 = Math.exp(-(((r - rs * 1.4) / (rs * 0.2)) ** 2));
+      const wrap2Amt = wrap2 * Math.pow(Math.abs(Math.sin(phi)), 1.25) * 0.28;
+      const pring = Math.exp(-(((r - rs * 1.035) / (rs * 0.028)) ** 2)) * 0.42;
+      const inner =
+        Math.exp(-(((r - rs * 0.8) / (rs * 0.022)) ** 2)) *
+        smoothstep(0.2, -0.06, py / rs) *
+        0.38;
+      const glow = Math.exp(-((r / (rs * 2.6)) ** 2)) * 0.055;
+
+      const pinch = 0.42 + 0.58 * clamp(Math.abs(px) / (rs * 1.5), 0, 1);
+      const front =
+        band * (1 - smoothstep(b * pinch * 0.72, b * pinch * 1.1, Math.abs(py)));
+      const hz = smoothstep(rs * 1.016, rs * 0.88, r);
+
+      let rr = PAGE + glow * 0.95;
+      let gg = PAGE + glow * 0.4;
+      let bb = PAGE + glow * 0.1;
+      rr += cr * dbright + 0.9 * wrapAmt + 0.82 * wrap2Amt + pring * 0.85;
+      gg += cg * dbright + 0.48 * wrapAmt + 0.42 * wrap2Amt + pring * 0.58;
+      bb += cb * dbright + 0.14 * wrapAmt + 0.12 * wrap2Amt + pring * 0.26;
+
+      const cover = hz * (1 - clamp(front * 1.45, 0, 1));
+      rr = mix(rr, 0, cover);
+      gg = mix(gg, 0, cover);
+      bb = mix(bb, 0, cover);
+      rr += inner * hz;
+      gg += inner * 0.72 * hz;
+      bb += inner * 0.38 * hz;
+
+      const i = (y * dw + x) * 4;
+      data[i] = Math.round(clamp(rr, 0, 1) * 255);
+      data[i + 1] = Math.round(clamp(gg, 0, 1) * 255);
+      data[i + 2] = Math.round(clamp(bb, 0, 1) * 255);
+      data[i + 3] = 255;
+    }
   }
 
-  const orbit = rs * 1.22;
-  const drift = animate ? time * 0.045 : 1.15;
-  const ang = drift + glance * 0.35;
-  const px = cx + Math.cos(ang) * orbit;
-  const py = cy + Math.sin(ang) * orbit * 0.28;
-  const tangent = ang + Math.PI / 2;
-  const len = Math.max(2.4, rs * 0.055);
-
-  ctx.save();
-  ctx.translate(px, py);
-  ctx.rotate(tangent);
-  ctx.strokeStyle = `rgba(255, 236, 214, ${0.28 + glow * 0.18})`;
-  ctx.lineWidth = 1;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-  ctx.beginPath();
-  ctx.moveTo(-len, 0.55);
-  ctx.lineTo(0, -0.7);
-  ctx.lineTo(len, 0.55);
-  ctx.stroke();
-  ctx.restore();
+  paintStars(data, dw, dh, dpr, cx, cy, rs, cssW, cssH);
+  ctx.putImageData(img, 0, 0);
 }
 
 export function mountWell(): void {
@@ -122,76 +153,25 @@ export function mountWell(): void {
   const canvas = document.querySelector<HTMLCanvasElement>(".well-canvas");
   if (!host || !canvas) return;
 
-  const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
+  const ctx = canvas.getContext("2d", { alpha: false });
   if (!ctx) return;
 
-  let width = 0;
-  let height = 0;
-  let dpr = 1;
-  let frame = 0;
-  let live = false;
-
-  const resize = (): void => {
+  const paint = (): void => {
     const rect = host.getBoundingClientRect();
-    width = Math.max(1, Math.floor(rect.width));
-    height = Math.max(1, Math.floor(rect.height));
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.floor(width * dpr);
-    canvas.height = Math.floor(height * dpr);
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cssW = Math.max(1, Math.floor(rect.width));
+    const cssH = Math.max(1, Math.floor(rect.height));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(cssW * dpr);
+    canvas.height = Math.floor(cssH * dpr);
+    canvas.style.width = `${cssW}px`;
+    canvas.style.height = `${cssH}px`;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    paintHorizon(ctx, cssW, cssH, dpr);
   };
 
-  const draw = (now: number, animate: boolean): void => {
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    paint(ctx, width, height, now * 0.001, animate);
-  };
-
-  const tick = (now: number): void => {
-    draw(now, true);
-    frame = requestAnimationFrame(tick);
-  };
-
-  const stop = (): void => {
-    live = false;
-    cancelAnimationFrame(frame);
-  };
-
-  const start = (): void => {
-    resize();
-    const still = prefersReducedMotion();
-    draw(still ? 0 : performance.now(), !still);
-    if (still) {
-      stop();
-      return;
-    }
-    if (!live) {
-      live = true;
-      frame = requestAnimationFrame(tick);
-    }
-  };
-
-  start();
-
-  motion.addEventListener("change", () => {
-    cancelAnimationFrame(frame);
-    live = false;
-    start();
-  });
-  window.addEventListener("resize", start);
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      stop();
-      return;
-    }
-    start();
-  });
+  paint();
+  window.addEventListener("resize", paint);
   if (typeof ResizeObserver !== "undefined") {
-    new ResizeObserver(() => {
-      resize();
-      draw(live ? performance.now() : 0, live && !prefersReducedMotion());
-    }).observe(host);
+    new ResizeObserver(paint).observe(host);
   }
 }

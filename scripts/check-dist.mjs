@@ -38,10 +38,16 @@ const required = [
   "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
   "https://x.com/akashpn",
   "https://cursor.com/@akashpn",
+  "https://huggingface.co/akashnaren",
+  "https://www.kaggle.com/akashpnaren",
   'src="/marks/github.svg"',
   'src="/marks/linkedin.svg"',
   'src="/marks/x.svg"',
   'src="/marks/cursor.svg"',
+  'src="/marks/huggingface.svg"',
+  'src="/marks/kaggle.svg"',
+  ">huggingface</span>",
+  ">kaggle</span>",
   'class="contact-marks"',
   'class="human-mail"',
   'class="mail-label"',
@@ -188,6 +194,8 @@ const assets = [
   "dist/marks/linkedin.svg",
   "dist/marks/x.svg",
   "dist/marks/cursor.svg",
+  "dist/marks/huggingface.svg",
+  "dist/marks/kaggle.svg",
   "dist/favicon.svg",
 ];
 const absent = assets.filter((path) => !existsSync(path));
@@ -361,6 +369,40 @@ if (/getContext\(\s*["']webgl/i.test(js) || js.includes("GL_FRAGMENT_PRECISION")
   process.exit(1);
 }
 
+if (/requestAnimationFrame/.test(js) || /webkitRequestAnimationFrame/.test(js)) {
+  console.error("well must be a still paint; no requestAnimationFrame");
+  process.exit(1);
+}
+
+if (
+  /\bship\b/.test(js) ||
+  /chevron/i.test(js) ||
+  /lineTo\(0,\s*-0\.7\)/.test(js) ||
+  /moveTo\(-len/.test(js)
+) {
+  console.error("well must not keep a ship or drifting chevron");
+  process.exit(1);
+}
+
+if (
+  /@keyframes\s+[^\{]*well/i.test(css) ||
+  /\.well[^{]*\{[^}]*animation:/.test(css) ||
+  /\.well-canvas[^{]*\{[^}]*animation:/.test(css)
+) {
+  console.error("stylesheet must not animate the well");
+  process.exit(1);
+}
+
+if (!html.includes("huggingface.co/akashnaren") || !root.includes("huggingface.co/akashnaren")) {
+  console.error("both built pages must keep huggingface.co/akashnaren");
+  process.exit(1);
+}
+
+if (!html.includes("kaggle.com/akashpnaren") || !root.includes("kaggle.com/akashpnaren")) {
+  console.error("both built pages must keep kaggle.com/akashpnaren");
+  process.exit(1);
+}
+
 for (const page of [html, root]) {
   if (page.includes("inboxapn") || page.includes("inboxapn@") || page.includes("to(not")) {
     console.error("built HTML must not concatenate the bots' email line");
@@ -369,5 +411,5 @@ for (const page of [html, root]) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a quiet canvas well, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets.",
+  "dist/index.html has the two-column split, type above a still Gargantua well, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets.",
 );
