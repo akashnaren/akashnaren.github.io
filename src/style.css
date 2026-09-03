@@ -7,8 +7,11 @@
 html {
   --fit: 1;
   background: #0a0a0a;
+  color-scheme: dark;
   height: 100vh;
   overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
