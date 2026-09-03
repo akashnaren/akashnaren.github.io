@@ -346,8 +346,28 @@ if (html.includes("well-static") || root.includes("well-static")) {
   process.exit(1);
 }
 
+if (!html.includes('class="well-hole"') || !root.includes('class="well-hole"')) {
+  console.error("built HTML must keep a first-paint CSS well-hole");
+  process.exit(1);
+}
+
+if (!html.includes('class="well-disk"') || !root.includes('class="well-disk"')) {
+  console.error("built HTML must keep the first-paint well-disk");
+  process.exit(1);
+}
+
+if (!html.includes('class="well-ring"') || !root.includes('class="well-ring"')) {
+  console.error("built HTML must keep the first-paint well-ring");
+  process.exit(1);
+}
+
 if (!html.includes('class="well-canvas"') || !root.includes('class="well-canvas"')) {
   console.error("built HTML must keep the well canvas");
+  process.exit(1);
+}
+
+if (!/class="well-hole"[\s\S]+class="well-canvas"/.test(html)) {
+  console.error("well-hole must sit in the HTML before the canvas so first paint is never empty");
   process.exit(1);
 }
 
@@ -370,7 +390,7 @@ if (/getContext\(\s*["']webgl/i.test(js) || js.includes("GL_FRAGMENT_PRECISION")
 }
 
 if (/requestAnimationFrame/.test(js) || /webkitRequestAnimationFrame/.test(js)) {
-  console.error("well must be a still paint; no requestAnimationFrame");
+  console.error("well idle must stay CSS; no requestAnimationFrame");
   process.exit(1);
 }
 
@@ -384,12 +404,38 @@ if (
   process.exit(1);
 }
 
+if (!/@keyframes\s+well-glance/.test(css)) {
+  console.error("stylesheet must keep a 7s well-glance idle on the ring");
+  process.exit(1);
+}
+
+if (!/(?:well-glance 7s|7s(?: ease-in-out)?(?: infinite)? well-glance)/.test(css)) {
+  console.error("well-ring idle must be a 7s glance, not a fade-in");
+  process.exit(1);
+}
+
 if (
-  /@keyframes\s+[^\{]*well/i.test(css) ||
-  /\.well[^{]*\{[^}]*animation:/.test(css) ||
-  /\.well-canvas[^{]*\{[^}]*animation:/.test(css)
+  /\.well\s*\{[^}]*animation:/.test(css) ||
+  /\.well-canvas[^{]*\{[^}]*animation:/.test(css) ||
+  /\.well-hole[^{]*\{[^}]*animation:/.test(css) ||
+  /\.well-disk[^{]*\{[^}]*animation:/.test(css)
 ) {
-  console.error("stylesheet must not animate the well");
+  console.error("stylesheet must not animate the well band, disk, or canvas");
+  process.exit(1);
+}
+
+if (
+  /\.well-hole[^{]*\{[^}]*opacity:\s*0/.test(css) ||
+  /\.well-disk[^{]*\{[^}]*opacity:\s*0/.test(css) ||
+  /\.well-hole[^{]*\{[^}]*animation-delay/.test(css) ||
+  /\.well-disk[^{]*\{[^}]*animation-delay/.test(css)
+) {
+  console.error("well-hole must be visible on first paint; no opacity 0 or delay");
+  process.exit(1);
+}
+
+if (!css.includes("radial-gradient")) {
+  console.error("stylesheet must paint the first-paint well as a CSS radial");
   process.exit(1);
 }
 
@@ -411,5 +457,5 @@ for (const page of [html, root]) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a still Gargantua well, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets.",
+  "dist/index.html has the two-column split, type above a first-paint CSS well, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets.",
 );

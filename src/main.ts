@@ -3,7 +3,7 @@ import { renderSite } from "./render.ts";
 import { mountWell } from "./well.ts";
 
 const root = document.getElementById("holder");
-if (root) {
+if (root && !root.querySelector(".well-hole")) {
   root.outerHTML = renderSite();
 }
 
