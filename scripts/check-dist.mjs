@@ -411,6 +411,16 @@ if (!/@keyframes\s+orbit-spin/.test(css)) {
   process.exit(1);
 }
 
+if (!/max-height:\s*86%/.test(css) && !css.includes("max-height:86%")) {
+  console.error("solar system must fill more of the sky band (86% cap) without clipping");
+  process.exit(1);
+}
+
+if (css.includes("11rem")) {
+  console.error("solar system must stay larger than the old 11rem cap");
+  process.exit(1);
+}
+
 if (
   /\.sky\s*\{[^}]*animation:/.test(css) ||
   /\.system[^{]*\{[^}]*animation:/.test(css) ||

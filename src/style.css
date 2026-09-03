@@ -71,12 +71,13 @@ body {
 .system {
   position: absolute;
   left: 50%;
-  top: 54%;
+  top: 56%;
   z-index: 0;
-  width: min(40%, 11rem);
+  width: min(70%, 12.75rem);
   height: auto;
   aspect-ratio: 1;
-  max-height: 78%;
+  max-width: 86%;
+  max-height: 86%;
   transform: translate(-50%, -50%);
   overflow: visible;
   pointer-events: none;
@@ -550,6 +551,12 @@ a:focus-visible {
   .contact {
     margin-top: calc(2.4rem * var(--fit));
     padding-top: calc(1.2rem * var(--fit));
+  }
+
+  .system {
+    width: min(34vw, 15.25rem);
+    max-width: 46%;
+    max-height: 86%;
   }
 }
 
