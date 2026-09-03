@@ -40,7 +40,7 @@ function renderMark(src: string, size: number, className: string): string {
 
 function renderGrokBotMark(): string {
   const size = String(managedMarkSize);
-  return `<span class="grok-bot-wrap" aria-hidden="true"><svg class="grok-bot-photon" viewBox="0 0 32 32" width="22" height="22" focusable="false"><circle class="grok-bot-photon-halo" cx="16" cy="16" r="15.2" fill="none" stroke="#ff6b00" stroke-width="0.85" opacity="0.34"/><circle class="grok-bot-photon-arc" cx="16" cy="16" r="15.2" fill="none" stroke="#ff6b00" stroke-width="1.35" stroke-linecap="round" stroke-dasharray="15 80" opacity="0.58"/></svg><svg class="grok-bot-mark" viewBox="0 0 32 32" width="${size}" height="${size}" focusable="false"><g class="grok-bot-body"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><g class="grok-bot-eyes"><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></g></g></svg></span>`;
+  return `<span class="grok-bot-wrap" aria-hidden="true"><svg class="grok-bot-photon" viewBox="0 0 32 32" width="20" height="20" focusable="false"><circle class="grok-bot-photon-halo" cx="16" cy="16" r="14.6" fill="none" stroke="#ff6b00" stroke-width="0.7" opacity="0.22"/></svg><svg class="grok-bot-mark" viewBox="0 0 32 32" width="${size}" height="${size}" focusable="false"><g class="grok-bot-body"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><g class="grok-bot-eyes"><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></g></g></svg></span>`;
 }
 
 function renderManagedBy(): string {
@@ -102,8 +102,8 @@ export function renderSite(): string {
         <div class="well-hole">
           <span class="well-disk"></span>
           <svg class="well-ring" viewBox="0 0 100 100" focusable="false">
-            <circle class="well-ring-halo" cx="50" cy="50" r="40.2" fill="none" stroke="#ff6b00" stroke-width="0.9" opacity="0.4"/>
-            <circle class="well-ring-arc" cx="50" cy="50" r="40.2" fill="none" stroke="#ff6b00" stroke-width="1.25" stroke-linecap="round" stroke-dasharray="18 234" opacity="0.55"/>
+            <circle class="well-ring-halo" cx="50" cy="50" r="40.2" fill="none" stroke="#ff6b00" stroke-width="0.75" opacity="0.3"/>
+            <circle class="well-ring-arc" cx="50" cy="50" r="40.2" fill="none" stroke="#ff6b00" stroke-width="1.05" stroke-linecap="round" stroke-dasharray="16 236" opacity="0.42"/>
           </svg>
         </div>
         <canvas class="well-canvas"></canvas>

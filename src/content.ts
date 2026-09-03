@@ -99,7 +99,7 @@ export const fleetMarks = [
   "/fleet/09.png",
 ] as const;
 
-export const fleetMarkSize = 22;
+export const fleetMarkSize = 24;
 
 export const managedMarkSize = 15;
 
