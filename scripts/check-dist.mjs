@@ -344,6 +344,19 @@ if (!css.includes("100dvh")) {
   process.exit(1);
 }
 
+if (!css.includes("color-scheme:dark") && !css.includes("color-scheme: dark")) {
+  console.error("stylesheet must declare color-scheme dark");
+  process.exit(1);
+}
+
+if (
+  !css.includes("text-size-adjust:100%") &&
+  !css.includes("text-size-adjust: 100%")
+) {
+  console.error("stylesheet must lock text-size-adjust at 100%");
+  process.exit(1);
+}
+
 if (
   !css.includes("flex-direction:column") &&
   !css.includes("flex-direction: column")
@@ -597,5 +610,5 @@ if (!existsSync("dist/.nojekyll") && !existsSync(".nojekyll")) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets. /bot is a quiet profile with a 404 SPA fallback.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a quiet profile with a 404 SPA fallback.",
 );
