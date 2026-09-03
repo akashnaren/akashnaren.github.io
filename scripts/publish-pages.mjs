@@ -49,6 +49,7 @@ function syncDir(from, to) {
 syncDir("dist/assets", "assets");
 syncDir("dist/fleet", "fleet");
 syncDir("dist/marks", "marks");
+syncDir("dist/bot", "bot");
 
 for (const file of [
   "favicon.svg",
@@ -56,6 +57,7 @@ for (const file of [
   "favicon-32.png",
   "site.webmanifest",
   ".nojekyll",
+  "404.html",
 ]) {
   const src = join("dist", file);
   if (existsSync(src)) copyFileSync(src, file);
@@ -75,6 +77,11 @@ if (html.includes("/src/main.ts")) {
   process.exit(1);
 }
 
+if (!existsSync("bot/index.html") || !existsSync("404.html")) {
+  console.error("publish-pages: bot/index.html or 404.html missing at repo root");
+  process.exit(1);
+}
+
 console.log(
-  "published dist to repo root for Files Pages (hashed assets + painted HTML).",
+  "published dist to repo root for Files Pages (hashed assets, /bot profile, 404 SPA fallback).",
 );

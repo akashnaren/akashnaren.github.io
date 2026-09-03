@@ -102,10 +102,42 @@ export const fleetFact = "nine";
 
 export const fleetLine = "nine grok bots, more coming.";
 
+export const handle = "@akashpn";
+
+export const botUrl = "https://akashnaren.github.io/bot";
+
+export const botDescription =
+  "Grok Bot profile for the fleet that manages this site.";
+
 export const managedBy: Paragraph = [
   "this site is managed by ",
-  { href: "https://x.ai/bot", label: "grok bot" },
+  { href: "/bot", label: "grok bot" },
   ".",
+];
+
+export const profileLine: Paragraph = [
+  "a ",
+  { href: "https://x.ai/bot", label: "grok bot" },
+  " profile for the fleet that manages this site.",
+];
+
+export const profileLinks: readonly Contact[] = [
+  { href: "/", label: "home", mark: "" },
+  {
+    href: "https://github.com/akashnaren",
+    label: "github",
+    mark: "/marks/github.svg",
+  },
+  {
+    href: "https://cursor.com/@akashpn",
+    label: "cursor",
+    mark: "/marks/cursor.svg",
+  },
+  {
+    href: "https://x.com/akashpn",
+    label: "x",
+    mark: "/marks/x.svg",
+  },
 ];
 
 export const personalMail = {
@@ -122,4 +154,9 @@ export const agentInbox = {
 
 export function isLink(part: Phrase): part is Link {
   return typeof part === "object";
+}
+
+export function isBotPath(pathname: string): boolean {
+  const path = pathname.split(/[?#]/, 1)[0] ?? "";
+  return /\/bot\/?$/.test(path) || /\/bot\/index\.html$/.test(path);
 }

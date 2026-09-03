@@ -209,12 +209,38 @@ h1 {
   }
 }
 
-.meta {
+.meta,
+.handle {
   font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: calc(12px * var(--fit));
   line-height: calc(16px * var(--fit));
   letter-spacing: 0.08em;
   color: #7d8187;
+}
+
+.page.profile {
+  justify-content: center;
+}
+
+.page.profile .stage {
+  flex: 0 1 auto;
+  max-width: 56rem;
+  padding: calc(2.4rem * var(--fit)) 1.4rem;
+}
+
+.profile-line {
+  padding-top: calc(16px * var(--fit));
+  color: #c4c4bf;
+  line-height: calc(23px * var(--fit));
+  max-width: 28em;
+}
+
+.page.profile .inbox {
+  margin-top: calc(1.35rem * var(--fit));
+}
+
+.page.profile .profile-links {
+  margin-top: calc(1.45rem * var(--fit));
 }
 
 .bio {
@@ -557,6 +583,14 @@ a:focus-visible {
     width: min(34vw, 15.25rem);
     max-width: 46%;
     max-height: 86%;
+  }
+
+  .page.profile .stage {
+    padding: calc(3.4rem * var(--fit)) 3.25rem;
+  }
+
+  .page.profile .him {
+    padding-right: 3.2rem;
   }
 }
 

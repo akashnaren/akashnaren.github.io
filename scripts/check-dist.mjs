@@ -58,7 +58,7 @@ const required = [
   "bots' email",
   'class="inbox"',
   "this site is managed by",
-  "https://x.ai/bot",
+  'href="/bot"',
   "grok bot",
   'class="managed-copy"',
   'class="scope"',
@@ -116,6 +116,13 @@ const forbidden = [
   "inboxapn@",
   "to(not",
   "emailapn",
+  "279M",
+  "279m",
+  "tokens",
+  "Longest Streak",
+  "Current Streak",
+  "15 agents",
+  "https://grok.com/@akashpn",
   "engineer @ tesla",
   "engineer @ Tesla",
   "engineer @ ",
@@ -255,6 +262,10 @@ if (!root.includes("mailto:apn@agentmail.to") || !root.includes("apn@agentmail.t
 }
 if (!root.includes("by grok") && !root.includes("by <a")) {
   console.error("root index.html must keep a real space before grok bot");
+  process.exit(1);
+}
+if (!root.includes('href="/bot"')) {
+  console.error("root index.html must link the grok footnote to /bot");
   process.exit(1);
 }
 if (root.includes("bygrok")) {
@@ -460,6 +471,131 @@ for (const page of [html, root]) {
   }
 }
 
+if (!existsSync("dist/bot/index.html") || !existsSync("bot/index.html")) {
+  console.error("bot profile must exist at dist/bot/index.html and bot/index.html");
+  process.exit(1);
+}
+
+if (!existsSync("dist/404.html") || !existsSync("404.html")) {
+  console.error("GitHub Pages SPA fallback 404.html is missing");
+  process.exit(1);
+}
+
+const botHtml = readFileSync("dist/bot/index.html", "utf8");
+const botRoot = readFileSync("bot/index.html", "utf8");
+const spa = readFileSync("dist/404.html", "utf8");
+const spaRoot = readFileSync("404.html", "utf8");
+
+const botRequired = [
+  "Akash Premkumar",
+  "@akashpn",
+  "a ",
+  "https://x.ai/bot",
+  "grok bot",
+  "profile for the fleet that manages this site.",
+  "bots' email",
+  "mailto:apn@agentmail.to",
+  "apn@agentmail.to",
+  'href="/"',
+  "https://github.com/akashnaren",
+  "https://cursor.com/@akashpn",
+  "https://x.com/akashpn",
+  ">home</span>",
+  ">github</span>",
+  ">cursor</span>",
+  ">x</span>",
+  "nine grok bots, more coming.",
+  'class="page profile"',
+  'class="handle"',
+  'class="fleet"',
+  'class="fact"',
+  "nine",
+  'src="/fleet/01.png"',
+  'src="/fleet/09.png"',
+  'property="og:url" content="https://akashnaren.github.io/bot"',
+  "Grok Bot profile for the fleet that manages this site.",
+  ...fleetSrcs.map((src) => `src="${src}"`),
+];
+
+for (const page of [botHtml, botRoot]) {
+  const missingBot = botRequired.filter((needle) => !page.includes(needle));
+  if (missingBot.length > 0) {
+    console.error("bot profile is missing required copy:");
+    for (const needle of missingBot) console.error(`  - ${needle}`);
+    process.exit(1);
+  }
+
+  const botFleet = fleetSrcs.filter((src) => page.includes(`src="${src}"`));
+  if (botFleet.length !== 9) {
+    console.error("bot profile must include all nine unlabeled fleet marks");
+    process.exit(1);
+  }
+
+  if (
+    /Tesla/.test(page) ||
+    /tesla\.com/.test(page) ||
+    /engineer\s*@/i.test(page) ||
+    /Redwood City/.test(page)
+  ) {
+    console.error("bot profile must not carry Tesla or home bio copy");
+    process.exit(1);
+  }
+
+  if (
+    page.includes('class="sky"') ||
+    page.includes('class="system"') ||
+    page.includes('class="well"') ||
+    page.includes("well-canvas")
+  ) {
+    console.error("bot profile must not keep the solar system or the well");
+    process.exit(1);
+  }
+
+  if (page.includes("akashnaren@gmail.com") || page.includes("human-mail")) {
+    console.error("bot profile should omit Gmail; it stays on home");
+    process.exit(1);
+  }
+
+  if (
+    /job assistant/i.test(page) ||
+    /startup advisor/i.test(page) ||
+    /looking for a job/i.test(page)
+  ) {
+    console.error("bot profile must not name bot roles or job-hunt");
+    process.exit(1);
+  }
+
+  if (!/\/assets\/index-[^"]+\.js/.test(page)) {
+    console.error("bot profile must reference hashed /assets/index-*.js");
+    process.exit(1);
+  }
+
+  if (/279M|Longest Streak|Current Streak|15 agents/i.test(page) || page.includes("tokens")) {
+    console.error("bot profile must not invent Cursor token or streak stats");
+    process.exit(1);
+  }
+}
+
+for (const page of [spa, spaRoot]) {
+  if (!page.includes('<div id="holder"></div>')) {
+    console.error("404.html must keep an empty #holder so the SPA can route");
+    process.exit(1);
+  }
+  if (!/\/assets\/index-[^"]+\.js/.test(page)) {
+    console.error("404.html must reference hashed /assets/index-*.js");
+    process.exit(1);
+  }
+  if (page.includes('class="page"') || page.includes('class="sky"')) {
+    console.error("404.html must not pre-paint home or the bot profile");
+    process.exit(1);
+  }
+}
+
+if (!existsSync("dist/.nojekyll") && !existsSync(".nojekyll")) {
+  console.error("Pages fallback needs .nojekyll");
+  process.exit(1);
+}
+
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets. /bot is a quiet profile with a 404 SPA fallback.",
 );
