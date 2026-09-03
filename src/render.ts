@@ -1,18 +1,44 @@
 import {
   agentInbox,
   body,
+  botDescription,
+  botUrl,
   contact,
+  description,
   fleetFact,
   fleetLine,
   fleetMarkSize,
   fleetMarks,
+  handle,
   isLink,
   managedBy,
   managedMarkSize,
   name,
   personalMail,
+  profileLine,
+  profileLinks,
+  url,
+  type Contact,
   type Phrase,
 } from "./content.ts";
+
+export type PageMeta = {
+  readonly title: string;
+  readonly description: string;
+  readonly url: string;
+};
+
+export const homeMeta: PageMeta = {
+  title: name,
+  description,
+  url,
+};
+
+export const botMeta: PageMeta = {
+  title: name,
+  description: botDescription,
+  url: botUrl,
+};
 
 function escapeHtml(value: string): string {
   return value
@@ -46,13 +72,15 @@ function renderManagedBy(): string {
   return `<p class="managed">${renderGrokBotMark()}<span class="managed-copy">${managedBy.map(renderPhrase).join("")}</span></p>`;
 }
 
+function renderContactLink(item: Contact): string {
+  const mark = item.mark
+    ? `<img class="contact-mark" src="${escapeHtml(item.mark)}" alt="" width="14" height="14" decoding="async" />`
+    : "";
+  return `<a class="contact-link" href="${escapeHtml(item.href)}">${mark}<span>${escapeHtml(item.label)}</span></a>`;
+}
+
 function renderContact(): string {
-  const links = contact
-    .map(
-      (item) =>
-        `<a class="contact-link" href="${escapeHtml(item.href)}"><img class="contact-mark" src="${escapeHtml(item.mark)}" alt="" width="14" height="14" decoding="async" /><span>${escapeHtml(item.label)}</span></a>`,
-    )
-    .join("");
+  const links = contact.map(renderContactLink).join("");
   return `<div class="contact">
           <p class="contact-marks">${links}</p>
           <p class="human-mail"><span class="mail-label">${escapeHtml(personalMail.label)}</span><a class="mail-address" href="${escapeHtml(personalMail.href)}">${escapeHtml(personalMail.address)}</a></p>
@@ -73,6 +101,10 @@ function renderInbox(): string {
 
 function renderFact(): string {
   return `<p class="fact">${escapeHtml(fleetFact)}</p>`;
+}
+
+function renderProfileLinks(): string {
+  return `<p class="contact-marks profile-links">${profileLinks.map(renderContactLink).join("")}</p>`;
 }
 
 export function renderSite(): string {
@@ -122,4 +154,84 @@ export function renderSite(): string {
         </svg>
       </div>
     </div>`;
+}
+
+export function renderBot(): string {
+  return `<div class="page profile" id="holder">
+      <div class="stage">
+      <main class="him">
+        <header>
+          <h1>${escapeHtml(name)}<span class="scope" aria-hidden="true"></span></h1>
+          <p class="handle">${escapeHtml(handle)}</p>
+        </header>
+        <p class="profile-line">${profileLine.map(renderPhrase).join("")}</p>
+        ${renderInbox()}
+        ${renderProfileLinks()}
+      </main>
+      <aside class="panel">
+        ${renderFact()}
+        ${renderFleet()}
+      </aside>
+      </div>
+    </div>`;
+}
+
+export function replaceHolder(html: string, next: string): string {
+  const painted = html.indexOf('<div class="page" id="holder">');
+  const empty = html.indexOf('<div id="holder"></div>');
+  const start = painted >= 0 ? painted : empty;
+  const end = html.lastIndexOf("</body>");
+  if (start < 0 || end < 0) {
+    throw new Error("html is missing a holder root or </body>");
+  }
+  return `${html.slice(0, start)}${next}\n  ${html.slice(end)}`;
+}
+
+export function applyPageMeta(html: string, meta: PageMeta): string {
+  const title = escapeHtml(meta.title);
+  const desc = escapeHtml(meta.description);
+  const href = escapeHtml(meta.url);
+  return html
+    .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
+    .replace(
+      /(<meta name="description" content=")[^"]*("\s*\/?>)/,
+      `$1${desc}$2`,
+    )
+    .replace(
+      /(<meta property="og:title" content=")[^"]*("\s*\/?>)/,
+      `$1${title}$2`,
+    )
+    .replace(
+      /(<meta property="og:description" content=")[^"]*("\s*\/?>)/,
+      `$1${desc}$2`,
+    )
+    .replace(
+      /(<meta property="og:url" content=")[^"]*("\s*\/?>)/,
+      `$1${href}$2`,
+    )
+    .replace(
+      /(<meta name="twitter:title" content=")[^"]*("\s*\/?>)/,
+      `$1${title}$2`,
+    )
+    .replace(
+      /(<meta name="twitter:description" content=")[^"]*("\s*\/?>)/,
+      `$1${desc}$2`,
+    )
+    .replace(/(<link rel="canonical" href=")[^"]*("\s*\/?>)/, `$1${href}$2`);
+}
+
+export function applyDocumentMeta(meta: PageMeta): void {
+  document.title = meta.title;
+  const pairs: ReadonlyArray<readonly [string, string]> = [
+    ['meta[name="description"]', meta.description],
+    ['meta[property="og:title"]', meta.title],
+    ['meta[property="og:description"]', meta.description],
+    ['meta[property="og:url"]', meta.url],
+    ['meta[name="twitter:title"]', meta.title],
+    ['meta[name="twitter:description"]', meta.description],
+  ];
+  for (const [selector, value] of pairs) {
+    document.querySelector(selector)?.setAttribute("content", value);
+  }
+  document.querySelector('link[rel="canonical"]')?.setAttribute("href", meta.url);
 }
