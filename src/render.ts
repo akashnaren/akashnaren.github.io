@@ -11,7 +11,6 @@ import {
   managedMarkSize,
   name,
   personalMail,
-  role,
   type Phrase,
 } from "./content.ts";
 
@@ -85,7 +84,6 @@ export function renderSite(): string {
         <div class="bio">
           <header>
             <h1>${escapeHtml(name)}<span class="scope" aria-hidden="true"></span></h1>
-            <p class="meta">${escapeHtml(role.prefix)}<a href="${escapeHtml(role.company.href)}">${escapeHtml(role.company.label)}</a></p>
           </header>
           ${paragraphs}
         </div>
@@ -98,15 +96,30 @@ export function renderSite(): string {
         ${renderInbox()}
       </aside>
       </div>
-      <div class="well" aria-hidden="true">
-        <div class="well-hole">
-          <span class="well-disk"></span>
-          <svg class="well-ring" viewBox="0 0 100 100" focusable="false">
-            <circle class="well-ring-halo" cx="50" cy="50" r="40.2" fill="none" stroke="#ff6b00" stroke-width="0.75" opacity="0.3"/>
-            <circle class="well-ring-arc" cx="50" cy="50" r="40.2" fill="none" stroke="#ff6b00" stroke-width="1.05" stroke-linecap="round" stroke-dasharray="16 236" opacity="0.42"/>
-          </svg>
-        </div>
-        <canvas class="well-canvas"></canvas>
+      <div class="sky" aria-hidden="true">
+        <svg class="system" viewBox="0 0 240 240" focusable="false">
+          <g class="orbits" fill="none" stroke="rgba(250,250,247,0.1)" stroke-width="0.45">
+            <circle cx="120" cy="120" r="16"/>
+            <circle cx="120" cy="120" r="26"/>
+            <circle cx="120" cy="120" r="38"/>
+            <circle cx="120" cy="120" r="52"/>
+            <circle cx="120" cy="120" r="68"/>
+            <circle cx="120" cy="120" r="84"/>
+            <circle cx="120" cy="120" r="98"/>
+            <circle cx="120" cy="120" r="110"/>
+          </g>
+          <g transform="translate(120 120)">
+            <circle class="sun" cx="0" cy="0" r="4.4" fill="#d4b56a"/>
+            <g class="spin spin-1"><circle cx="16" cy="0" r="1.05" fill="#9a9590"/></g>
+            <g class="spin spin-2"><circle cx="26" cy="0" r="1.45" fill="#b8a078"/></g>
+            <g class="spin spin-3"><circle cx="38" cy="0" r="1.55" fill="#6d8a9a"/></g>
+            <g class="spin spin-4"><circle cx="52" cy="0" r="1.2" fill="#a86a50"/></g>
+            <g class="spin spin-5"><circle cx="68" cy="0" r="2.25" fill="#b89870"/></g>
+            <g class="spin spin-6"><circle cx="84" cy="0" r="1.9" fill="#c4b48a"/></g>
+            <g class="spin spin-7"><circle cx="98" cy="0" r="1.45" fill="#7a9aa8"/></g>
+            <g class="spin spin-8"><circle cx="110" cy="0" r="1.35" fill="#5a6f9a"/></g>
+          </g>
+        </svg>
       </div>
     </div>`;
 }
