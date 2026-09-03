@@ -13,14 +13,9 @@ export type Contact = Link & {
 
 export const name = "Akash Premkumar";
 export const description =
-  "Engineer at Tesla in Redwood City. CS and Math, UC San Diego.";
+  "At Tesla in Redwood City. Diagnostics, telemetry, and data analysis. CS and Math, UC San Diego.";
 export const url = "https://akashnaren.github.io/";
 export const themeColor = "#0a0a0a";
-
-export const role = {
-  prefix: "engineer @ ",
-  company: { href: "https://www.tesla.com/", label: "tesla" } satisfies Link,
-};
 
 export const body: readonly Paragraph[] = [
   ["I live in Redwood City."],
@@ -99,7 +94,7 @@ export const fleetMarks = [
   "/fleet/09.png",
 ] as const;
 
-export const fleetMarkSize = 22;
+export const fleetMarkSize = 24;
 
 export const managedMarkSize = 15;
 

@@ -16,7 +16,6 @@ const fleetSrcs = [
 
 const required = [
   "Akash Premkumar",
-  "engineer @ ",
   "I live in Redwood City.",
   "diagnostics",
   "telemetry",
@@ -117,6 +116,17 @@ const forbidden = [
   "inboxapn@",
   "to(not",
   "emailapn",
+  "engineer @ tesla",
+  "engineer @ Tesla",
+  "engineer @ ",
+  "Engineer at Tesla",
+  "Engineer @ tesla",
+  "well-hole",
+  "well-disk",
+  "well-ring",
+  "well-canvas",
+  "well-glance",
+  "well-static",
 ];
 
 const missing = required.filter((needle) => !html.includes(needle));
@@ -327,52 +337,44 @@ if (
   !css.includes("flex-direction:column") &&
   !css.includes("flex-direction: column")
 ) {
-  console.error("stylesheet must stack the type stage above the well");
+  console.error("stylesheet must stack the type stage above the sky");
   process.exit(1);
 }
 
 if (!/min-height:\s*20vh/.test(css)) {
-  console.error("stylesheet must keep a well band at the bottom");
+  console.error("stylesheet must keep a sky band at the bottom");
   process.exit(1);
 }
 
 if (!css.includes("24px") || !css.includes("linear-gradient")) {
-  console.error("stylesheet must keep a short soft fade at the type/well join");
+  console.error("stylesheet must keep a short soft fade at the type/sky join");
   process.exit(1);
 }
 
-if (html.includes("well-static") || root.includes("well-static")) {
-  console.error("built HTML must not paint a second well-static rectangle");
+if (
+  html.includes("well-hole") ||
+  root.includes("well-hole") ||
+  html.includes("well-canvas") ||
+  root.includes("well-canvas") ||
+  html.includes('class="well"') ||
+  root.includes('class="well"')
+) {
+  console.error("built HTML must not keep the black-hole well");
   process.exit(1);
 }
 
-if (!html.includes('class="well-hole"') || !root.includes('class="well-hole"')) {
-  console.error("built HTML must keep a first-paint CSS well-hole");
+if (!html.includes('class="sky"') || !root.includes('class="sky"')) {
+  console.error("built HTML must keep a first-paint sky band");
   process.exit(1);
 }
 
-if (!html.includes('class="well-disk"') || !root.includes('class="well-disk"')) {
-  console.error("built HTML must keep the first-paint well-disk");
+if (!html.includes('class="system"') || !root.includes('class="system"')) {
+  console.error("built HTML must keep the first-paint solar system");
   process.exit(1);
 }
 
-if (!html.includes('class="well-ring"') || !root.includes('class="well-ring"')) {
-  console.error("built HTML must keep the first-paint well-ring");
-  process.exit(1);
-}
-
-if (!html.includes('class="well-canvas"') || !root.includes('class="well-canvas"')) {
-  console.error("built HTML must keep the well canvas");
-  process.exit(1);
-}
-
-if (!/class="well-hole"[\s\S]+class="well-canvas"/.test(html)) {
-  console.error("well-hole must sit in the HTML before the canvas so first paint is never empty");
-  process.exit(1);
-}
-
-if (!/class="stage"[\s\S]+class="well"/.test(html) || /class="well"[\s\S]+class="stage"/.test(html)) {
-  console.error("type stage must sit above the well, never behind it");
+if (!/class="stage"[\s\S]+class="sky"/.test(html) || /class="sky"[\s\S]+class="stage"/.test(html)) {
+  console.error("type stage must sit above the sky, never behind it");
   process.exit(1);
 }
 
@@ -385,12 +387,12 @@ if (!jsName) {
 }
 const js = readFileSync(`dist/assets/${jsName}`, "utf8");
 if (/getContext\(\s*["']webgl/i.test(js) || js.includes("GL_FRAGMENT_PRECISION")) {
-  console.error("well must stay a small Canvas 2D module; no WebGL shader path");
+  console.error("sky must stay CSS/SVG; no WebGL shader path");
   process.exit(1);
 }
 
 if (/requestAnimationFrame/.test(js) || /webkitRequestAnimationFrame/.test(js)) {
-  console.error("well idle must stay CSS; no requestAnimationFrame");
+  console.error("sky idle must stay CSS; no requestAnimationFrame");
   process.exit(1);
 }
 
@@ -400,43 +402,35 @@ if (
   /lineTo\(0,\s*-0\.7\)/.test(js) ||
   /moveTo\(-len/.test(js)
 ) {
-  console.error("well must not keep a ship or drifting chevron");
+  console.error("sky must not keep a ship or drifting chevron");
   process.exit(1);
 }
 
-if (!/@keyframes\s+well-glance/.test(css)) {
-  console.error("stylesheet must keep a 7s well-glance idle on the ring");
-  process.exit(1);
-}
-
-if (!/(?:well-glance 7s|7s(?: ease-in-out)?(?: infinite)? well-glance)/.test(css)) {
-  console.error("well-ring idle must be a 7s glance, not a fade-in");
+if (!/@keyframes\s+orbit-spin/.test(css)) {
+  console.error("stylesheet must keep a slow orbit idle on the system");
   process.exit(1);
 }
 
 if (
-  /\.well\s*\{[^}]*animation:/.test(css) ||
-  /\.well-canvas[^{]*\{[^}]*animation:/.test(css) ||
-  /\.well-hole[^{]*\{[^}]*animation:/.test(css) ||
-  /\.well-disk[^{]*\{[^}]*animation:/.test(css)
+  /\.sky\s*\{[^}]*animation:/.test(css) ||
+  /\.system[^{]*\{[^}]*animation:/.test(css) ||
+  /\.system[^{]*\{[^}]*opacity:\s*0/.test(css) ||
+  /\.sky[^{]*\{[^}]*opacity:\s*0/.test(css)
 ) {
-  console.error("stylesheet must not animate the well band, disk, or canvas");
-  process.exit(1);
-}
-
-if (
-  /\.well-hole[^{]*\{[^}]*opacity:\s*0/.test(css) ||
-  /\.well-disk[^{]*\{[^}]*opacity:\s*0/.test(css) ||
-  /\.well-hole[^{]*\{[^}]*animation-delay/.test(css) ||
-  /\.well-disk[^{]*\{[^}]*animation-delay/.test(css)
-) {
-  console.error("well-hole must be visible on first paint; no opacity 0 or delay");
+  console.error("sky and system must be visible on first paint; no band fade-in");
   process.exit(1);
 }
 
 if (!css.includes("radial-gradient")) {
-  console.error("stylesheet must paint the first-paint well as a CSS radial");
+  console.error("stylesheet must keep first-paint stars as CSS radials in the sky");
   process.exit(1);
+}
+
+for (const page of [html, root]) {
+  if (/engineer\s*@/i.test(page) || /Engineer at Tesla/.test(page)) {
+    console.error("pages must not label him engineer @ tesla");
+    process.exit(1);
+  }
 }
 
 if (!html.includes("huggingface.co/akashnaren") || !root.includes("huggingface.co/akashnaren")) {
@@ -457,5 +451,5 @@ for (const page of [html, root]) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint CSS well, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line, nine unlabeled faces, overflow-hidden 100dvh, and hashed Pages assets.",
 );
