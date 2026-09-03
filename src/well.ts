@@ -84,37 +84,28 @@ function paintHorizon(
       const r = Math.hypot(px, py);
       const phi = Math.atan2(py, px);
       const ell = (px * px) / (a * a) + (py * py) / (b * b);
-      const band = smoothstep(1.16, 0.62, ell) * smoothstep(0.04, 0.16, ell);
-      const fiber =
-        0.82 + 0.18 * Math.sin(phi * 2.1 + Math.log(Math.max(r, 0.02)) * 5.4);
-      const rust =
-        0.5 + 0.5 * Math.sin(phi * 5.8 - Math.log(Math.max(r, 0.02)) * 7.2);
+      const band = smoothstep(1.14, 0.68, ell) * smoothstep(0.045, 0.17, ell);
       const near = Math.pow(
         clamp(1.2 * rs / Math.max(Math.hypot(px, py / 0.52), 1.2 * rs), 0, 1),
-        0.7,
+        0.75,
       );
-      const rim = Math.pow(clamp(Math.abs(px) / (a * 0.88), 0, 1), 1.2);
+      const rim = Math.pow(clamp(Math.abs(px) / (a * 0.9), 0, 1), 1.25);
+      const cr = mix(0.55, 0.9, clamp(0.3 + near * 0.35 + rim * 0.2, 0, 1));
+      const cg = mix(0.22, 0.42, clamp(0.2 + near * 0.28 + rim * 0.12, 0, 1));
+      const cb = mix(0.06, 0.14, clamp(near * 0.18, 0, 1));
 
-      let cr = mix(0.42, 0.86, clamp(0.25 + near * 0.4 + rim * 0.28, 0, 1));
-      let cg = mix(0.14, 0.4, clamp(0.18 + near * 0.32 + rim * 0.16, 0, 1));
-      let cb = mix(0.04, 0.12, clamp(near * 0.2, 0, 1));
-      cr = mix(cr, 0.96, Math.pow(near, 1.3) * 0.28 + rim * 0.12);
-      cg = mix(cg, 0.7, Math.pow(near, 1.2) * 0.2);
-      cr = mix(cr, 0.38, rust * rust * band * 0.22);
-      cg = mix(cg, 0.14, rust * rust * band * 0.16);
-
-      const dbright = band * fiber * (0.38 + 0.28 * near) * (0.55 + 0.3 * rim);
-      const wrap = Math.exp(-(((r - rs * 1.16) / (rs * 0.3)) ** 2));
-      const polar = Math.pow(Math.abs(py) / Math.max(r, 1e-4), 1.1);
-      const wrapAmt = wrap * (0.22 + 0.85 * polar) * 0.55;
-      const wrap2 = Math.exp(-(((r - rs * 1.4) / (rs * 0.2)) ** 2));
-      const wrap2Amt = wrap2 * Math.pow(Math.abs(Math.sin(phi)), 1.25) * 0.28;
-      const pring = Math.exp(-(((r - rs * 1.035) / (rs * 0.028)) ** 2)) * 0.42;
+      const dbright = band * (0.28 + 0.18 * near) * (0.5 + 0.28 * rim);
+      const wrap = Math.exp(-(((r - rs * 1.15) / (rs * 0.32)) ** 2));
+      const polar = Math.pow(Math.abs(py) / Math.max(r, 1e-4), 1.12);
+      const wrapAmt = wrap * (0.18 + 0.7 * polar) * 0.42;
+      const wrap2 = Math.exp(-(((r - rs * 1.38) / (rs * 0.22)) ** 2));
+      const wrap2Amt = wrap2 * Math.pow(Math.abs(Math.sin(phi)), 1.3) * 0.18;
+      const pring = Math.exp(-(((r - rs * 1.034) / (rs * 0.032)) ** 2)) * 0.28;
       const inner =
-        Math.exp(-(((r - rs * 0.8) / (rs * 0.022)) ** 2)) *
-        smoothstep(0.2, -0.06, py / rs) *
-        0.38;
-      const glow = Math.exp(-((r / (rs * 2.6)) ** 2)) * 0.055;
+        Math.exp(-(((r - rs * 0.8) / (rs * 0.028)) ** 2)) *
+        smoothstep(0.22, -0.04, py / rs) *
+        0.22;
+      const glow = Math.exp(-((r / (rs * 2.5)) ** 2)) * 0.04;
 
       const pinch = 0.42 + 0.58 * clamp(Math.abs(px) / (rs * 1.5), 0, 1);
       const front =
@@ -160,7 +151,7 @@ export function mountWell(): void {
     const rect = host.getBoundingClientRect();
     const cssW = Math.max(1, Math.floor(rect.width));
     const cssH = Math.max(1, Math.floor(rect.height));
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = 2;
     canvas.width = Math.floor(cssW * dpr);
     canvas.height = Math.floor(cssH * dpr);
     canvas.style.width = `${cssW}px`;
