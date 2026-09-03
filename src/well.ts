@@ -13,10 +13,10 @@ export function holeLayout(cssW: number, cssH: number): {
   cy: number;
   rs: number;
 } {
-  const hole = Math.min(cssH * 0.58, cssW * 0.7);
+  const hole = Math.min(cssH * 0.48, cssW * 0.58);
   return {
     cx: cssW * 0.5,
-    cy: cssH * 0.5,
+    cy: cssH * 0.56,
     rs: hole / 2,
   };
 }
