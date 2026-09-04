@@ -240,6 +240,11 @@ export const agentInbox = {
   tip: "the agents' inbox — not his personal Gmail",
 } as const;
 
+export const marketplace = {
+  href: "https://x.ai/bot/marketplace",
+  label: "grok bot marketplace",
+} as const;
+
 export function isLink(part: Phrase): part is Link {
   return typeof part === "object";
 }

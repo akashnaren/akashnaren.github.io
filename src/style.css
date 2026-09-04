@@ -505,14 +505,24 @@ h1 {
 
 .foot {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
-  gap: calc(0.45rem * var(--fit)) 1.4rem;
+  gap: calc(0.35rem * var(--fit));
   flex: 0 0 auto;
   margin-top: calc(0.45rem * var(--fit));
   padding-top: calc(0.7rem * var(--fit));
   border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.market {
+  margin: 0;
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(11px * var(--fit));
+  line-height: calc(16px * var(--fit));
+  letter-spacing: 0.08em;
+  color: #6a6e74;
 }
 
 .page.profile .managed {

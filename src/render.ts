@@ -16,6 +16,7 @@ import {
   managedBy,
   managedByHere,
   managedMarkSize,
+  marketplace,
   name,
   personalMail,
   pickLine,
@@ -209,6 +210,7 @@ export function renderBot(): string {
       ${renderBoard()}
       <footer class="foot">
         ${renderManagedBy(managedByHere)}
+        <p class="market"><a class="market-link" href="${escapeHtml(marketplace.href)}">${escapeHtml(marketplace.label)}</a></p>
       </footer>
       </div>
     </div>`;

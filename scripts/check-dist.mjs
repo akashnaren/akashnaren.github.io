@@ -303,6 +303,11 @@ if (/profile assistant/i.test(html) || /profile assistant/i.test(root)) {
   process.exit(1);
 }
 
+if (html.includes("https://x.ai/bot/marketplace") || root.includes("https://x.ai/bot/marketplace")) {
+  console.error("home must not carry the grok bot marketplace link; that sits on /bot");
+  process.exit(1);
+}
+
 if (/looking for a job/i.test(html) || /looking for a job/i.test(root)) {
   console.error("pages must not mention looking for a job");
   process.exit(1);
@@ -455,6 +460,11 @@ if (css.includes("@property --aim") || css.includes("--aim")) {
 
 if (!css.includes(".inbox-tip")) {
   console.error("stylesheet must keep the bots' email tooltip");
+  process.exit(1);
+}
+
+if (!css.includes(".market")) {
+  console.error("stylesheet must keep the quiet grok bot marketplace line");
   process.exit(1);
 }
 
@@ -699,6 +709,9 @@ const botRequired = [
   'class="inbox-label"',
   'class="inbox-address"',
   "https://x.ai/bot",
+  "https://x.ai/bot/marketplace",
+  "grok bot marketplace",
+  'class="market"',
   "grok bot",
   "this site is managed by",
   "mailto:apn@agentmail.to",
