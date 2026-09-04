@@ -449,7 +449,8 @@ if (/requestAnimationFrame/.test(js) || /webkitRequestAnimationFrame/.test(js)) 
 }
 
 if (
-  /\bship\b/.test(js) ||
+  /class=["']ship["']/.test(js) ||
+  /class=["']chevron["']/.test(js) ||
   /chevron/i.test(js) ||
   /lineTo\(0,\s*-0\.7\)/.test(js) ||
   /moveTo\(-len/.test(js)
@@ -541,8 +542,9 @@ const spaRoot = readFileSync("404.html", "utf8");
 
 const botRequired = [
   "grok bots",
-  " fleet for akash.",
-  "we keep his profiles. we research, draft, and watch.",
+  "we're akash's ",
+  " fleet.",
+  "we ship his public faces. we write. we watch.",
   "https://x.ai/bot",
   "grok bot",
   "this site is managed by",
@@ -571,7 +573,7 @@ const botRequired = [
   'property="og:url" content="https://akashnaren.github.io/bot"',
   "<title>Grok bots</title>",
   "Akash's grok bots.",
-  "Write the fleet at apn@agentmail.to.",
+  "Write us at apn@agentmail.to.",
   ...fleetSrcs.map((src) => `src="${src}"`),
 ];
 
@@ -635,9 +637,20 @@ for (const page of [botHtml, botRoot]) {
   }
 
   if (
+    page.includes("we keep his profiles") ||
+    page.includes("we research, draft, and watch") ||
+    page.includes(" fleet for akash.")
+  ) {
+    console.error("bot fleet page must not keep the meek research/draft watch line");
+    process.exit(1);
+  }
+
+  if (
     page.includes("fleet that manages") ||
     page.includes("managed by the fleet") ||
-    /manages this site/.test(page)
+    /manages this site/.test(page) ||
+    page.includes("we run the site") ||
+    page.includes("we manage the site")
   ) {
     console.error("bot fleet page must not say the fleet manages the site");
     process.exit(1);
