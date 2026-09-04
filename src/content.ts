@@ -242,7 +242,7 @@ export const agentInbox = {
 
 export const marketplace = {
   href: "https://x.ai/bot/marketplace",
-  label: "grok bot marketplace",
+  label: "browse and add grok bots",
 } as const;
 
 export function isLink(part: Phrase): part is Link {
