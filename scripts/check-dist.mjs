@@ -295,6 +295,11 @@ if (/job assistant/i.test(html) || /job assistant/i.test(root)) {
   process.exit(1);
 }
 
+if (/profile assistant/i.test(html) || /profile assistant/i.test(root)) {
+  console.error("home must not name Profile Assistant; that seat is named only on /bot");
+  process.exit(1);
+}
+
 if (/looking for a job/i.test(html) || /looking for a job/i.test(root)) {
   console.error("pages must not mention looking for a job");
   process.exit(1);
@@ -542,9 +547,8 @@ const spaRoot = readFileSync("404.html", "utf8");
 
 const botRequired = [
   "grok bots",
-  "we're akash's ",
-  " fleet.",
-  "we ship his public faces. we write. we watch.",
+  " fleet for akash.",
+  "profile assistant keeps this site.",
   "https://x.ai/bot",
   "grok bot",
   "this site is managed by",
@@ -572,8 +576,8 @@ const botRequired = [
   'src="/fleet/09.png"',
   'property="og:url" content="https://akashnaren.github.io/bot"',
   "<title>Grok bots</title>",
-  "Akash's grok bots.",
-  "Write us at apn@agentmail.to.",
+  "Grok Bot fleet profile.",
+  "Profile Assistant manages this site.",
   ...fleetSrcs.map((src) => `src="${src}"`),
 ];
 
@@ -621,11 +625,10 @@ for (const page of [botHtml, botRoot]) {
   if (
     /job assistant/i.test(page) ||
     /startup advisor/i.test(page) ||
-    /profile assistant/i.test(page) ||
     /looking for a job/i.test(page) ||
     /job search/i.test(page)
   ) {
-    console.error("bot fleet page must not name bot roles or job-hunt");
+    console.error("bot fleet page must not name Job Assistant, Startup Advisor, or job-hunt");
     process.exit(1);
   }
 
@@ -636,19 +639,14 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  if (
-    page.includes("we keep his profiles") ||
-    page.includes("we research, draft, and watch") ||
-    page.includes(" fleet for akash.")
-  ) {
-    console.error("bot fleet page must not keep the meek research/draft watch line");
+  if (!page.includes("profile assistant")) {
+    console.error("bot fleet page must name profile assistant as the seat that keeps the site");
     process.exit(1);
   }
 
   if (
     page.includes("fleet that manages") ||
     page.includes("managed by the fleet") ||
-    /manages this site/.test(page) ||
     page.includes("we run the site") ||
     page.includes("we manage the site")
   ) {
