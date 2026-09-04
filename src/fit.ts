@@ -13,14 +13,12 @@ export function fitStage(): void {
   root.style.setProperty("--fit", "1");
 
   const pageH = Math.min(page.clientHeight, viewportHeight());
-  const profile = page.classList.contains("profile");
-  const floor = profile
-    ? Math.max(16, Math.round(pageH * 0.04))
-    : Math.max(140, Math.round(pageH * 0.28));
+  if (page.classList.contains("profile")) return;
+
+  const floor = Math.max(140, Math.round(pageH * 0.28));
   const stageH = stage.scrollHeight;
   if (stageH + floor <= pageH) return;
 
-  const floorFit = profile ? 0.62 : 0.68;
-  const fit = Math.max(floorFit, (pageH - floor) / stageH);
+  const fit = Math.max(0.68, (pageH - floor) / stageH);
   root.style.setProperty("--fit", fit.toFixed(3));
 }

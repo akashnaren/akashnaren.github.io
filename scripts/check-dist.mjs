@@ -460,12 +460,27 @@ if (!css.includes(".inbox-tip")) {
 }
 
 if (
-  !/\.face\s*\{[^}]*width:\s*calc\(72px/.test(css) &&
-  !/\.face\{[^}]*width:calc\(72px/.test(css) &&
-  !css.includes("width:calc(72px") &&
-  !css.includes("width: calc(72px")
+  !css.includes("8.2vw") &&
+  !css.includes("clamp(4.75rem") &&
+  !css.includes("clamp(4.75rem,8.2vw")
 ) {
-  console.error("/bot faces must be large hit targets (72px), not the old 42px chips");
+  console.error("/bot faces must scale with the viewport (8.2vw clamp), not 42px or 72px chips");
+  process.exit(1);
+}
+
+if (
+  !css.includes("min-height:58vh") &&
+  !css.includes("min-height: 58vh")
+) {
+  console.error("/bot crew-sky must keep a 58vh floor so the planetarium cannot collapse to a 240px toy");
+  process.exit(1);
+}
+
+if (
+  !css.includes("height:62vh") &&
+  !css.includes("height: 62vh")
+) {
+  console.error("/bot crew-sky must use a viewport height (62vh) instead of content-sized 100%");
   process.exit(1);
 }
 
@@ -1046,5 +1061,5 @@ if (!js.includes("3000") || (!js.includes("setInterval") && !js.includes("setTim
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a full-viewport grok bot collection with a solar plinth, 3s auto-cycle, email tooltip, and no footer socials.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a full-viewport grok bot collection with a solar plinth, 3s auto-cycle, email tooltip, no footer socials, and a 62vh sky with 8.2vw faces.",
 );
