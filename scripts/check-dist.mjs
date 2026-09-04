@@ -951,10 +951,10 @@ if (
 }
 
 if (
-  !/\.crew-sky\s*\{[^}]*flex:\s*1/.test(css) &&
-  !/\.crew-sky\{[^}]*flex:1/.test(css)
+  !/\.crew-sky\s*\{[^}]*flex:\s*(?:1|auto)/.test(css) &&
+  !/\.crew-sky\{[^}]*flex:(?:1|auto)/.test(css)
 ) {
-  console.error("/bot crew-sky must flex:1 so the ring can fill the leftover viewport height");
+  console.error("/bot crew-sky must flex so the ring can fill the leftover viewport height");
   process.exit(1);
 }
 
