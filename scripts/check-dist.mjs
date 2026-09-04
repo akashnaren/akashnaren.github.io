@@ -407,25 +407,50 @@ if (
 }
 
 if (
-  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*44rem/.test(css) &&
-  !/\.page\.profile\s+\.stage\{[^}]*max-width:44rem/.test(css)
+  !/\.page\.profile[^{]*\{[^}]*width:\s*100vw/.test(css) &&
+  !/\.page\.profile\{[^}]*width:100vw/.test(css)
 ) {
-  console.error("/bot stage must keep a 44rem constellation room, not a stretching board");
+  console.error("/bot page must occupy the full viewport (100vw)");
   process.exit(1);
 }
 
 if (
   /\.page\.profile\s+\.stage\{[^}]*max-width:38rem/.test(css) ||
   /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*38rem/.test(css) ||
+  /\.page\.profile\s+\.stage\{[^}]*max-width:44rem/.test(css) ||
+  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*44rem/.test(css) ||
   /\.page\.profile\s+\.stage\{[^}]*max-width:72rem/.test(css) ||
   /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*72rem/.test(css)
 ) {
-  console.error("/bot stage must not keep the 38rem studio stack or the 72rem stretching board");
+  console.error("/bot stage must not keep a 38rem, 44rem, or 72rem boxed room");
+  process.exit(1);
+}
+
+if (
+  !/\.page\.profile\s+\.stage\{[^}]*max-width:100vw/.test(css) &&
+  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*100vw/.test(css)
+) {
+  console.error("/bot stage must span 100vw — no boxed constellation room");
   process.exit(1);
 }
 
 if (!css.includes(".crew-sky") || !css.includes(".face") || !css.includes(".brief")) {
-  console.error("stylesheet must keep the constellation crew (crew-sky, face, brief)");
+  console.error("stylesheet must keep the planetarium crew (crew-sky, face, brief)");
+  process.exit(1);
+}
+
+if (!css.includes(".lead") || !css.includes(".orbit") || !css.includes(".spoke")) {
+  console.error("stylesheet must keep the planetarium lead, orbit, and spoke");
+  process.exit(1);
+}
+
+if (
+  !/\.face\s*\{[^}]*width:\s*calc\(72px/.test(css) &&
+  !/\.face\{[^}]*width:calc\(72px/.test(css) &&
+  !css.includes("width:calc(72px") &&
+  !css.includes("width: calc(72px")
+) {
+  console.error("/bot faces must be large hit targets (72px), not the old 42px chips");
   process.exit(1);
 }
 
@@ -475,7 +500,17 @@ if (
   !/\.crew-sky\s*\{[^}]*height:/.test(css) &&
   !/\.crew-sky\{[^}]*height:/.test(css)
 ) {
-  console.error("constellation field must have a reserved fixed height");
+  console.error("planetarium field must have a reserved height so the crew can fill the frame");
+  process.exit(1);
+}
+
+if (
+  /\.crew-sky\{[^}]*max-width:calc\(22rem/.test(css) ||
+  /\.crew-sky\s*\{[^}]*max-width:\s*calc\(22rem/.test(css) ||
+  /\.crew-sky\{[^}]*height:calc\(13\.5rem/.test(css) ||
+  /\.crew-sky\s*\{[^}]*height:\s*calc\(13\.5rem/.test(css)
+) {
+  console.error("/bot must not keep the tiny 22rem × 13.5rem constellation widget");
   process.exit(1);
 }
 
@@ -685,6 +720,10 @@ const botRequired = [
   'class="write"',
   'class="board"',
   'class="crew-sky"',
+  'class="lead"',
+  'class="orbit"',
+  'class="spoke"',
+  'class="lead-mark"',
   'class="face"',
   'class="brief"',
   'class="brief-name"',
@@ -774,7 +813,7 @@ for (const page of [botHtml, botRoot]) {
 
   const faceCount = (page.match(/class="face"/g) ?? []).length;
   if (faceCount !== 9) {
-    console.error(`bot page must paint nine constellation faces, found ${String(faceCount)}`);
+    console.error(`bot page must paint nine planetarium faces, found ${String(faceCount)}`);
     process.exit(1);
   }
 
@@ -837,7 +876,7 @@ for (const page of [botHtml, botRoot]) {
   }
 
   if (/class="crew-sky"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
-    console.error("bots' inbox belongs in the write block, not the constellation");
+    console.error("bots' inbox belongs in the write block, not the planetarium");
     process.exit(1);
   }
 
@@ -894,12 +933,14 @@ if (
   !js.includes("is-on") ||
   !js.includes("aria-pressed") ||
   !js.includes("brief-copy") ||
-  !js.includes("pick a seat")
+  !js.includes("pick a seat") ||
+  !js.includes("lead-mark") ||
+  !js.includes("--aim")
 ) {
-  console.error("script must bind constellation face selection into the reserved brief slot");
+  console.error("script must bind planetarium face selection into the reserved brief slot and aim the spoke");
   process.exit(1);
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a fixed constellation crew with a reserved brief slot and a 404 SPA fallback.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a full-viewport planetarium crew with a reserved brief slot and a 404 SPA fallback.",
 );
