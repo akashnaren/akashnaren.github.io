@@ -407,31 +407,75 @@ if (
 }
 
 if (
-  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*72rem/.test(css) &&
-  !/\.page\.profile\s+\.stage\{[^}]*max-width:72rem/.test(css)
+  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*44rem/.test(css) &&
+  !/\.page\.profile\s+\.stage\{[^}]*max-width:44rem/.test(css)
 ) {
-  console.error("/bot stage must be a wide 72rem board, not a studio strip");
+  console.error("/bot stage must keep a 44rem constellation room, not a stretching board");
   process.exit(1);
 }
 
 if (
   /\.page\.profile\s+\.stage\{[^}]*max-width:38rem/.test(css) ||
-  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*38rem/.test(css)
+  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*38rem/.test(css) ||
+  /\.page\.profile\s+\.stage\{[^}]*max-width:72rem/.test(css) ||
+  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*72rem/.test(css)
 ) {
-  console.error("/bot stage must not keep the 38rem vertical studio stack");
+  console.error("/bot stage must not keep the 38rem studio stack or the 72rem stretching board");
+  process.exit(1);
+}
+
+if (!css.includes(".crew-sky") || !css.includes(".face") || !css.includes(".brief")) {
+  console.error("stylesheet must keep the constellation crew (crew-sky, face, brief)");
+  process.exit(1);
+}
+
+if (css.includes(".crew-grid") || css.includes(".board-split") || css.includes(".tile-face")) {
+  console.error("stylesheet must not keep the stretching 3×3 crew grid");
   process.exit(1);
 }
 
 if (
-  !css.includes(".crew-grid") ||
-  (!css.includes("repeat(3,") && !css.includes("repeat(3, "))
+  !/\.page\.profile[^{]*\{[^}]*overflow:\s*hidden/.test(css) &&
+  !/\.page\.profile\{[^}]*overflow:hidden/.test(css)
 ) {
-  console.error("stylesheet must keep a 3-column crew grid");
+  console.error("/bot page must stay overflow hidden — no scrollbar when a seat is selected");
   process.exit(1);
 }
 
-if (!css.includes(".tile") || !css.includes(".brief") || !css.includes(".board-split")) {
-  console.error("stylesheet must keep the interactive crew board (tiles, brief, split)");
+if (
+  /\.page\.profile[^{]*\{[^}]*overflow-y:\s*auto/.test(css) ||
+  /\.page\.profile\{[^}]*overflow-y:auto/.test(css)
+) {
+  console.error("/bot must not opt into overflow-y auto on any viewport");
+  process.exit(1);
+}
+
+if (
+  !/\.brief\s*\{[^}]*height:/.test(css) &&
+  !/\.brief\{[^}]*height:/.test(css)
+) {
+  console.error("brief slot must have a reserved fixed height so copy cannot grow the page");
+  process.exit(1);
+}
+
+if (
+  !/\.brief\s*\{[^}]*overflow:\s*hidden/.test(css) &&
+  !/\.brief\{[^}]*overflow:hidden/.test(css)
+) {
+  console.error("brief slot must overflow hidden so detail text never reflows chrome");
+  process.exit(1);
+}
+
+if (!css.includes("line-clamp:2") && !css.includes("line-clamp: 2") && !css.includes("-webkit-line-clamp:2") && !css.includes("-webkit-line-clamp: 2")) {
+  console.error("brief copy must clamp so longer blurbs cannot grow the reserved slot");
+  process.exit(1);
+}
+
+if (
+  !/\.crew-sky\s*\{[^}]*height:/.test(css) &&
+  !/\.crew-sky\{[^}]*height:/.test(css)
+) {
+  console.error("constellation field must have a reserved fixed height");
   process.exit(1);
 }
 
@@ -606,18 +650,16 @@ const botRequired = [
   "finance engineer",
   "product engineer",
   "agent master",
-  "i keep his public profiles.",
-  "i ship this site.",
-  "i write the sparse copy.",
-  "i watch him.",
-  "i ship the product code.",
-  "i take the research problems.",
-  "i coordinate the fleet.",
-  "read-only unless he asks.",
-  "i watch the spend.",
-  "small-stakes agentic trading experiment",
-  "i run the product loop.",
-  "i design high-quality grok bots.",
+  "hi. i keep his public faces tidy",
+  "ship this little site",
+  "i tinker on the real code",
+  "i wander into papers for him",
+  "i herd the nine of us",
+  "i only send when he says so",
+  "tap the glass if it looks a little spicy",
+  "tiny trading experiments",
+  "sharp corners get polite",
+  "seats stay cute. seats stay tight",
   "the crew",
   "pick a seat.",
   "bots' email",
@@ -642,10 +684,11 @@ const botRequired = [
   'class="rail"',
   'class="write"',
   'class="board"',
-  'class="board-split"',
-  'class="crew-grid"',
-  'class="tile"',
+  'class="crew-sky"',
+  'class="face"',
   'class="brief"',
+  'class="brief-name"',
+  'class="brief-copy"',
   'class="foot"',
   'class="inbox"',
   'class="managed-copy"',
@@ -729,9 +772,14 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  const tileCount = (page.match(/class="tile"/g) ?? []).length;
-  if (tileCount !== 9) {
-    console.error(`bot page must paint nine crew tiles, found ${String(tileCount)}`);
+  const faceCount = (page.match(/class="face"/g) ?? []).length;
+  if (faceCount !== 9) {
+    console.error(`bot page must paint nine constellation faces, found ${String(faceCount)}`);
+    process.exit(1);
+  }
+
+  if (page.includes('class="crew-grid"') || page.includes('class="board-split"') || page.includes('class="tile"')) {
+    console.error("bot page must not keep the stretching 3×3 crew grid");
     process.exit(1);
   }
 
@@ -788,8 +836,8 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  if (/class="crew-grid"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
-    console.error("bots' inbox belongs in the write block, not the crew grid");
+  if (/class="crew-sky"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
+    console.error("bots' inbox belongs in the write block, not the constellation");
     process.exit(1);
   }
 
@@ -845,12 +893,13 @@ if (/\.page\.fleet[\s{,]/.test(css)) {
 if (
   !js.includes("is-on") ||
   !js.includes("aria-pressed") ||
-  !js.includes("brief-copy")
+  !js.includes("brief-copy") ||
+  !js.includes("pick a seat")
 ) {
-  console.error("script must bind crew tile selection into the brief panel");
+  console.error("script must bind constellation face selection into the reserved brief slot");
   process.exit(1);
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is Profile Assistant's crew board with a 404 SPA fallback.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a fixed constellation crew with a reserved brief slot and a 404 SPA fallback.",
 );
