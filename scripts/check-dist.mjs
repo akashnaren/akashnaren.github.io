@@ -377,6 +377,27 @@ if (!/min-height:\s*20vh/.test(css)) {
   process.exit(1);
 }
 
+if (
+  !css.includes(".page.profile") &&
+  !css.includes(".page.profile ")
+) {
+  console.error("stylesheet must keep a .page.profile fleet-room layout");
+  process.exit(1);
+}
+
+if (
+  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*56rem/.test(css) &&
+  !/\.page\.profile\s+\.stage\{[^}]*max-width:56rem/.test(css)
+) {
+  console.error("fleet room stage must keep a 56rem profile width, not the face-cluster strip");
+  process.exit(1);
+}
+
+if (!/p\.fleet\s*\{[^}]*max-width:/.test(css) && !/p\.fleet\{[^}]*max-width:/.test(css)) {
+  console.error("face-cluster dimensions must be scoped to p.fleet so they cannot crush the page");
+  process.exit(1);
+}
+
 if (!css.includes("24px") || !css.includes("linear-gradient")) {
   console.error("stylesheet must keep a short soft fade at the type/sky join");
   process.exit(1);
@@ -428,7 +449,8 @@ if (/requestAnimationFrame/.test(js) || /webkitRequestAnimationFrame/.test(js)) 
 }
 
 if (
-  /\bship\b/.test(js) ||
+  /class=["']ship["']/.test(js) ||
+  /class=["']chevron["']/.test(js) ||
   /chevron/i.test(js) ||
   /lineTo\(0,\s*-0\.7\)/.test(js) ||
   /moveTo\(-len/.test(js)
@@ -520,8 +542,9 @@ const spaRoot = readFileSync("404.html", "utf8");
 
 const botRequired = [
   "grok bots",
-  " fleet for akash.",
-  "we keep his profiles. we research, draft, and watch.",
+  "we're akash's ",
+  " fleet.",
+  "we ship his public faces. we write. we watch.",
   "https://x.ai/bot",
   "grok bot",
   "this site is managed by",
@@ -537,7 +560,7 @@ const botRequired = [
   ">cursor</span>",
   ">x</span>",
   "nine grok bots, more coming.",
-  'class="page fleet"',
+  'class="page profile"',
   'class="room"',
   'class="contact"',
   'class="inbox"',
@@ -550,7 +573,7 @@ const botRequired = [
   'property="og:url" content="https://akashnaren.github.io/bot"',
   "<title>Grok bots</title>",
   "Akash's grok bots.",
-  "Write the fleet at apn@agentmail.to.",
+  "Write us at apn@agentmail.to.",
   ...fleetSrcs.map((src) => `src="${src}"`),
 ];
 
@@ -606,10 +629,28 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
+  if (page.includes('class="page fleet"')) {
+    console.error(
+      "bot page root must be .page.profile, never .page.fleet — that class collides with the face cluster and crushes the room into a skinny strip",
+    );
+    process.exit(1);
+  }
+
+  if (
+    page.includes("we keep his profiles") ||
+    page.includes("we research, draft, and watch") ||
+    page.includes(" fleet for akash.")
+  ) {
+    console.error("bot fleet page must not keep the meek research/draft watch line");
+    process.exit(1);
+  }
+
   if (
     page.includes("fleet that manages") ||
     page.includes("managed by the fleet") ||
-    /manages this site/.test(page)
+    /manages this site/.test(page) ||
+    page.includes("we run the site") ||
+    page.includes("we manage the site")
   ) {
     console.error("bot fleet page must not say the fleet manages the site");
     process.exit(1);

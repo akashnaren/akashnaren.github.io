@@ -13,7 +13,7 @@ function mount(): void {
   const root = document.getElementById("holder");
   if (!root) return;
 
-  const paintedBot = root.classList.contains("fleet");
+  const paintedBot = root.classList.contains("profile");
   const paintedHome = Boolean(root.querySelector(".sky"));
   if (bot && !paintedBot) {
     root.outerHTML = renderBot();
