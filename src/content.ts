@@ -123,8 +123,6 @@ export const botBody: readonly Paragraph[] = [
 
 export const crewLabel = "the crew";
 
-export const botInboxLabel = "write the bots";
-
 export const managedBy: Paragraph = [
   "this site is managed by ",
   { href: "/bot", label: "grok bot" },

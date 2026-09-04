@@ -3,7 +3,6 @@ import {
   body,
   botBody,
   botDescription,
-  botInboxLabel,
   botName,
   botTitle,
   botUrl,
@@ -181,7 +180,7 @@ export function renderBot(): string {
         ${paragraphs}
       </main>
       <section class="write">
-        ${renderInbox(botInboxLabel)}
+        ${renderInbox()}
       </section>
       <aside class="crew">
         <p class="crew-label">${escapeHtml(crewLabel)}</p>

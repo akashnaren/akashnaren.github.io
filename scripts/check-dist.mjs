@@ -119,6 +119,9 @@ const forbidden = [
   "inboxapn@",
   "to(not",
   "emailapn",
+  "botsapn",
+  "botsapn@",
+  "write the bots",
   "279M",
   "279m",
   "tokens",
@@ -383,6 +386,19 @@ if (!/min-height:\s*20vh/.test(css)) {
 }
 
 if (
+  !/\.inbox\s*\{[^}]*(?:flex-direction:\s*column|flex-flow:\s*column)/.test(css) &&
+  !/\.inbox\{[^}]*(?:flex-direction:column|flex-flow:column)/.test(css)
+) {
+  console.error("inbox must stack label and address in a flex column so they never jam");
+  process.exit(1);
+}
+
+if (!/\.inbox\s*\{[^}]*gap:/.test(css) && !/\.inbox\{[^}]*gap:/.test(css)) {
+  console.error("inbox must keep a real CSS gap between label and address");
+  process.exit(1);
+}
+
+if (
   !css.includes(".page.profile") &&
   !css.includes(".page.profile ")
 ) {
@@ -532,7 +548,13 @@ if (!html.includes("kaggle.com/akashpnaren") || !root.includes("kaggle.com/akash
 }
 
 for (const page of [html, root]) {
-  if (page.includes("inboxapn") || page.includes("inboxapn@") || page.includes("to(not")) {
+  if (
+    page.includes("inboxapn") ||
+    page.includes("inboxapn@") ||
+    page.includes("to(not") ||
+    page.includes("botsapn") ||
+    page.includes("botsapn@")
+  ) {
     console.error("built HTML must not concatenate the bots' email line");
     process.exit(1);
   }
@@ -560,7 +582,9 @@ const botRequired = [
   "i write the sparse copy.",
   "i watch him.",
   "the crew",
-  "write the bots",
+  "bots' email",
+  'class="inbox-label"',
+  'class="inbox-address"',
   "https://x.ai/bot",
   "grok bot",
   "this site is managed by",
@@ -691,6 +715,22 @@ for (const page of [botHtml, botRoot]) {
 
   if (!/class="write"[\s\S]{0,800}mailto:apn@agentmail\.to/.test(page)) {
     console.error("bots' inbox must sit in the write block");
+    process.exit(1);
+  }
+
+  if (
+    !page.includes(
+      '<span class="inbox-label">bots\' email</span><a class="inbox-address" href="mailto:apn@agentmail.to">apn@agentmail.to</a>',
+    )
+  ) {
+    console.error(
+      "bot inbox must keep a separate bots' email label and mailto address, never one jammed string",
+    );
+    process.exit(1);
+  }
+
+  if (page.includes("write the bots") || page.includes("botsapn")) {
+    console.error("bot inbox must not keep the old write-the-bots label or botsapn jam");
     process.exit(1);
   }
 
