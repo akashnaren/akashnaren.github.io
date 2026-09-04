@@ -14,6 +14,8 @@ const fleetSrcs = [
   "/fleet/09.png",
 ];
 
+const homeFleetSrcs = fleetSrcs.filter((src) => src !== "/fleet/01.png");
+
 const required = [
   "Akash Premkumar",
   "I live in Redwood City.",
@@ -69,6 +71,12 @@ const required = [
   'class="grok-bot-mark"',
   'class="grok-bot-eyes"',
   'class="fleet"',
+  'class="fleet-face"',
+  'class="fleet-face is-host"',
+  "fleet-wrap",
+  'class="fleet-tip"',
+  'class="fleet-invite"',
+  "click on any bot",
   "nine grok bots, more coming.",
   'class="him"',
   'class="panel"',
@@ -76,7 +84,7 @@ const required = [
   'name="twitter:card"',
   'property="og:url" content="https://akashnaren.github.io/"',
   'name="theme-color" content="#0a0a0a"',
-  ...fleetSrcs.map((src) => `src="${src}"`),
+  ...homeFleetSrcs.map((src) => `src="${src}"`),
 ];
 
 const forbidden = [
@@ -103,14 +111,8 @@ const forbidden = [
   "Money Engineer",
   "Personal CFO",
   "New Bot",
-  "secretary",
   "article writer",
   "Systems Engineer",
-  "chief of staff",
-  "profile assistant",
-  "research advisor",
-  "software engineer",
-  "product engineer",
   "bygrok",
   "mailto:gmail",
   "/marks/gmail",
@@ -179,9 +181,22 @@ if (/\bprofessor\b/i.test(html)) {
   process.exit(1);
 }
 
-const fleetHits = fleetSrcs.filter((src) => html.includes(`src="${src}"`));
-if (fleetHits.length !== 9) {
-  console.error("dist/index.html must include all nine unlabeled fleet marks");
+const fleetHits = homeFleetSrcs.filter((src) => html.includes(`src="${src}"`));
+if (fleetHits.length !== 8) {
+  console.error("dist/index.html must include the eight non-host unlabeled fleet marks");
+  process.exit(1);
+}
+
+if (html.includes('src="/fleet/01.png"')) {
+  console.error("home host seat must be the glancing grok SVG, not /fleet/01.png");
+  process.exit(1);
+}
+
+if (
+  !/class="fleet-face is-host"[\s\S]{0,900}grok-bot-eyes/.test(html) ||
+  !/class="fleet-face is-host"[\s\S]{0,900}fleet-wrap/.test(html)
+) {
+  console.error("home host fleet face must keep the glancing grok-bot SVG");
   process.exit(1);
 }
 
@@ -298,10 +313,60 @@ if (/job assistant/i.test(html) || /job assistant/i.test(root)) {
   process.exit(1);
 }
 
-if (/profile assistant/i.test(html) || /profile assistant/i.test(root)) {
-  console.error("home must not name Profile Assistant; that seat is named only on /bot");
-  process.exit(1);
+const seatNames = [
+  "profile assistant",
+  "software engineer",
+  "research advisor",
+  "chief of staff",
+  "secretary",
+  "chief financial officer",
+  "finance engineer",
+  "product engineer",
+  "agent master",
+];
+
+function assertHomeFleetInvite(page, label) {
+  if (!page.includes("click on any bot") || !page.includes('class="fleet-invite"')) {
+    console.error(`${label} must keep the quiet click on any bot invite`);
+    process.exit(1);
+  }
+  if (!page.includes('<p class="fleet-invite"><a href="/bot">click on any bot</a></p>')) {
+    console.error(`${label} must hyperlink the fleet invite to /bot`);
+    process.exit(1);
+  }
+
+  const faces = [...page.matchAll(/<a class="fleet-face[^"]*"[^>]*>/g)].map((match) => match[0]);
+  if (faces.length !== 9) {
+    console.error(`${label} must wrap all nine fleet faces as /bot links, found ${String(faces.length)}`);
+    process.exit(1);
+  }
+
+  for (const name of seatNames) {
+    const face = faces.find(
+      (markup) =>
+        markup.includes('href="/bot"') &&
+        markup.includes(`title="${name}"`) &&
+        markup.includes(`aria-label="${name}"`),
+    );
+    if (!face) {
+      console.error(`${label} must title and aria-label a /bot fleet face as ${name}`);
+      process.exit(1);
+    }
+    if (!page.includes(`<span class="fleet-tip" aria-hidden="true">${name}</span>`)) {
+      console.error(`${label} must keep a quiet fleet tip for ${name}`);
+      process.exit(1);
+    }
+  }
+
+  const him = page.match(/<main class="him">[\s\S]*?<\/main>/)?.[0] ?? "";
+  if (seatNames.some((name) => him.includes(name))) {
+    console.error(`${label} must not name seats in the him column`);
+    process.exit(1);
+  }
 }
+
+assertHomeFleetInvite(html, "dist/index.html");
+assertHomeFleetInvite(root, "root index.html");
 
 if (html.includes("https://x.ai/bot/marketplace") || root.includes("https://x.ai/bot/marketplace")) {
   console.error("home must not carry the grok bot marketplace link; that sits on /bot");
@@ -318,12 +383,12 @@ if (!/class="him"[\s\S]{0,8000}mailto:akashnaren@gmail\.com/.test(html)) {
   process.exit(1);
 }
 
-if (!/class="panel"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(html)) {
+if (!/class="panel"[\s\S]{0,8000}mailto:apn@agentmail\.to/.test(html)) {
   console.error("Agent inbox must stay in the fleet panel");
   process.exit(1);
 }
 
-if (/class="panel"[\s\S]{0,4000}akashnaren@gmail\.com/.test(html)) {
+if (/class="panel"[\s\S]{0,8000}akashnaren@gmail\.com/.test(html)) {
   console.error("Gmail must not sit in the fleet panel");
   process.exit(1);
 }
@@ -460,6 +525,63 @@ if (css.includes("@property --aim") || css.includes("--aim")) {
 
 if (!css.includes(".inbox-tip")) {
   console.error("stylesheet must keep the bots' email tooltip");
+  process.exit(1);
+}
+
+if (!css.includes(".fleet-face") || !css.includes(".fleet-tip") || !css.includes(".fleet-invite")) {
+  console.error("stylesheet must keep home fleet face links, name tips, and the invite line");
+  process.exit(1);
+}
+
+if (
+  !css.includes(".fleet-face:hover .fleet-tip") ||
+  !css.includes(".fleet-face:focus-visible .fleet-tip")
+) {
+  console.error("stylesheet must show fleet name tips on hover and focus-visible");
+  process.exit(1);
+}
+
+if (
+  !css.includes("hover:hover") &&
+  !css.includes("hover: hover") &&
+  !css.includes("pointer:fine") &&
+  !css.includes("pointer: fine")
+) {
+  console.error("fleet name tips must not depend on hover alone on touch");
+  process.exit(1);
+}
+
+if (
+  !css.includes(".fleet-face::after") &&
+  !css.includes(".fleet-face:after") &&
+  !css.includes(".fleet-face:after")
+) {
+  console.error("fleet faces must keep an expanded tap pad");
+  process.exit(1);
+}
+
+if (!css.includes("touch-action:manipulation") && !css.includes("touch-action: manipulation")) {
+  console.error("fleet faces must keep touch-action manipulation");
+  process.exit(1);
+}
+
+if (!css.includes("-14px") && !css.includes("-12px")) {
+  console.error("mobile fleet faces must keep a larger tap pad than the 24px mark");
+  process.exit(1);
+}
+
+if (!css.includes("max(22px") && !css.includes("max(22px,")) {
+  console.error("fleet faces must keep a 22px floor so --fit cannot crush the marks");
+  process.exit(1);
+}
+
+if (!/@keyframes\s+fleet-idle/.test(css) || !css.includes("fleet-idle")) {
+  console.error("stylesheet must keep a quiet staggered fleet idle");
+  process.exit(1);
+}
+
+if (!/@keyframes\s+grok-glance/.test(css) || !css.includes("grok-glance")) {
+  console.error("stylesheet must keep the grok-bot eye glance");
   process.exit(1);
 }
 
@@ -1010,5 +1132,5 @@ if (!js.includes("3000") || (!js.includes("setInterval") && !js.includes("setTim
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a centered grok bot collection roster with a 46rem stage, 3s auto-cycle, brief crossfade, email tooltip, and no footer socials.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a centered grok bot collection roster with a 46rem stage, 3s auto-cycle, brief crossfade, email tooltip, and no footer socials.",
 );

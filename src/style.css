@@ -647,7 +647,7 @@ header p {
   flex-wrap: wrap;
   column-gap: 0.4em;
   row-gap: 0.12em;
-  margin-top: calc(1.55rem * var(--fit));
+  margin-top: calc(1.15rem * var(--fit));
   font-size: calc(11px * var(--fit));
   line-height: calc(16px * var(--fit));
   color: #6a6e74;
@@ -721,68 +721,241 @@ p.fleet {
   overflow: visible;
 }
 
-.fleet-mark {
+.fleet-face {
   position: absolute;
-  width: calc(24px * var(--fit));
-  height: calc(24px * var(--fit));
+  display: block;
+  width: max(22px, calc(24px * var(--fit)));
+  height: max(22px, calc(24px * var(--fit)));
+  padding: 0;
+  margin: 0;
+  background: none;
+  overflow: visible;
+  transform: translate(-50%, -50%);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 107, 0, 0.16);
+}
+
+.fleet-face::before {
+  content: none;
+}
+
+.fleet-face::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 999px;
+}
+
+.fleet-face:focus-visible {
+  outline: 1px solid rgba(250, 250, 247, 0.72);
+  outline-offset: 2px;
+  border-radius: 999px;
+  padding: 0;
+  margin: 0;
+}
+
+.fleet-mark {
+  display: block;
+  width: 100%;
+  height: 100%;
   padding: 0;
   background: none;
   opacity: 0.92;
   overflow: visible;
-  transform: translate(-50%, -50%);
 }
 
-.fleet-mark:nth-child(1) {
+.fleet-wrap {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.fleet-wrap .grok-bot-photon,
+.fleet-wrap .grok-bot-mark {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes fleet-idle {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(-1px);
+    opacity: 1;
+  }
+}
+
+.fleet-face:not(.is-host) .fleet-mark {
+  animation: fleet-idle 8s ease-in-out infinite;
+}
+
+.fleet-face:nth-child(2) .fleet-mark {
+  animation-duration: 7.2s;
+  animation-delay: 0.45s;
+}
+
+.fleet-face:nth-child(3) .fleet-mark {
+  animation-duration: 8.6s;
+  animation-delay: 1.15s;
+}
+
+.fleet-face:nth-child(4) .fleet-mark {
+  animation-duration: 7.8s;
+  animation-delay: 1.85s;
+}
+
+.fleet-face:nth-child(5) .fleet-mark {
+  animation-duration: 9s;
+  animation-delay: 0.7s;
+}
+
+.fleet-face:nth-child(6) .fleet-mark {
+  animation-duration: 7.5s;
+  animation-delay: 2.2s;
+}
+
+.fleet-face:nth-child(7) .fleet-mark {
+  animation-duration: 8.3s;
+  animation-delay: 1.4s;
+}
+
+.fleet-face:nth-child(8) .fleet-mark {
+  animation-duration: 7.1s;
+  animation-delay: 2.55s;
+}
+
+.fleet-face:nth-child(9) .fleet-mark {
+  animation-duration: 8.8s;
+  animation-delay: 0.25s;
+}
+
+.fleet-face:hover .fleet-mark,
+.fleet-face:focus-visible .fleet-mark,
+.fleet-face:hover .fleet-wrap,
+.fleet-face:focus-visible .fleet-wrap {
+  animation-play-state: paused;
+  opacity: 1;
+  transform: none;
+}
+
+.fleet-face:nth-child(1) {
   left: 18%;
   top: 16%;
 }
 
-.fleet-mark:nth-child(2) {
+.fleet-face:nth-child(2) {
   left: 40%;
   top: 42%;
 }
 
-.fleet-mark:nth-child(3) {
+.fleet-face:nth-child(3) {
   left: 68%;
   top: 14%;
 }
 
-.fleet-mark:nth-child(4) {
+.fleet-face:nth-child(4) {
   left: 26%;
   top: 58%;
 }
 
-.fleet-mark:nth-child(5) {
+.fleet-face:nth-child(5) {
   left: 50%;
   top: 20%;
 }
 
-.fleet-mark:nth-child(6) {
+.fleet-face:nth-child(6) {
   left: 74%;
   top: 44%;
 }
 
-.fleet-mark:nth-child(7) {
+.fleet-face:nth-child(7) {
   left: 20%;
   top: 76%;
 }
 
-.fleet-mark:nth-child(8) {
+.fleet-face:nth-child(8) {
   left: 48%;
   top: 68%;
 }
 
-.fleet-mark:nth-child(9) {
+.fleet-face:nth-child(9) {
   left: 70%;
   top: 72%;
 }
 
-.fleet-line {
+.fleet-tip {
+  --tip-x: -50%;
+  --tip-y: 3px;
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 0.32rem);
+  z-index: 4;
+  width: max-content;
+  max-width: min(12rem, calc(100vw - 2.4rem));
+  padding: 0.2rem 0.38rem;
+  border: 1px solid rgba(255, 107, 0, 0.28);
+  border-radius: 4px;
+  background: #121212;
+  color: #c4c4bf;
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(10px * var(--fit));
+  line-height: calc(13px * var(--fit));
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(var(--tip-x), var(--tip-y));
+  pointer-events: none;
+  transition: opacity 280ms ease, transform 280ms ease;
+}
+
+.fleet-face:nth-child(1) .fleet-tip,
+.fleet-face:nth-child(4) .fleet-tip,
+.fleet-face:nth-child(7) .fleet-tip {
+  left: 0;
+  --tip-x: 0%;
+}
+
+.fleet-face:nth-child(3) .fleet-tip,
+.fleet-face:nth-child(6) .fleet-tip,
+.fleet-face:nth-child(9) .fleet-tip {
+  left: auto;
+  right: 0;
+  --tip-x: 0%;
+}
+
+.fleet-face:nth-child(7) .fleet-tip,
+.fleet-face:nth-child(8) .fleet-tip,
+.fleet-face:nth-child(9) .fleet-tip {
+  top: auto;
+  bottom: calc(100% + 0.32rem);
+}
+
+.fleet-face:focus-visible .fleet-tip {
+  --tip-y: 0;
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fleet-face:hover .fleet-tip {
+    --tip-y: 0;
+    opacity: 1;
+  }
+}
+
+.fleet-line,
+.fleet-invite {
   margin-top: calc(0.55rem * var(--fit));
   color: #5c6066;
   font-size: calc(11px * var(--fit));
   line-height: calc(15px * var(--fit));
   letter-spacing: 0.01em;
+}
+
+.fleet-invite {
+  margin-top: calc(0.2rem * var(--fit));
 }
 
 .inbox {
@@ -876,6 +1049,34 @@ a:focus-visible {
   }
 }
 
+@media (max-width: 879px) {
+  .panel {
+    padding-top: calc(1.05rem * var(--fit));
+  }
+
+  p.fleet {
+    max-width: min(calc(14.8rem * var(--fit)), 100%);
+    height: calc(7.2rem * var(--fit));
+    margin-top: calc(0.55rem * var(--fit));
+  }
+
+  .fleet-face::after {
+    inset: -14px;
+  }
+
+  .managed {
+    margin-top: calc(0.95rem * var(--fit));
+  }
+
+  .fleet-invite {
+    margin-top: calc(0.28rem * var(--fit));
+  }
+
+  .fleet-tip {
+    white-space: normal;
+  }
+}
+
 @media (max-width: 700px) {
   .page.profile .stage {
     padding: 1.4rem 1.15rem 1.8rem;
@@ -926,7 +1127,8 @@ a:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .grok-bot-eyes,
   .scope::after,
-  .spin {
+  .spin,
+  .fleet-face:not(.is-host) .fleet-mark {
     animation: none;
   }
 
@@ -935,7 +1137,8 @@ a:focus-visible {
   .row-name,
   .brief-name,
   .brief-copy,
-  .inbox-tip {
+  .inbox-tip,
+  .fleet-tip {
     transition: none;
   }
 
