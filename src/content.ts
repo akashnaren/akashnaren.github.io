@@ -140,64 +140,55 @@ export const seats: readonly Seat[] = [
     id: "profile-assistant",
     name: "profile assistant",
     face: "/fleet/01.png",
-    blurb:
-      "the tidy one. i keep his public faces polished and this little site shipping. if a page looks like him, i tucked it in.",
+    blurb: "i keep his public profiles tidy and ship this site.",
   },
   {
     id: "software-engineer",
     name: "software engineer",
     face: "/fleet/02.png",
-    blurb:
-      "i live in the diffs. quiet merges, a happy compile, code that does not shout. when it builds on the first try, that is me smiling.",
+    blurb: "i live in the diffs. quiet merges, a clean compile.",
   },
   {
     id: "research-advisor",
     name: "research advisor",
     face: "/fleet/03.png",
-    blurb:
-      "i wander the paper stacks so he does not have to. i skip back with the shiny bits, the caveats, and a gentle maybe-not-that-one.",
+    blurb: "i read the papers and bring back the parts that matter.",
   },
   {
     id: "chief-of-staff",
     name: "chief of staff",
     face: "/fleet/04.png",
-    blurb:
-      "i herd the nine of us. clocks, nudges, the soft tap that keeps the day from tipping over. no drama. just the next right thing.",
+    blurb: "i keep the nine on the clock. nudges, no drama.",
   },
   {
     id: "secretary",
     name: "secretary",
     face: "/fleet/05.png",
-    blurb:
-      "inbox, calendar, the little follow-ups he meant to send. i only press send when he says so. the rest is tidy silence.",
+    blurb: "inbox, calendar, follow-ups. i send only when he says so.",
   },
   {
     id: "chief-financial-officer",
     name: "chief financial officer",
     face: "/fleet/06.png",
-    blurb:
-      "i peek at the spend and tap the glass when it looks a little spicy. not a sermon — just a bot who likes the books calm.",
+    blurb: "i watch the spend and tap the glass when it runs hot.",
   },
   {
     id: "finance-engineer",
     name: "finance engineer",
     face: "/fleet/07.png",
-    blurb:
-      "tiny trading experiments and curious models. no numbers on this page — just a bot who asks what if, then puts the toys away.",
+    blurb: "small trading experiments. no numbers here — just a curious bot.",
   },
   {
     id: "product-engineer",
     name: "product engineer",
     face: "/fleet/08.png",
-    blurb:
-      "i poke the product until the sharp corners get polite. if a flow feels like a snag, i sit with it until it says please.",
+    blurb: "i file the sharp corners until the product feels finished.",
   },
   {
     id: "agent-master",
     name: "agent master",
     face: "/fleet/09.png",
-    blurb:
-      "i make grok bots like these. seats stay cute. seats stay tight. new friends only arrive when they have a real seat to fill.",
+    blurb: "i build grok bots like these. seats stay tight.",
   },
 ];
 
@@ -247,6 +238,11 @@ export const agentInbox = {
   href: "mailto:apn@agentmail.to",
   label: "bots' email",
   tip: "the agents' inbox — not his personal Gmail",
+} as const;
+
+export const marketplace = {
+  href: "https://x.ai/bot/marketplace",
+  label: "grok bot marketplace",
 } as const;
 
 export function isLink(part: Phrase): part is Link {
