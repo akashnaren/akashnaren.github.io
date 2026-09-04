@@ -439,8 +439,23 @@ if (!css.includes(".crew-sky") || !css.includes(".face") || !css.includes(".brie
   process.exit(1);
 }
 
-if (!css.includes(".lead") || !css.includes(".orbit") || !css.includes(".spoke")) {
-  console.error("stylesheet must keep the planetarium lead, orbit, and spoke");
+if (!css.includes(".plinth") || !css.includes(".orbit") || !css.includes(".spoke")) {
+  console.error("stylesheet must keep the planetarium plinth, orbit, and spoke");
+  process.exit(1);
+}
+
+if (css.includes(".lead-mark") || css.includes(".lead {") || css.includes(".lead{")) {
+  console.error("stylesheet must not enlarge a fleet PNG as the center lead");
+  process.exit(1);
+}
+
+if (!css.includes("@property --aim")) {
+  console.error("spoke aim must be a registered custom property so it can ease");
+  process.exit(1);
+}
+
+if (!css.includes(".inbox-tip")) {
+  console.error("stylesheet must keep the bots' email tooltip");
   process.exit(1);
 }
 
@@ -491,7 +506,16 @@ if (
   process.exit(1);
 }
 
-if (!css.includes("line-clamp:2") && !css.includes("line-clamp: 2") && !css.includes("-webkit-line-clamp:2") && !css.includes("-webkit-line-clamp: 2")) {
+if (
+  !css.includes("line-clamp:3") &&
+  !css.includes("line-clamp: 3") &&
+  !css.includes("-webkit-line-clamp:3") &&
+  !css.includes("-webkit-line-clamp: 3") &&
+  !css.includes("line-clamp:2") &&
+  !css.includes("line-clamp: 2") &&
+  !css.includes("-webkit-line-clamp:2") &&
+  !css.includes("-webkit-line-clamp: 2")
+) {
   console.error("brief copy must clamp so longer blurbs cannot grow the reserved slot");
   process.exit(1);
 }
@@ -676,6 +700,7 @@ const spa = readFileSync("dist/404.html", "utf8");
 const spaRoot = readFileSync("404.html", "utf8");
 
 const botRequired = [
+  "grok bot collection",
   "profile assistant",
   "software engineer",
   "research advisor",
@@ -685,19 +710,21 @@ const botRequired = [
   "finance engineer",
   "product engineer",
   "agent master",
-  "hi. i keep his public faces tidy",
-  "ship this little site",
-  "i tinker on the real code",
-  "i wander into papers for him",
+  "the tidy one",
+  "this little site shipping",
+  "i live in the diffs",
+  "i wander the paper stacks",
   "i herd the nine of us",
-  "i only send when he says so",
-  "tap the glass if it looks a little spicy",
-  "tiny trading experiments",
+  "i only press send when he says so",
+  "tap the glass when it looks a little spicy",
+  "tiny trading experiments and curious models",
   "sharp corners get polite",
   "seats stay cute. seats stay tight",
   "the crew",
-  "pick a seat.",
   "bots' email",
+  "the agents' inbox — not his personal Gmail",
+  'class="inbox-tip"',
+  'role="tooltip"',
   'class="inbox-label"',
   'class="inbox-address"',
   "https://x.ai/bot",
@@ -705,31 +732,24 @@ const botRequired = [
   "this site is managed by",
   "mailto:apn@agentmail.to",
   "apn@agentmail.to",
-  'href="/"',
-  "https://github.com/akashnaren",
-  "https://cursor.com/@akashpn",
-  "https://x.com/akashpn",
-  ">home</span>",
-  ">github</span>",
-  ">cursor</span>",
-  ">x</span>",
   "nine grok bots, more coming.",
   'class="page profile"',
-  'class="seat"',
+  'class="mast"',
   'class="rail"',
   'class="write"',
   'class="board"',
-  'class="crew-sky"',
-  'class="lead"',
+  'data-cycle="3000"',
+  'class="crew-sky',
+  'class="plinth"',
+  'class="system"',
   'class="orbit"',
   'class="spoke"',
-  'class="lead-mark"',
-  'class="face"',
-  'class="brief"',
+  'class="face',
+  'class="brief',
   'class="brief-name"',
   'class="brief-copy"',
   'class="foot"',
-  'class="inbox"',
+  'class="inbox',
   'class="managed-copy"',
   'class="grok-bot-eyes"',
   "seat-wrap",
@@ -738,8 +758,8 @@ const botRequired = [
   'src="/fleet/01.png"',
   'src="/fleet/09.png"',
   'property="og:url" content="https://akashnaren.github.io/bot"',
-  "<title>Profile Assistant</title>",
-  "Profile Assistant, a grok bot. I manage this site.",
+  "<title>grok bot collection</title>",
+  "Nine grok bots. A quiet collection.",
   ...fleetSrcs.map((src) => `src="${src}"`),
 ];
 
@@ -771,11 +791,35 @@ for (const page of [botHtml, botRoot]) {
 
   if (
     page.includes('class="sky"') ||
-    page.includes('class="system"') ||
     page.includes('class="well"') ||
     page.includes("well-canvas")
   ) {
-    console.error("bot page must not keep the solar system or the well");
+    console.error("bot page must not keep the home sky band or the well");
+    process.exit(1);
+  }
+
+  if (!page.includes('class="system"') || !page.includes('class="plinth"')) {
+    console.error("bot page must keep the solar system in the center plinth");
+    process.exit(1);
+  }
+
+  if (page.includes('class="lead-mark"') || page.includes('class="lead"')) {
+    console.error("bot page must not enlarge a fleet PNG in the center");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("https://github.com/akashnaren") ||
+    page.includes("https://cursor.com/@akashpn") ||
+    page.includes("https://x.com/akashpn") ||
+    page.includes('class="profile-links"')
+  ) {
+    console.error("bot page must not keep github / cursor / x links in the footer");
+    process.exit(1);
+  }
+
+  if (page.includes("<title>Profile Assistant</title>") || page.includes(">profile assistant<span")) {
+    console.error("bot page top title must be grok bot collection, not Profile Assistant");
     process.exit(1);
   }
 
@@ -811,7 +855,7 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  const faceCount = (page.match(/class="face"/g) ?? []).length;
+  const faceCount = (page.match(/<button[^>]*class="face/g) ?? []).length;
   if (faceCount !== 9) {
     console.error(`bot page must paint nine planetarium faces, found ${String(faceCount)}`);
     process.exit(1);
@@ -860,13 +904,22 @@ for (const page of [botHtml, botRoot]) {
   }
 
   if (
-    !page.includes(
-      '<span class="inbox-label">bots\' email</span><a class="inbox-address" href="mailto:apn@agentmail.to">apn@agentmail.to</a>',
-    )
+    !page.includes('<span class="inbox-label">bots\' email</span>') ||
+    !page.includes('class="inbox-address"') ||
+    !page.includes('href="mailto:apn@agentmail.to"') ||
+    !page.includes(">apn@agentmail.to</a>")
   ) {
     console.error(
       "bot inbox must keep a separate bots' email label and mailto address, never one jammed string",
     );
+    process.exit(1);
+  }
+
+  if (
+    !page.includes('class="inbox-tip"') ||
+    !page.includes("the agents' inbox — not his personal Gmail")
+  ) {
+    console.error("bot inbox must tooltip that apn@agentmail.to is the agents' inbox, not his Gmail");
     process.exit(1);
   }
 
@@ -976,13 +1029,22 @@ if (
   !js.includes("aria-pressed") ||
   !js.includes("brief-copy") ||
   !js.includes("pick a seat") ||
-  !js.includes("lead-mark") ||
   !js.includes("--aim")
 ) {
   console.error("script must bind planetarium face selection into the reserved brief slot and aim the spoke");
   process.exit(1);
 }
 
+if (js.includes("lead-mark")) {
+  console.error("script must not swap an enlarged fleet PNG into the center");
+  process.exit(1);
+}
+
+if (!js.includes("3000") || (!js.includes("setInterval") && !js.includes("setTimeout"))) {
+  console.error("script must auto-cycle seats every 3000ms");
+  process.exit(1);
+}
+
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a full-viewport planetarium crew with a reserved brief slot and a 404 SPA fallback.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a full-viewport grok bot collection with a solar plinth, 3s auto-cycle, email tooltip, and no footer socials.",
 );

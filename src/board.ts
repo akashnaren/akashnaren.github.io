@@ -1,42 +1,21 @@
 import { pickLine } from "./content.ts";
 
+const IDLE_MS = 1400;
+const SWAP_MS = 160;
+
 function facesIn(board: HTMLElement): HTMLButtonElement[] {
   return [...board.querySelectorAll<HTMLButtonElement>(":scope .face")];
 }
 
-function paintBrief(
-  brief: HTMLElement,
-  face: HTMLButtonElement | null,
-): void {
-  const name = brief.querySelector<HTMLElement>(".brief-name");
-  const copy = brief.querySelector<HTMLElement>(".brief-copy");
-  const open = Boolean(face);
-
-  brief.classList.toggle("is-open", open);
-  if (name) name.textContent = open ? (face?.dataset.name ?? "") : pickLine;
-  if (copy) copy.textContent = open ? (face?.dataset.blurb ?? "") : "";
+function prefersQuiet(): boolean {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-function paintLead(
-  sky: HTMLElement,
-  faces: readonly HTMLButtonElement[],
-  face: HTMLButtonElement | null,
-): void {
-  const lead = sky.querySelector<HTMLImageElement>(".lead-mark");
-  const host = faces[0];
-  const src = face
-    ? (face.querySelector("img")?.getAttribute("src") ?? host?.querySelector("img")?.getAttribute("src"))
-    : host?.querySelector("img")?.getAttribute("src");
-  if (lead && src) lead.setAttribute("src", src);
-
-  sky.classList.toggle("is-lit", Boolean(face));
-  const index = face ? Math.max(0, faces.indexOf(face)) : 0;
-  sky.style.setProperty("--aim", `${String(index * 40)}deg`);
-}
-
-function markHash(id: string | null): void {
-  const next = id ? `#${id}` : `${location.pathname}${location.search}`;
-  history.replaceState(null, "", next);
+function shortestAim(from: number, to: number): number {
+  const raw = ((to - from) % 360) + 360;
+  const wrapped = raw % 360;
+  const delta = wrapped > 180 ? wrapped - 360 : wrapped;
+  return from + delta;
 }
 
 export function bindCrewBoard(): void {
@@ -50,20 +29,96 @@ export function bindCrewBoard(): void {
   const sky: HTMLElement = skyNode;
 
   const faces = facesIn(board);
-  const host = document.querySelector<HTMLElement>(".page.profile .seat");
-  let pointerArmed = false;
+  if (faces.length === 0) return;
 
-  function select(id: string | null, syncHash = true): void {
+  const cycleMs = Number(board.dataset.cycle ?? "3000");
+  let pointerArmed = false;
+  let userHeld = false;
+  let cycleTimer = 0;
+  let idleTimer = 0;
+  let briefTimer = 0;
+  let aimDeg = 0;
+
+  function paintBrief(face: HTMLButtonElement | null, fromUser: boolean): void {
+    const name = brief.querySelector<HTMLElement>(".brief-name");
+    const copy = brief.querySelector<HTMLElement>(".brief-copy");
+    if (!name || !copy) return;
+
+    const nextName = face ? (face.dataset.name ?? "") : pickLine;
+    const nextCopy = face ? (face.dataset.blurb ?? "") : "";
+    brief.setAttribute("aria-live", fromUser ? "polite" : "off");
+    brief.classList.toggle("is-open", Boolean(face));
+
+    if (name.textContent === nextName && copy.textContent === nextCopy) return;
+
+    const apply = (): void => {
+      name.textContent = nextName;
+      copy.textContent = nextCopy;
+      brief.classList.remove("is-swap");
+    };
+
+    window.clearTimeout(briefTimer);
+    if (prefersQuiet()) {
+      apply();
+      return;
+    }
+
+    brief.classList.add("is-swap");
+    briefTimer = window.setTimeout(apply, SWAP_MS);
+  }
+
+  function paintAim(face: HTMLButtonElement | null): void {
+    const index = face ? Math.max(0, faces.indexOf(face)) : 0;
+    const target = index * 40;
+    aimDeg = shortestAim(aimDeg, target);
+    sky.style.setProperty("--aim", `${String(aimDeg)}deg`);
+    sky.classList.toggle("is-lit", Boolean(face));
+  }
+
+  function select(id: string | null, syncHash = false, fromUser = false): void {
     const face = id ? (faces.find((item) => item.dataset.seat === id) ?? null) : null;
     for (const item of faces) {
       const on = item === face;
       item.classList.toggle("is-on", on);
       item.setAttribute("aria-pressed", on ? "true" : "false");
     }
-    host?.classList.toggle("is-on", face?.dataset.seat === "profile-assistant");
-    paintBrief(brief, face);
-    paintLead(sky, faces, face);
-    if (syncHash) markHash(face?.dataset.seat ?? null);
+    paintBrief(face, fromUser);
+    paintAim(face);
+    if (syncHash) {
+      const next = face ? `#${face.dataset.seat ?? ""}` : `${location.pathname}${location.search}`;
+      history.replaceState(null, "", next);
+    }
+  }
+
+  function stopCycle(): void {
+    window.clearInterval(cycleTimer);
+    cycleTimer = 0;
+  }
+
+  function startCycle(): void {
+    stopCycle();
+    if (!Number.isFinite(cycleMs) || cycleMs <= 0) return;
+    cycleTimer = window.setInterval(() => {
+      if (userHeld) return;
+      const current = faces.findIndex((item) => item.classList.contains("is-on"));
+      const next = current < 0 ? 0 : (current + 1) % faces.length;
+      select(faces[next]?.dataset.seat ?? null);
+    }, cycleMs);
+  }
+
+  function hold(face: HTMLButtonElement): void {
+    userHeld = true;
+    window.clearTimeout(idleTimer);
+    stopCycle();
+    select(face.dataset.seat ?? null, false, true);
+  }
+
+  function release(): void {
+    userHeld = false;
+    window.clearTimeout(idleTimer);
+    idleTimer = window.setTimeout(() => {
+      if (!userHeld) startCycle();
+    }, IDLE_MS);
   }
 
   board.addEventListener("pointerdown", () => {
@@ -74,33 +129,38 @@ export function bindCrewBoard(): void {
     pointerArmed = false;
     const face = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>(".face");
     if (!face || !board.contains(face)) return;
-    const id = face.dataset.seat ?? null;
-    select(face.classList.contains("is-on") ? null : id);
+    select(face.dataset.seat ?? null, true, true);
   });
+
+  for (const face of faces) {
+    face.addEventListener("pointerenter", () => {
+      hold(face);
+    });
+    face.addEventListener("pointerleave", () => {
+      release();
+    });
+  }
 
   board.addEventListener("focusin", (event) => {
     const face = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>(".face");
     if (!face || !board.contains(face)) return;
-    if (pointerArmed || face.classList.contains("is-on")) return;
-    select(face.dataset.seat ?? null);
+    hold(face);
   });
 
-  host?.addEventListener("click", (event) => {
-    if ((event.target as HTMLElement | null)?.closest("a")) return;
-    const on = host.classList.contains("is-on");
-    select(on ? null : "profile-assistant");
-  });
-
-  host?.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    const on = host.classList.contains("is-on");
-    select(on ? null : "profile-assistant");
+  board.addEventListener("focusout", (event) => {
+    const next = event.relatedTarget;
+    if (next instanceof Node && board.contains(next)) {
+      const face = (next as HTMLElement).closest(".face");
+      if (face && board.contains(face)) return;
+    }
+    if (pointerArmed) return;
+    release();
   });
 
   board.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      select(null);
+      (document.activeElement as HTMLElement | null)?.blur();
+      release();
       return;
     }
 
@@ -113,9 +173,9 @@ export function bindCrewBoard(): void {
 
     let next = index;
     if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-      next = Math.min(faces.length - 1, index + 1);
+      next = (index + 1) % faces.length;
     } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-      next = Math.max(0, index - 1);
+      next = (index - 1 + faces.length) % faces.length;
     } else return;
 
     if (next === index) return;
@@ -124,9 +184,13 @@ export function bindCrewBoard(): void {
   });
 
   const fromHash = location.hash.replace(/^#/, "");
-  if (fromHash && faces.some((face) => face.dataset.seat === fromHash)) {
-    select(fromHash, false);
-  } else {
-    paintLead(sky, faces, null);
-  }
+  const hashed = fromHash && faces.some((face) => face.dataset.seat === fromHash);
+  const current = faces.find((face) => face.classList.contains("is-on"));
+  const startId = hashed
+    ? fromHash
+    : (current?.dataset.seat ?? faces[0]?.dataset.seat ?? null);
+  const startFace = startId ? (faces.find((item) => item.dataset.seat === startId) ?? null) : null;
+  aimDeg = startFace ? Math.max(0, faces.indexOf(startFace)) * 40 : 0;
+  select(startId, false);
+  startCycle();
 }
