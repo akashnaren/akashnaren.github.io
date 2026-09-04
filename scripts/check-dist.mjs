@@ -17,9 +17,12 @@ const fleetSrcs = [
 const required = [
   "Akash Premkumar",
   "I live in Redwood City.",
+  "I worked on vehicle service systems",
   "diagnostics",
   "telemetry",
-  "data analysis for service engineering",
+  "data analysis for service",
+  "Worked at Tesla in Redwood City on vehicle service systems",
+  "Previously I worked on vehicle engineering",
   "bill of materials",
   "full stack applications",
   "https://www.tesla.com/robotaxi",
@@ -123,6 +126,10 @@ const forbidden = [
   "Current Streak",
   "15 agents",
   "https://grok.com/@akashpn",
+  "I work on diagnostics",
+  "I work on telemetry",
+  "I work on",
+  "At Tesla in Redwood City. Diagnostics",
   "engineer @ tesla",
   "engineer @ Tesla",
   "engineer @ ",
@@ -463,6 +470,18 @@ if (!css.includes("radial-gradient")) {
 for (const page of [html, root]) {
   if (/engineer\s*@/i.test(page) || /Engineer at Tesla/.test(page)) {
     console.error("pages must not label him engineer @ tesla");
+    process.exit(1);
+  }
+  if (page.includes("I work on") || /At Tesla I work\b/.test(page)) {
+    console.error("Tesla service copy must stay past tense");
+    process.exit(1);
+  }
+  if (!page.includes("I worked on vehicle service systems")) {
+    console.error("home bio must say Tesla vehicle service work in the past tense");
+    process.exit(1);
+  }
+  if (!page.includes("Worked at Tesla in Redwood City on vehicle service systems")) {
+    console.error("meta descriptions must state Tesla service work in the past tense");
     process.exit(1);
   }
 }
