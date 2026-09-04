@@ -167,14 +167,20 @@ export function renderSite(): string {
 }
 
 function renderFace(seat: Seat): string {
-  return `<button type="button" class="face" role="listitem" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" data-blurb="${escapeHtml(seat.blurb)}" aria-pressed="false" aria-label="${escapeHtml(seat.name)}">${renderMark(seat.face, 40, "face-mark")}</button>`;
+  return `<button type="button" class="face" role="listitem" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" data-blurb="${escapeHtml(seat.blurb)}" aria-pressed="false" aria-label="${escapeHtml(seat.name)}">${renderMark(seat.face, 80, "face-mark")}</button>`;
+}
+
+function renderLead(): string {
+  const host = seats[0];
+  if (!host) return "";
+  return `<span class="orbit" aria-hidden="true"></span><span class="spoke" aria-hidden="true"></span><div class="lead" aria-hidden="true">${renderMark(host.face, 160, "lead-mark")}</div>`;
 }
 
 function renderBoard(): string {
   const faces = seats.map(renderFace).join("");
   return `<main class="board">
         <p class="crew-label">${escapeHtml(crewLabel)}</p>
-        <div class="crew-sky" role="list">${faces}</div>
+        <div class="crew-sky" role="list">${renderLead()}${faces}</div>
         <aside class="brief" aria-live="polite">
           <p class="brief-name">${escapeHtml(pickLine)}</p>
           <p class="brief-copy"></p>
@@ -187,7 +193,7 @@ export function renderBot(): string {
   return `<div class="page profile" id="holder">
       <div class="stage">
       <div class="rail">
-        <header class="seat">
+        <header class="seat" data-seat="profile-assistant" tabindex="0">
           ${renderGrokBotMark("seat")}
           <div class="seat-id">
             <h1>${escapeHtml(botName)}<span class="scope" aria-hidden="true"></span></h1>

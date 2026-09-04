@@ -224,7 +224,8 @@ h1 {
 }
 
 .page.profile {
-  justify-content: center;
+  width: 100vw;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -232,13 +233,14 @@ h1 {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
   width: 100%;
-  max-width: 44rem;
+  max-width: 100vw;
   min-height: 0;
   height: 100%;
   overflow: hidden;
-  padding: calc(1.4rem * var(--fit)) 1.4rem;
+  padding: calc(1.05rem * var(--fit)) 4vw calc(0.7rem * var(--fit));
 }
 
 .rail {
@@ -248,48 +250,120 @@ h1 {
   justify-content: space-between;
   flex: 0 0 auto;
   width: 100%;
-  gap: calc(0.8rem * var(--fit)) 1.6rem;
+  gap: calc(0.55rem * var(--fit)) 1.6rem;
 }
 
 .board {
   display: flex;
   flex-direction: column;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
   min-width: 0;
-  margin-top: calc(1.15rem * var(--fit));
+  min-height: 0;
+  margin-top: calc(0.35rem * var(--fit));
 }
 
 .crew-sky {
   position: relative;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  align-self: stretch;
   width: 100%;
-  max-width: calc(22rem * var(--fit));
-  height: calc(13.5rem * var(--fit));
-  margin: calc(0.55rem * var(--fit)) auto 0;
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
   overflow: hidden;
+  background-image:
+    radial-gradient(ellipse 42% 38% at 50% 50%, rgba(255, 107, 0, 0.05), transparent 72%),
+    radial-gradient(1px 1px at 8% 22%, rgba(250, 250, 247, 0.2), transparent),
+    radial-gradient(1.1px 1.1px at 18% 78%, rgba(250, 250, 247, 0.14), transparent),
+    radial-gradient(1px 1px at 86% 18%, rgba(250, 250, 247, 0.18), transparent),
+    radial-gradient(1px 1px at 92% 64%, rgba(250, 250, 247, 0.12), transparent),
+    radial-gradient(1.05px 1.05px at 64% 8%, rgba(250, 250, 247, 0.16), transparent),
+    radial-gradient(1px 1px at 40% 92%, rgba(250, 250, 247, 0.12), transparent);
 }
 
-.crew-sky::before {
-  content: "";
+.lead {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 62%;
-  height: 62%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(11.25rem * var(--fit));
+  height: calc(11.25rem * var(--fit));
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.lead-mark {
+  width: calc(7.4rem * var(--fit));
+  height: calc(7.4rem * var(--fit));
+  object-fit: contain;
+  opacity: 0.34;
+}
+
+.crew-sky.is-lit .lead-mark {
+  opacity: 1;
+}
+
+.orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 88%;
+  height: 80%;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
 
+.orbit::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(12.4rem * var(--fit));
+  height: calc(12.4rem * var(--fit));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.spoke {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: 46%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 107, 0, 0.62), transparent);
+  transform-origin: left center;
+  transform: rotate(calc(var(--aim, 0deg) - 90deg));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.crew-sky.is-lit .spoke {
+  opacity: 1;
+}
+
+.crew-sky.is-lit .orbit {
+  border-color: rgba(255, 107, 0, 0.28);
+}
+
 .face {
   appearance: none;
   position: absolute;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(42px * var(--fit));
-  height: calc(42px * var(--fit));
+  width: calc(72px * var(--fit));
+  height: calc(72px * var(--fit));
   padding: 0;
   border: 1px solid transparent;
   border-radius: 50%;
@@ -301,56 +375,56 @@ h1 {
 }
 
 .face-mark {
-  width: calc(28px * var(--fit));
-  height: calc(28px * var(--fit));
+  width: calc(52px * var(--fit));
+  height: calc(52px * var(--fit));
   object-fit: contain;
   pointer-events: none;
   user-select: none;
 }
 
-.face:nth-child(1) {
-  left: 18%;
+.face[data-seat="profile-assistant"] {
+  left: 50%;
+  top: 10%;
+}
+
+.face[data-seat="software-engineer"] {
+  left: 78%;
   top: 20%;
 }
 
-.face:nth-child(2) {
-  left: 42%;
-  top: 46%;
+.face[data-seat="research-advisor"] {
+  left: 93%;
+  top: 43%;
 }
 
-.face:nth-child(3) {
-  left: 72%;
-  top: 16%;
+.face[data-seat="chief-of-staff"] {
+  left: 87%;
+  top: 70%;
 }
 
-.face:nth-child(4) {
-  left: 28%;
-  top: 68%;
+.face[data-seat="secretary"] {
+  left: 66%;
+  top: 88%;
 }
 
-.face:nth-child(5) {
-  left: 52%;
-  top: 24%;
+.face[data-seat="chief-financial-officer"] {
+  left: 34%;
+  top: 88%;
 }
 
-.face:nth-child(6) {
-  left: 78%;
-  top: 50%;
+.face[data-seat="finance-engineer"] {
+  left: 13%;
+  top: 70%;
 }
 
-.face:nth-child(7) {
-  left: 16%;
-  top: 82%;
+.face[data-seat="product-engineer"] {
+  left: 7%;
+  top: 43%;
 }
 
-.face:nth-child(8) {
-  left: 50%;
-  top: 78%;
-}
-
-.face:nth-child(9) {
-  left: 74%;
-  top: 80%;
+.face[data-seat="agent-master"] {
+  left: 22%;
+  top: 20%;
 }
 
 .face:hover,
@@ -377,9 +451,9 @@ h1 {
   flex-direction: column;
   justify-content: flex-start;
   flex: 0 0 auto;
-  width: 100%;
+  width: min(42rem, 100%);
   height: calc(5.6rem * var(--fit));
-  margin-top: calc(0.85rem * var(--fit));
+  margin-top: calc(0.35rem * var(--fit));
   overflow: hidden;
 }
 
@@ -416,6 +490,22 @@ h1 {
   align-items: center;
   gap: calc(0.9rem * var(--fit));
   min-width: 0;
+  cursor: pointer;
+}
+
+.seat.is-on .seat-wrap {
+  box-shadow: 0 0 0 1px #ff6b00;
+  border-radius: 50%;
+}
+
+.seat:focus {
+  outline: none;
+}
+
+.seat:focus-visible {
+  outline: 1px solid #ff6b00;
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 
 .seat-id {
@@ -484,14 +574,19 @@ h1 {
 }
 
 .foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(0.45rem * var(--fit)) 1.4rem;
   flex: 0 0 auto;
-  margin-top: calc(1.15rem * var(--fit));
-  padding-top: calc(0.95rem * var(--fit));
+  margin-top: calc(0.45rem * var(--fit));
+  padding-top: calc(0.7rem * var(--fit));
   border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .page.profile .managed {
-  margin-top: calc(0.95rem * var(--fit));
+  margin-top: 0;
 }
 
 header p {
@@ -830,27 +925,91 @@ a:focus-visible {
   .page.profile .stage {
     display: flex;
     flex-direction: column;
-    max-width: 44rem;
-    padding: calc(2.2rem * var(--fit)) 3.25rem;
+    align-items: stretch;
+    max-width: 100vw;
+    width: 100%;
+    padding: calc(1.25rem * var(--fit)) 4.5vw calc(0.85rem * var(--fit));
   }
 
-  .crew-sky {
-    max-width: calc(24rem * var(--fit));
-    height: calc(15rem * var(--fit));
+  .page.profile .face {
+    width: calc(84px * var(--fit));
+    height: calc(84px * var(--fit));
   }
 
-  .face {
-    width: calc(46px * var(--fit));
-    height: calc(46px * var(--fit));
+  .page.profile .face-mark {
+    width: calc(62px * var(--fit));
+    height: calc(62px * var(--fit));
   }
 
-  .face-mark {
-    width: calc(32px * var(--fit));
-    height: calc(32px * var(--fit));
+  .page.profile .lead {
+    width: calc(13.5rem * var(--fit));
+    height: calc(13.5rem * var(--fit));
   }
 
-  .brief {
+  .page.profile .lead-mark {
+    width: calc(9.2rem * var(--fit));
+    height: calc(9.2rem * var(--fit));
+  }
+
+  .page.profile .brief {
     height: calc(5.6rem * var(--fit));
+  }
+}
+
+@media (max-width: 700px) {
+  .page.profile .face {
+    width: calc(60px * var(--fit));
+    height: calc(60px * var(--fit));
+  }
+
+  .page.profile .face-mark {
+    width: calc(44px * var(--fit));
+    height: calc(44px * var(--fit));
+  }
+
+  .page.profile .lead {
+    width: calc(8.6rem * var(--fit));
+    height: calc(8.6rem * var(--fit));
+  }
+
+  .page.profile .lead-mark {
+    width: calc(5.6rem * var(--fit));
+    height: calc(5.6rem * var(--fit));
+  }
+
+  .orbit::before {
+    width: calc(9.4rem * var(--fit));
+    height: calc(9.4rem * var(--fit));
+  }
+}
+
+@media (max-height: 560px) {
+  .page.profile .stage {
+    padding: calc(0.55rem * var(--fit)) 3vw;
+  }
+
+  .page.profile .face {
+    width: calc(52px * var(--fit));
+    height: calc(52px * var(--fit));
+  }
+
+  .page.profile .face-mark {
+    width: calc(38px * var(--fit));
+    height: calc(38px * var(--fit));
+  }
+
+  .page.profile .lead {
+    width: calc(6.4rem * var(--fit));
+    height: calc(6.4rem * var(--fit));
+  }
+
+  .page.profile .lead-mark {
+    width: calc(4.2rem * var(--fit));
+    height: calc(4.2rem * var(--fit));
+  }
+
+  .page.profile .brief {
+    height: calc(4.8rem * var(--fit));
   }
 }
 
