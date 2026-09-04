@@ -5,13 +5,14 @@ import {
   botTitle,
   botUrl,
   collectionLine,
+  collectionPath,
   collectionTitle,
   contact,
   description,
   fleetFact,
+  fleetInvite,
   fleetLine,
   fleetMarkSize,
-  fleetMarks,
   isLink,
   managedBy,
   managedByHere,
@@ -69,11 +70,12 @@ function renderMark(src: string, size: number, className: string): string {
   return `<img class="${className}" src="${escapeHtml(src)}" alt="" width="${String(size)}" height="${String(size)}" decoding="async" />`;
 }
 
-function renderGrokBotMark(kind: "managed" | "seat" = "managed"): string {
+function renderGrokBotMark(kind: "managed" | "seat" | "fleet" = "managed"): string {
   const seat = kind === "seat";
-  const size = String(seat ? 36 : managedMarkSize);
-  const photon = seat ? "40" : "20";
-  const wrap = seat ? "grok-bot-wrap seat-wrap" : "grok-bot-wrap";
+  const fleet = kind === "fleet";
+  const size = String(fleet ? fleetMarkSize : seat ? 36 : managedMarkSize);
+  const photon = fleet ? "24" : seat ? "40" : "20";
+  const wrap = fleet ? "grok-bot-wrap fleet-wrap" : seat ? "grok-bot-wrap seat-wrap" : "grok-bot-wrap";
   return `<span class="${wrap}" aria-hidden="true"><svg class="grok-bot-photon" viewBox="0 0 32 32" width="${photon}" height="${photon}" focusable="false"><circle class="grok-bot-photon-halo" cx="16" cy="16" r="14.6" fill="none" stroke="#ff6b00" stroke-width="0.7" opacity="0.22"/></svg><svg class="grok-bot-mark" viewBox="0 0 32 32" width="${size}" height="${size}" focusable="false"><g class="grok-bot-body"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><g class="grok-bot-eyes"><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></g></g></svg></span>`;
 }
 
@@ -96,12 +98,22 @@ function renderContact(): string {
         </div>`;
 }
 
+function renderFleetFace(seat: Seat): string {
+  const name = escapeHtml(seat.name);
+  const href = escapeHtml(collectionPath);
+  const host = seat.id === "profile-assistant";
+  const mark = host
+    ? renderGrokBotMark("fleet")
+    : renderMark(seat.face, fleetMarkSize, "fleet-mark");
+  const klass = host ? "fleet-face is-host" : "fleet-face";
+  return `<a class="${klass}" href="${href}" title="${name}" aria-label="${name}">${mark}<span class="fleet-tip" aria-hidden="true">${name}</span></a>`;
+}
+
 function renderFleet(): string {
-  const marks = fleetMarks
-    .map((src) => renderMark(src, fleetMarkSize, "fleet-mark"))
-    .join("");
-  return `<p class="fleet" aria-hidden="true">${marks}</p>
-          <p class="fleet-line">${escapeHtml(fleetLine)}</p>`;
+  const marks = seats.map(renderFleetFace).join("");
+  return `<p class="fleet">${marks}</p>
+          <p class="fleet-line">${escapeHtml(fleetLine)}</p>
+          <p class="fleet-invite"><a href="${escapeHtml(collectionPath)}">${escapeHtml(fleetInvite)}</a></p>`;
 }
 
 function renderInbox(label: string = agentInbox.label, tip = ""): string {

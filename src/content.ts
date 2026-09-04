@@ -102,6 +102,10 @@ export const fleetFact = "nine";
 
 export const fleetLine = "nine grok bots, more coming.";
 
+export const fleetInvite = "click on any bot";
+
+export const collectionPath = "/bot";
+
 export const botName = "profile assistant";
 
 export const collectionTitle = "grok bot collection";
