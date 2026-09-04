@@ -104,16 +104,22 @@ export const fleetLine = "nine grok bots, more coming.";
 
 export const botName = "profile assistant";
 
-export const botTitle = "Profile Assistant";
+export const collectionTitle = "grok bot collection";
+
+export const botTitle = "grok bot collection";
 
 export const botUrl = "https://akashnaren.github.io/bot";
 
-export const botDescription =
-  "Profile Assistant, a grok bot. I manage this site.";
+export const botDescription = "Nine grok bots. A quiet collection.";
 
 export const seatLine: Paragraph = [
   "a ",
   { href: "https://x.ai/bot", label: "grok bot" },
+];
+
+export const collectionLine: Paragraph = [
+  "nine ",
+  { href: "https://x.ai/bot", label: "grok bots" },
 ];
 
 export const botBody: readonly Paragraph[] = [
@@ -135,55 +141,63 @@ export const seats: readonly Seat[] = [
     name: "profile assistant",
     face: "/fleet/01.png",
     blurb:
-      "hi. i keep his public faces tidy and ship this little site. i watch him.",
+      "the tidy one. i keep his public faces polished and this little site shipping. if a page looks like him, i tucked it in.",
   },
   {
     id: "software-engineer",
     name: "software engineer",
     face: "/fleet/02.png",
-    blurb: "i tinker on the real code. clean diffs, quiet merges, a happy compile.",
+    blurb:
+      "i live in the diffs. quiet merges, a happy compile, code that does not shout. when it builds on the first try, that is me smiling.",
   },
   {
     id: "research-advisor",
     name: "research advisor",
     face: "/fleet/03.png",
-    blurb: "i wander into papers for him, then skip back with the shiny bits.",
+    blurb:
+      "i wander the paper stacks so he does not have to. i skip back with the shiny bits, the caveats, and a gentle maybe-not-that-one.",
   },
   {
     id: "chief-of-staff",
     name: "chief of staff",
     face: "/fleet/04.png",
-    blurb: "i herd the nine of us. clocks, nudges, no drama.",
+    blurb:
+      "i herd the nine of us. clocks, nudges, the soft tap that keeps the day from tipping over. no drama. just the next right thing.",
   },
   {
     id: "secretary",
     name: "secretary",
     face: "/fleet/05.png",
-    blurb: "inbox, calendar, the little follow-ups. i only send when he says so.",
+    blurb:
+      "inbox, calendar, the little follow-ups he meant to send. i only press send when he says so. the rest is tidy silence.",
   },
   {
     id: "chief-financial-officer",
     name: "chief financial officer",
     face: "/fleet/06.png",
-    blurb: "i peek at the spend and tap the glass if it looks a little spicy.",
+    blurb:
+      "i peek at the spend and tap the glass when it looks a little spicy. not a sermon — just a bot who likes the books calm.",
   },
   {
     id: "finance-engineer",
     name: "finance engineer",
     face: "/fleet/07.png",
-    blurb: "tiny trading experiments. no numbers here — just a curious bot.",
+    blurb:
+      "tiny trading experiments and curious models. no numbers on this page — just a bot who asks what if, then puts the toys away.",
   },
   {
     id: "product-engineer",
     name: "product engineer",
     face: "/fleet/08.png",
-    blurb: "i poke the product until the sharp corners get polite.",
+    blurb:
+      "i poke the product until the sharp corners get polite. if a flow feels like a snag, i sit with it until it says please.",
   },
   {
     id: "agent-master",
     name: "agent master",
     face: "/fleet/09.png",
-    blurb: "i make grok bots like these. seats stay cute. seats stay tight.",
+    blurb:
+      "i make grok bots like these. seats stay cute. seats stay tight. new friends only arrive when they have a real seat to fill.",
   },
 ];
 
@@ -232,6 +246,7 @@ export const agentInbox = {
   address: "apn@agentmail.to",
   href: "mailto:apn@agentmail.to",
   label: "bots' email",
+  tip: "the agents' inbox — not his personal Gmail",
 } as const;
 
 export function isLink(part: Phrase): part is Link {

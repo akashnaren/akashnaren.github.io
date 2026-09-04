@@ -14,6 +14,12 @@ html {
   text-size-adjust: 100%;
 }
 
+@property --aim {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
 body {
   background: #0a0a0a;
   height: 100vh;
@@ -284,29 +290,38 @@ h1 {
     radial-gradient(1px 1px at 40% 92%, rgba(250, 250, 247, 0.12), transparent);
 }
 
-.lead {
+.plinth {
   position: absolute;
   left: 50%;
   top: 50%;
   z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: clamp(12.5rem, 22vw, 20rem);
   height: clamp(12.5rem, 22vw, 20rem);
   pointer-events: none;
   transform: translate(-50%, -50%);
 }
 
-.lead-mark {
-  width: 68%;
-  height: 68%;
-  object-fit: contain;
-  opacity: 0.34;
+.plinth::after {
+  content: "";
+  position: absolute;
+  inset: 10%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 107, 0, 0.08), transparent 72%);
+  pointer-events: none;
 }
 
-.crew-sky.is-lit .lead-mark {
-  opacity: 1;
+.page.profile .plinth .system {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  opacity: 0.86;
 }
 
 .orbit {
@@ -315,10 +330,11 @@ h1 {
   top: 50%;
   width: 88%;
   height: 80%;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
+  transition: border-color 360ms ease, box-shadow 360ms ease;
 }
 
 .orbit::before {
@@ -342,9 +358,10 @@ h1 {
   height: 1px;
   background: linear-gradient(90deg, rgba(255, 107, 0, 0.62), transparent);
   transform-origin: left center;
-  transform: rotate(calc(var(--aim, 0deg) - 90deg));
+  transform: rotate(calc(var(--aim) - 90deg));
   opacity: 0;
   pointer-events: none;
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease;
 }
 
 .crew-sky.is-lit .spoke {
@@ -352,7 +369,8 @@ h1 {
 }
 
 .crew-sky.is-lit .orbit {
-  border-color: rgba(255, 107, 0, 0.28);
+  border-color: rgba(255, 107, 0, 0.32);
+  box-shadow: 0 0 48px rgba(255, 107, 0, 0.05);
 }
 
 .face {
@@ -371,7 +389,12 @@ h1 {
   color: inherit;
   font: inherit;
   cursor: pointer;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(1);
+  transition:
+    border-color 320ms ease,
+    box-shadow 360ms ease,
+    transform 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 320ms ease;
 }
 
 .face-mark {
@@ -380,6 +403,8 @@ h1 {
   object-fit: contain;
   pointer-events: none;
   user-select: none;
+  opacity: 0.78;
+  transition: opacity 320ms ease;
 }
 
 .face[data-seat="profile-assistant"] {
@@ -429,12 +454,21 @@ h1 {
 
 .face:hover,
 .face:focus-visible {
-  border-color: rgba(255, 107, 0, 0.55);
+  border-color: rgba(255, 107, 0, 0.5);
+  box-shadow: 0 0 18px rgba(255, 107, 0, 0.16);
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+.face:hover .face-mark,
+.face:focus-visible .face-mark,
+.face.is-on .face-mark {
+  opacity: 1;
 }
 
 .face.is-on {
   border-color: #ff6b00;
-  box-shadow: 0 0 0 1px rgba(255, 107, 0, 0.28);
+  box-shadow: 0 0 0 1px rgba(255, 107, 0, 0.28), 0 0 22px rgba(255, 107, 0, 0.2);
+  transform: translate(-50%, -50%) scale(1.08);
 }
 
 .face:focus {
@@ -457,6 +491,16 @@ h1 {
   overflow: hidden;
 }
 
+.brief-name,
+.brief-copy {
+  transition: opacity 300ms ease, color 320ms ease;
+}
+
+.brief.is-swap .brief-name,
+.brief.is-swap .brief-copy {
+  opacity: 0;
+}
+
 .brief-name {
   height: 1.15rem;
   overflow: hidden;
@@ -474,42 +518,26 @@ h1 {
 }
 
 .brief-copy {
-  height: 3.2rem;
-  margin-top: 0.55rem;
+  height: 4.5rem;
+  margin-top: 0.5rem;
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   color: #c4c4bf;
   font-size: 1.05rem;
-  line-height: 1.6rem;
+  line-height: 1.5rem;
 }
 
-.seat {
+.mast {
   display: flex;
   align-items: center;
   gap: calc(0.9rem * var(--fit));
   min-width: 0;
-  cursor: pointer;
 }
 
-.seat.is-on .seat-wrap {
-  box-shadow: 0 0 0 1px #ff6b00;
-  border-radius: 50%;
-}
-
-.seat:focus {
-  outline: none;
-}
-
-.seat:focus-visible {
-  outline: 1px solid #ff6b00;
-  outline-offset: 4px;
-  border-radius: 2px;
-}
-
-.seat-id {
+.mast-id {
   min-width: 0;
 }
 
@@ -544,12 +572,41 @@ h1 {
 }
 
 .page.profile .inbox {
+  position: relative;
   margin-top: 0;
 }
 
 .page.profile .inbox-address {
   font-size: calc(15px * var(--fit));
   line-height: calc(22px * var(--fit));
+}
+
+.inbox-tip {
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  z-index: 5;
+  width: max-content;
+  max-width: min(20rem, 72vw);
+  padding: 0.42rem 0.58rem;
+  border: 1px solid rgba(255, 107, 0, 0.28);
+  border-radius: 4px;
+  background: #121212;
+  color: #c4c4bf;
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(11px * var(--fit));
+  line-height: calc(15px * var(--fit));
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 320ms ease, transform 320ms ease;
+}
+
+.inbox.has-tip:hover .inbox-tip,
+.inbox.has-tip:focus-within .inbox-tip {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .page.profile .board .fleet-line {
@@ -578,7 +635,7 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: calc(0.45rem * var(--fit)) 1.4rem;
   flex: 0 0 auto;
   margin-top: calc(0.45rem * var(--fit));
@@ -937,6 +994,13 @@ a:focus-visible {
     min-height: 58vh;
   }
 
+  .page.profile .plinth .system {
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    top: 50%;
+  }
+
   .page.profile .brief {
     height: 7.2rem;
   }
@@ -953,9 +1017,14 @@ a:focus-visible {
     height: clamp(3.6rem, 14vw, 5.4rem);
   }
 
-  .page.profile .lead {
+  .page.profile .plinth {
     width: clamp(8.5rem, 42vw, 12.5rem);
     height: clamp(8.5rem, 42vw, 12.5rem);
+  }
+
+  .orbit::before {
+    width: clamp(9.4rem, 46vw, 14rem);
+    height: clamp(9.4rem, 46vw, 14rem);
   }
 
   .page.profile .brief {
@@ -978,13 +1047,19 @@ a:focus-visible {
     height: clamp(3.2rem, 7vw, 4.6rem);
   }
 
-  .page.profile .lead {
+  .page.profile .plinth {
     width: clamp(7.2rem, 18vw, 10.5rem);
     height: clamp(7.2rem, 18vw, 10.5rem);
   }
 
   .page.profile .brief {
     height: 5.2rem;
+  }
+
+  .page.profile .brief-copy {
+    height: 3.2rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 }
 
@@ -1001,6 +1076,15 @@ a:focus-visible {
   .scope::after,
   .spin {
     animation: none;
+  }
+
+  .face,
+  .spoke,
+  .orbit,
+  .brief-name,
+  .brief-copy,
+  .inbox-tip {
+    transition: none;
   }
 
   .scope::after {
