@@ -162,7 +162,7 @@ export function renderSite(): string {
 export function renderBot(): string {
   const paragraphs = fleetBody.map(renderParagraph).join("\n          ");
 
-  return `<div class="page fleet" id="holder">
+  return `<div class="page profile" id="holder">
       <div class="stage">
       <main class="him">
         <div class="room">
@@ -186,7 +186,7 @@ export function renderBot(): string {
 }
 
 export function replaceHolder(html: string, next: string): string {
-  const painted = html.indexOf('<div class="page" id="holder">');
+  const painted = html.search(/<div class="page(?: [^"]*)?" id="holder">/);
   const empty = html.indexOf('<div id="holder"></div>');
   const start = painted >= 0 ? painted : empty;
   const end = html.lastIndexOf("</body>");

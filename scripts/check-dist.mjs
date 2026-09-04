@@ -377,6 +377,27 @@ if (!/min-height:\s*20vh/.test(css)) {
   process.exit(1);
 }
 
+if (
+  !css.includes(".page.profile") &&
+  !css.includes(".page.profile ")
+) {
+  console.error("stylesheet must keep a .page.profile fleet-room layout");
+  process.exit(1);
+}
+
+if (
+  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*56rem/.test(css) &&
+  !/\.page\.profile\s+\.stage\{[^}]*max-width:56rem/.test(css)
+) {
+  console.error("fleet room stage must keep a 56rem profile width, not the face-cluster strip");
+  process.exit(1);
+}
+
+if (!/p\.fleet\s*\{[^}]*max-width:/.test(css) && !/p\.fleet\{[^}]*max-width:/.test(css)) {
+  console.error("face-cluster dimensions must be scoped to p.fleet so they cannot crush the page");
+  process.exit(1);
+}
+
 if (!css.includes("24px") || !css.includes("linear-gradient")) {
   console.error("stylesheet must keep a short soft fade at the type/sky join");
   process.exit(1);
@@ -537,7 +558,7 @@ const botRequired = [
   ">cursor</span>",
   ">x</span>",
   "nine grok bots, more coming.",
-  'class="page fleet"',
+  'class="page profile"',
   'class="room"',
   'class="contact"',
   'class="inbox"',
@@ -603,6 +624,13 @@ for (const page of [botHtml, botRoot]) {
     /job search/i.test(page)
   ) {
     console.error("bot fleet page must not name bot roles or job-hunt");
+    process.exit(1);
+  }
+
+  if (page.includes('class="page fleet"')) {
+    console.error(
+      "bot page root must be .page.profile, never .page.fleet — that class collides with the face cluster and crushes the room into a skinny strip",
+    );
     process.exit(1);
   }
 

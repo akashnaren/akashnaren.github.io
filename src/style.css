@@ -223,12 +223,31 @@ h1 {
   line-height: calc(23px * var(--fit));
 }
 
-.page.fleet .inbox {
+.page.profile {
+  justify-content: center;
+}
+
+.page.profile .stage {
+  flex: 0 1 auto;
+  width: 100%;
+  max-width: 56rem;
+  padding: calc(2.4rem * var(--fit)) 1.4rem;
+}
+
+.page.profile .inbox {
   margin-top: 0;
 }
 
-.page.fleet .profile-links {
+.page.profile .profile-links {
   margin-top: calc(1.15rem * var(--fit));
+}
+
+.page.profile .contact {
+  margin-top: calc(1.55rem * var(--fit));
+}
+
+.page.profile .managed {
+  margin-top: calc(1.1rem * var(--fit));
 }
 
 header p {
@@ -414,7 +433,7 @@ header p {
   }
 }
 
-.fleet {
+p.fleet {
   position: relative;
   width: 100%;
   max-width: calc(13.6rem * var(--fit));
@@ -548,7 +567,7 @@ a:focus-visible {
     border-left: 1px solid rgba(255, 255, 255, 0.14);
   }
 
-  .fleet {
+  p.fleet {
     max-width: calc(15.75rem * var(--fit));
     height: calc(8.4rem * var(--fit));
     margin-top: calc(0.95rem * var(--fit));
@@ -563,6 +582,18 @@ a:focus-visible {
     width: min(34vw, 15.25rem);
     max-width: 46%;
     max-height: 86%;
+  }
+
+  .page.profile .stage {
+    padding: calc(3.4rem * var(--fit)) 3.25rem;
+  }
+
+  .page.profile .him {
+    padding-right: 3.2rem;
+  }
+
+  .page.profile .contact {
+    margin-top: calc(1.85rem * var(--fit));
   }
 }
 
