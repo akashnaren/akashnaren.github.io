@@ -1,7 +1,6 @@
 import {
   agentInbox,
   body,
-  botBody,
   botDescription,
   botName,
   botTitle,
@@ -19,12 +18,15 @@ import {
   managedMarkSize,
   name,
   personalMail,
+  pickLine,
   profileLinks,
   seatLine,
+  seats,
   url,
   type Contact,
   type Paragraph,
   type Phrase,
+  type Seat,
 } from "./content.ts";
 
 export type PageMeta = {
@@ -164,28 +166,42 @@ export function renderSite(): string {
     </div>`;
 }
 
-export function renderBot(): string {
-  const paragraphs = botBody.map(renderParagraph).join("\n          ");
+function renderTile(seat: Seat): string {
+  return `<button type="button" class="tile" role="listitem" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" data-blurb="${escapeHtml(seat.blurb)}" aria-pressed="false" aria-label="${escapeHtml(seat.name)}">${renderMark(seat.face, 56, "tile-face")}</button>`;
+}
 
+function renderBoard(): string {
+  const tiles = seats.map(renderTile).join("");
+  return `<main class="board">
+        <p class="crew-label">${escapeHtml(crewLabel)}</p>
+        <div class="board-split">
+          <div class="crew-grid" role="list">${tiles}</div>
+          <aside class="brief" aria-live="polite">
+            <p class="brief-hint">${escapeHtml(pickLine)}</p>
+            <p class="brief-name"></p>
+            <p class="brief-copy"></p>
+          </aside>
+        </div>
+        <p class="fleet-line">${escapeHtml(fleetLine)}</p>
+      </main>`;
+}
+
+export function renderBot(): string {
   return `<div class="page profile" id="holder">
       <div class="stage">
-      <header class="seat">
-        ${renderGrokBotMark("seat")}
-        <div class="seat-id">
-          <h1>${escapeHtml(botName)}<span class="scope" aria-hidden="true"></span></h1>
-          <p class="seat-line">${seatLine.map(renderPhrase).join("")}</p>
-        </div>
-      </header>
-      <main class="work">
-        ${paragraphs}
-      </main>
-      <section class="write">
-        ${renderInbox()}
-      </section>
-      <aside class="crew">
-        <p class="crew-label">${escapeHtml(crewLabel)}</p>
-        ${renderFleet()}
-      </aside>
+      <div class="rail">
+        <header class="seat">
+          ${renderGrokBotMark("seat")}
+          <div class="seat-id">
+            <h1>${escapeHtml(botName)}<span class="scope" aria-hidden="true"></span></h1>
+            <p class="seat-line">${seatLine.map(renderPhrase).join("")}</p>
+          </div>
+        </header>
+        <section class="write">
+          ${renderInbox()}
+        </section>
+      </div>
+      ${renderBoard()}
       <footer class="foot">
         ${renderProfileLinks()}
         ${renderManagedBy(managedByHere)}

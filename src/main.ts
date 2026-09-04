@@ -1,3 +1,4 @@
+import { bindCrewBoard } from "./board.ts";
 import { isBotPath } from "./content.ts";
 import { fitStage } from "./fit.ts";
 import {
@@ -25,6 +26,7 @@ function mount(): void {
 }
 
 mount();
+bindCrewBoard();
 fitStage();
 
 window.addEventListener("resize", fitStage);

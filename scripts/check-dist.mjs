@@ -407,10 +407,31 @@ if (
 }
 
 if (
-  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*38rem/.test(css) &&
-  !/\.page\.profile\s+\.stage\{[^}]*max-width:38rem/.test(css)
+  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*72rem/.test(css) &&
+  !/\.page\.profile\s+\.stage\{[^}]*max-width:72rem/.test(css)
 ) {
-  console.error("/bot stage must keep a 38rem studio width, not the face-cluster strip");
+  console.error("/bot stage must be a wide 72rem board, not a studio strip");
+  process.exit(1);
+}
+
+if (
+  /\.page\.profile\s+\.stage\{[^}]*max-width:38rem/.test(css) ||
+  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*38rem/.test(css)
+) {
+  console.error("/bot stage must not keep the 38rem vertical studio stack");
+  process.exit(1);
+}
+
+if (
+  !css.includes(".crew-grid") ||
+  (!css.includes("repeat(3,") && !css.includes("repeat(3, "))
+) {
+  console.error("stylesheet must keep a 3-column crew grid");
+  process.exit(1);
+}
+
+if (!css.includes(".tile") || !css.includes(".brief") || !css.includes(".board-split")) {
+  console.error("stylesheet must keep the interactive crew board (tiles, brief, split)");
   process.exit(1);
 }
 
@@ -577,11 +598,28 @@ const spaRoot = readFileSync("404.html", "utf8");
 
 const botRequired = [
   "profile assistant",
+  "software engineer",
+  "research advisor",
+  "chief of staff",
+  "secretary",
+  "chief financial officer",
+  "finance engineer",
+  "product engineer",
+  "agent master",
   "i keep his public profiles.",
   "i ship this site.",
   "i write the sparse copy.",
   "i watch him.",
+  "i ship the product code.",
+  "i take the research problems.",
+  "i coordinate the fleet.",
+  "read-only unless he asks.",
+  "i watch the spend.",
+  "small-stakes agentic trading experiment",
+  "i run the product loop.",
+  "i design high-quality grok bots.",
   "the crew",
+  "pick a seat.",
   "bots' email",
   'class="inbox-label"',
   'class="inbox-address"',
@@ -601,15 +639,20 @@ const botRequired = [
   "nine grok bots, more coming.",
   'class="page profile"',
   'class="seat"',
-  'class="work"',
+  'class="rail"',
   'class="write"',
-  'class="crew"',
+  'class="board"',
+  'class="board-split"',
+  'class="crew-grid"',
+  'class="tile"',
+  'class="brief"',
   'class="foot"',
   'class="inbox"',
   'class="managed-copy"',
-  'class="fleet"',
   'class="grok-bot-eyes"',
   "seat-wrap",
+  "data-seat=",
+  "data-blurb=",
   'src="/fleet/01.png"',
   'src="/fleet/09.png"',
   'property="og:url" content="https://akashnaren.github.io/bot"',
@@ -681,6 +724,17 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
+  if (page.includes('class="work"')) {
+    console.error("bot page must not keep the vertical work bio stack");
+    process.exit(1);
+  }
+
+  const tileCount = (page.match(/class="tile"/g) ?? []).length;
+  if (tileCount !== 9) {
+    console.error(`bot page must paint nine crew tiles, found ${String(tileCount)}`);
+    process.exit(1);
+  }
+
   if (!page.includes("profile assistant")) {
     console.error("bot page must name profile assistant as the seat that keeps the site");
     process.exit(1);
@@ -734,8 +788,8 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  if (/class="crew"[\s\S]{0,2000}mailto:apn@agentmail\.to/.test(page)) {
-    console.error("bots' inbox belongs in the write block, not the crew cluster");
+  if (/class="crew-grid"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
+    console.error("bots' inbox belongs in the write block, not the crew grid");
     process.exit(1);
   }
 
@@ -749,8 +803,8 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  if (/\bprofessor\b/i.test(page) || page.includes("chief of staff")) {
-    console.error("bot page must not name other bots");
+  if (/\bprofessor\b/i.test(page)) {
+    console.error("bot page must not name professor");
     process.exit(1);
   }
 }
@@ -779,7 +833,7 @@ if (
   !/\.page\.profile\s+\.stage\{[^}]*display:flex/.test(css) &&
   !/\.page\.profile\s+\.stage\s*\{[^}]*display:\s*flex/.test(css)
 ) {
-  console.error("stylesheet must keep /bot as a flex studio, not the home two-column grid");
+  console.error("stylesheet must keep /bot as a flex board, not the home two-column grid");
   process.exit(1);
 }
 
@@ -788,6 +842,15 @@ if (/\.page\.fleet[\s{,]/.test(css)) {
   process.exit(1);
 }
 
+if (
+  !js.includes("is-on") ||
+  !js.includes("aria-pressed") ||
+  !js.includes("brief-copy")
+) {
+  console.error("script must bind crew tile selection into the brief panel");
+  process.exit(1);
+}
+
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is Profile Assistant's seat with a 404 SPA fallback.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is Profile Assistant's crew board with a 404 SPA fallback.",
 );
