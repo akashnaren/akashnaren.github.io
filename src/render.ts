@@ -7,7 +7,6 @@ import {
   collectionLine,
   collectionTitle,
   contact,
-  crewLabel,
   description,
   fleetFact,
   fleetLine,
@@ -171,28 +170,23 @@ export function renderSite(): string {
     </div>`;
 }
 
-function renderFace(seat: Seat, on = false): string {
+function renderRow(seat: Seat, on = false): string {
   const pressed = on ? "true" : "false";
-  const klass = on ? "face is-on" : "face";
-  return `<button type="button" class="${klass}" role="listitem" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" data-blurb="${escapeHtml(seat.blurb)}" aria-pressed="${pressed}" aria-label="${escapeHtml(seat.name)}">${renderMark(seat.face, 80, "face-mark")}</button>`;
-}
-
-function renderPlinth(): string {
-  return `<span class="orbit" aria-hidden="true"></span><span class="spoke" aria-hidden="true"></span><div class="plinth" aria-hidden="true">${renderSolarSystem()}</div>`;
+  const klass = on ? "row is-on" : "row";
+  return `<button type="button" class="${klass}" role="listitem" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" data-blurb="${escapeHtml(seat.blurb)}" aria-pressed="${pressed}" aria-label="${escapeHtml(seat.name)}">${renderMark(seat.face, 40, "row-face")}<span class="row-id"><span class="row-name">${escapeHtml(seat.name)}</span><span class="row-blurb">${escapeHtml(seat.blurb)}</span></span></button>`;
 }
 
 function renderBoard(): string {
   const host = seats[0];
-  const faces = seats.map((seat, index) => renderFace(seat, index === 0)).join("");
+  const rows = seats.map((seat, index) => renderRow(seat, index === 0)).join("");
   const name = host?.name ?? pickLine;
   const copy = host?.blurb ?? "";
   return `<main class="board" data-cycle="3000">
-        <p class="crew-label">${escapeHtml(crewLabel)}</p>
-        <div class="crew-sky is-lit" role="list" style="--aim: 0deg">${renderPlinth()}${faces}</div>
         <aside class="brief is-open" aria-live="off">
           <p class="brief-name">${escapeHtml(name)}</p>
           <p class="brief-copy">${escapeHtml(copy)}</p>
         </aside>
+        <div class="roster" role="list">${rows}</div>
         <p class="fleet-line">${escapeHtml(fleetLine)}</p>
       </main>`;
 }

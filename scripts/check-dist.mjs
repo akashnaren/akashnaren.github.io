@@ -407,50 +407,49 @@ if (
 }
 
 if (
-  !/\.page\.profile[^{]*\{[^}]*width:\s*100vw/.test(css) &&
-  !/\.page\.profile\{[^}]*width:100vw/.test(css)
+  /\.page\.profile[^{]*\{[^}]*width:\s*100vw/.test(css) ||
+  /\.page\.profile\{[^}]*width:100vw/.test(css)
 ) {
-  console.error("/bot page must occupy the full viewport (100vw)");
+  console.error("/bot page must not force 100vw — the roster sits in a centered stage");
   process.exit(1);
 }
 
 if (
-  /\.page\.profile\s+\.stage\{[^}]*max-width:38rem/.test(css) ||
-  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*38rem/.test(css) ||
-  /\.page\.profile\s+\.stage\{[^}]*max-width:44rem/.test(css) ||
-  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*44rem/.test(css) ||
-  /\.page\.profile\s+\.stage\{[^}]*max-width:72rem/.test(css) ||
-  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*72rem/.test(css)
+  !/\.page\.profile\s+\.stage\{[^}]*max-width:\s*46rem/.test(css) &&
+  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*46rem/.test(css) &&
+  !/\.page\.profile\s+\.stage\{[^}]*max-width:46rem/.test(css)
 ) {
-  console.error("/bot stage must not keep a 38rem, 44rem, or 72rem boxed room");
+  console.error("/bot stage must use a 46rem readable max-width, matching home density");
   process.exit(1);
 }
 
 if (
-  !/\.page\.profile\s+\.stage\{[^}]*max-width:100vw/.test(css) &&
-  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*100vw/.test(css)
+  /\.page\.profile\s+\.stage\{[^}]*max-width:100vw/.test(css) ||
+  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*100vw/.test(css)
 ) {
-  console.error("/bot stage must span 100vw — no boxed constellation room");
+  console.error("/bot stage must not span 100vw — no full-bleed planetarium room");
   process.exit(1);
 }
 
-if (!css.includes(".crew-sky") || !css.includes(".face") || !css.includes(".brief")) {
-  console.error("stylesheet must keep the planetarium crew (crew-sky, face, brief)");
+if (!css.includes(".roster") || !css.includes(".row") || !css.includes(".brief")) {
+  console.error("stylesheet must keep the roster table (roster, row, brief)");
   process.exit(1);
 }
 
-if (!css.includes(".plinth") || !css.includes(".orbit") || !css.includes(".spoke")) {
-  console.error("stylesheet must keep the planetarium plinth, orbit, and spoke");
+if (
+  css.includes(".crew-sky") ||
+  css.includes(".plinth") ||
+  css.includes(".orbit") ||
+  css.includes(".spoke") ||
+  css.includes(".face-mark") ||
+  css.includes(".lead-mark")
+) {
+  console.error("stylesheet must not keep planetarium chrome (crew-sky, plinth, orbit, spoke, faces)");
   process.exit(1);
 }
 
-if (css.includes(".lead-mark") || css.includes(".lead {") || css.includes(".lead{")) {
-  console.error("stylesheet must not enlarge a fleet PNG as the center lead");
-  process.exit(1);
-}
-
-if (!css.includes("@property --aim")) {
-  console.error("spoke aim must be a registered custom property so it can ease");
+if (css.includes("@property --aim") || css.includes("--aim")) {
+  console.error("stylesheet must not keep the planetarium spoke --aim property");
   process.exit(1);
 }
 
@@ -459,28 +458,8 @@ if (!css.includes(".inbox-tip")) {
   process.exit(1);
 }
 
-if (
-  !css.includes("8.2vw") &&
-  !css.includes("clamp(4.75rem") &&
-  !css.includes("clamp(4.75rem,8.2vw")
-) {
-  console.error("/bot faces must scale with the viewport (8.2vw clamp), not 42px or 72px chips");
-  process.exit(1);
-}
-
-if (
-  !css.includes("min-height:58vh") &&
-  !css.includes("min-height: 58vh")
-) {
-  console.error("/bot crew-sky must keep a 58vh floor so the planetarium cannot collapse to a 240px toy");
-  process.exit(1);
-}
-
-if (
-  !css.includes("height:62vh") &&
-  !css.includes("height: 62vh")
-) {
-  console.error("/bot crew-sky must use a viewport height (62vh) instead of content-sized 100%");
+if (css.includes("8.2vw") || css.includes("min-height:58vh") || css.includes("height:62vh")) {
+  console.error("/bot must not keep the planetarium viewport face sizing");
   process.exit(1);
 }
 
@@ -490,18 +469,10 @@ if (css.includes(".crew-grid") || css.includes(".board-split") || css.includes("
 }
 
 if (
-  !/\.page\.profile[^{]*\{[^}]*overflow:\s*hidden/.test(css) &&
-  !/\.page\.profile\{[^}]*overflow:hidden/.test(css)
+  !/\.row[^{]*\{[^}]*transition:/.test(css) &&
+  !/\.row\{[^}]*transition:/.test(css)
 ) {
-  console.error("/bot page must stay overflow hidden — no scrollbar when a seat is selected");
-  process.exit(1);
-}
-
-if (
-  /\.page\.profile[^{]*\{[^}]*overflow-y:\s*auto/.test(css) ||
-  /\.page\.profile\{[^}]*overflow-y:auto/.test(css)
-) {
-  console.error("/bot must not opt into overflow-y auto on any viewport");
+  console.error("/bot rows must keep a restrained hover/focus transition");
   process.exit(1);
 }
 
@@ -535,21 +506,8 @@ if (
   process.exit(1);
 }
 
-if (
-  !/\.crew-sky\s*\{[^}]*height:/.test(css) &&
-  !/\.crew-sky\{[^}]*height:/.test(css)
-) {
-  console.error("planetarium field must have a reserved height so the crew can fill the frame");
-  process.exit(1);
-}
-
-if (
-  /\.crew-sky\{[^}]*max-width:calc\(22rem/.test(css) ||
-  /\.crew-sky\s*\{[^}]*max-width:\s*calc\(22rem/.test(css) ||
-  /\.crew-sky\{[^}]*height:calc\(13\.5rem/.test(css) ||
-  /\.crew-sky\s*\{[^}]*height:\s*calc\(13\.5rem/.test(css)
-) {
-  console.error("/bot must not keep the tiny 22rem × 13.5rem constellation widget");
+if (css.includes(".crew-sky")) {
+  console.error("/bot must not keep a crew-sky planetarium field");
   process.exit(1);
 }
 
@@ -725,17 +683,15 @@ const botRequired = [
   "finance engineer",
   "product engineer",
   "agent master",
-  "the tidy one",
-  "this little site shipping",
+  "i keep his public profiles tidy and ship this site",
   "i live in the diffs",
-  "i wander the paper stacks",
-  "i herd the nine of us",
-  "i only press send when he says so",
-  "tap the glass when it looks a little spicy",
-  "tiny trading experiments and curious models",
-  "sharp corners get polite",
-  "seats stay cute. seats stay tight",
-  "the crew",
+  "i read the papers and bring back the parts that matter",
+  "i keep the nine on the clock",
+  "i send only when he says so",
+  "tap the glass when it runs hot",
+  "small trading experiments",
+  "i file the sharp corners until the product feels finished",
+  "i build grok bots like these. seats stay tight",
   "bots' email",
   "the agents' inbox — not his personal Gmail",
   'class="inbox-tip"',
@@ -754,12 +710,11 @@ const botRequired = [
   'class="write"',
   'class="board"',
   'data-cycle="3000"',
-  'class="crew-sky',
-  'class="plinth"',
-  'class="system"',
-  'class="orbit"',
-  'class="spoke"',
-  'class="face',
+  'class="roster"',
+  'class="row',
+  'class="row-face"',
+  'class="row-name"',
+  'class="row-blurb"',
   'class="brief',
   'class="brief-name"',
   'class="brief-copy"',
@@ -807,19 +762,17 @@ for (const page of [botHtml, botRoot]) {
   if (
     page.includes('class="sky"') ||
     page.includes('class="well"') ||
-    page.includes("well-canvas")
+    page.includes("well-canvas") ||
+    page.includes('class="system"') ||
+    page.includes('class="plinth"') ||
+    page.includes('class="orbit"') ||
+    page.includes('class="spoke"') ||
+    page.includes('class="crew-sky"') ||
+    page.includes('class="face"') ||
+    page.includes('class="lead-mark"') ||
+    page.includes('class="lead"')
   ) {
-    console.error("bot page must not keep the home sky band or the well");
-    process.exit(1);
-  }
-
-  if (!page.includes('class="system"') || !page.includes('class="plinth"')) {
-    console.error("bot page must keep the solar system in the center plinth");
-    process.exit(1);
-  }
-
-  if (page.includes('class="lead-mark"') || page.includes('class="lead"')) {
-    console.error("bot page must not enlarge a fleet PNG in the center");
+    console.error("bot page must not keep the planetarium, solar plinth, or home sky");
     process.exit(1);
   }
 
@@ -870,9 +823,9 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  const faceCount = (page.match(/<button[^>]*class="face/g) ?? []).length;
-  if (faceCount !== 9) {
-    console.error(`bot page must paint nine planetarium faces, found ${String(faceCount)}`);
+  const rowCount = (page.match(/<button[^>]*class="row/g) ?? []).length;
+  if (rowCount !== 9) {
+    console.error(`bot page must paint nine roster rows, found ${String(rowCount)}`);
     process.exit(1);
   }
 
@@ -943,8 +896,8 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  if (/class="crew-sky"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
-    console.error("bots' inbox belongs in the write block, not the planetarium");
+  if (/class="roster"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
+    console.error("bots' inbox belongs in the write block, not the roster");
     process.exit(1);
   }
 
@@ -1006,31 +959,15 @@ if (
   !/\.board\s*\{[^}]*width:\s*100%/.test(css) &&
   !/\.board\{[^}]*width:100%/.test(css)
 ) {
-  console.error("/bot board must be width:100% so the planetarium can span the stage");
+  console.error("/bot board must be width:100% so the roster can span the stage");
   process.exit(1);
 }
 
 if (
-  !/\.crew-sky\s*\{[^}]*width:\s*100%/.test(css) &&
-  !/\.crew-sky\{[^}]*width:100%/.test(css)
+  !/\.roster\s*\{[^}]*width:\s*100%/.test(css) &&
+  !/\.roster\{[^}]*width:100%/.test(css)
 ) {
-  console.error("/bot crew-sky must be width:100% so faces are not percentage-positioned in a collapsed strip");
-  process.exit(1);
-}
-
-if (
-  !/\.crew-sky\s*\{[^}]*flex:\s*(?:1|auto)/.test(css) &&
-  !/\.crew-sky\{[^}]*flex:(?:1|auto)/.test(css)
-) {
-  console.error("/bot crew-sky must flex so the ring can fill the leftover viewport height");
-  process.exit(1);
-}
-
-if (
-  !css.includes('data-seat="profile-assistant"') &&
-  !css.includes("data-seat=profile-assistant")
-) {
-  console.error("/bot faces must be placed by data-seat, not nth-of-type against a collapsed parent");
+  console.error("/bot roster must be width:100% so rows are not a left widget");
   process.exit(1);
 }
 
@@ -1043,15 +980,14 @@ if (
   !js.includes("is-on") ||
   !js.includes("aria-pressed") ||
   !js.includes("brief-copy") ||
-  !js.includes("pick a seat") ||
-  !js.includes("--aim")
+  !js.includes("is-swap")
 ) {
-  console.error("script must bind planetarium face selection into the reserved brief slot and aim the spoke");
+  console.error("script must bind roster row selection into the reserved brief slot with a crossfade");
   process.exit(1);
 }
 
-if (js.includes("lead-mark")) {
-  console.error("script must not swap an enlarged fleet PNG into the center");
+if (js.includes("lead-mark") || js.includes("--aim") || js.includes("crew-sky")) {
+  console.error("script must not keep planetarium aim, lead, or sky binding");
   process.exit(1);
 }
 
@@ -1061,5 +997,5 @@ if (!js.includes("3000") || (!js.includes("setInterval") && !js.includes("setTim
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a full-viewport grok bot collection with a solar plinth, 3s auto-cycle, email tooltip, no footer socials, and a 62vh sky with 8.2vw faces.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a centered grok bot collection roster with a 46rem stage, 3s auto-cycle, brief crossfade, email tooltip, and no footer socials.",
 );

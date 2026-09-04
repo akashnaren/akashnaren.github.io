@@ -14,12 +14,6 @@ html {
   text-size-adjust: 100%;
 }
 
-@property --aim {
-  syntax: "<angle>";
-  inherits: true;
-  initial-value: 0deg;
-}
-
 body {
   background: #0a0a0a;
   height: 100vh;
@@ -230,23 +224,25 @@ h1 {
 }
 
 .page.profile {
-  width: 100vw;
+  width: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .page.profile .stage {
   display: flex;
   flex-direction: column;
-  flex: 1 1 0%;
+  flex: 0 1 auto;
   align-items: stretch;
   justify-content: flex-start;
   width: 100%;
-  max-width: 100vw;
+  max-width: 46rem;
+  margin: 0 auto;
   min-height: 0;
-  height: 100%;
-  overflow: hidden;
-  padding: 1.1rem 3.5vw 0.75rem;
+  height: auto;
+  overflow: visible;
+  padding: 2.1rem 1.4rem 2rem;
 }
 
 .rail {
@@ -257,225 +253,114 @@ h1 {
   flex: 0 0 auto;
   width: 100%;
   gap: calc(0.55rem * var(--fit)) 1.6rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .board {
   display: flex;
   flex-direction: column;
-  flex: 1 1 0%;
+  flex: 0 0 auto;
   align-self: stretch;
   width: 100%;
   min-width: 0;
   min-height: 0;
-  margin-top: 0.35rem;
+  margin-top: 0.85rem;
 }
 
-.crew-sky {
-  position: relative;
-  flex: 1 1 0%;
-  align-self: stretch;
-  width: 100%;
-  max-width: none;
-  height: 62vh;
-  min-height: 58vh;
-  margin: 0;
-  overflow: hidden;
-  background-image:
-    radial-gradient(ellipse 42% 38% at 50% 50%, rgba(255, 107, 0, 0.05), transparent 72%),
-    radial-gradient(1px 1px at 8% 22%, rgba(250, 250, 247, 0.2), transparent),
-    radial-gradient(1.1px 1.1px at 18% 78%, rgba(250, 250, 247, 0.14), transparent),
-    radial-gradient(1px 1px at 86% 18%, rgba(250, 250, 247, 0.18), transparent),
-    radial-gradient(1px 1px at 92% 64%, rgba(250, 250, 247, 0.12), transparent),
-    radial-gradient(1.05px 1.05px at 64% 8%, rgba(250, 250, 247, 0.16), transparent),
-    radial-gradient(1px 1px at 40% 92%, rgba(250, 250, 247, 0.12), transparent);
-}
-
-.plinth {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 1;
-  width: clamp(12.5rem, 22vw, 20rem);
-  height: clamp(12.5rem, 22vw, 20rem);
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-}
-
-.plinth::after {
-  content: "";
-  position: absolute;
-  inset: 10%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 107, 0, 0.08), transparent 72%);
-  pointer-events: none;
-}
-
-.page.profile .plinth .system {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 0;
-  width: 100%;
-  height: auto;
-  max-width: none;
-  max-height: none;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  opacity: 0.86;
-}
-
-.orbit {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 88%;
-  height: 80%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  transition: border-color 360ms ease, box-shadow 360ms ease;
-}
-
-.orbit::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: clamp(13.5rem, 24vw, 22rem);
-  height: clamp(13.5rem, 24vw, 22rem);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.spoke {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 0;
-  width: 46%;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(255, 107, 0, 0.62), transparent);
-  transform-origin: left center;
-  transform: rotate(calc(var(--aim) - 90deg));
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease;
-}
-
-.crew-sky.is-lit .spoke {
-  opacity: 1;
-}
-
-.crew-sky.is-lit .orbit {
-  border-color: rgba(255, 107, 0, 0.32);
-  box-shadow: 0 0 48px rgba(255, 107, 0, 0.05);
-}
-
-.face {
-  appearance: none;
-  position: absolute;
-  z-index: 2;
+.roster {
   display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 0.15rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.row {
+  appearance: none;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
-  width: clamp(4.75rem, 8.2vw, 7.25rem);
-  height: clamp(4.75rem, 8.2vw, 7.25rem);
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: 50%;
+  column-gap: 1rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.62rem 0.45rem 0.62rem 0.4rem;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid transparent;
   background: transparent;
   color: inherit;
   font: inherit;
+  text-align: left;
   cursor: pointer;
-  transform: translate(-50%, -50%) scale(1);
   transition:
     border-color 320ms ease,
-    box-shadow 360ms ease,
-    transform 340ms cubic-bezier(0.22, 1, 0.36, 1),
     background-color 320ms ease;
 }
 
-.face-mark {
-  width: 72%;
-  height: 72%;
+.row-face {
+  width: 36px;
+  height: 36px;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
-  opacity: 0.78;
+  opacity: 0.82;
   transition: opacity 320ms ease;
 }
 
-.face[data-seat="profile-assistant"] {
-  left: 50%;
-  top: 10%;
+.row-id {
+  display: grid;
+  grid-template-columns: minmax(9.5rem, 13.25rem) minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 1.1rem;
+  min-width: 0;
 }
 
-.face[data-seat="software-engineer"] {
-  left: 78%;
-  top: 20%;
+.row-name {
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  line-height: 1.2rem;
+  letter-spacing: 0.08em;
+  color: #c4c4bf;
+  transition: color 320ms ease;
 }
 
-.face[data-seat="research-advisor"] {
-  left: 93%;
-  top: 43%;
+.row-blurb {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #8a8e86;
+  font-size: 0.92rem;
+  line-height: 1.35rem;
 }
 
-.face[data-seat="chief-of-staff"] {
-  left: 87%;
-  top: 70%;
+.row:hover,
+.row:focus-visible {
+  background: rgba(255, 107, 0, 0.045);
+  border-left-color: rgba(255, 107, 0, 0.42);
 }
 
-.face[data-seat="secretary"] {
-  left: 66%;
-  top: 88%;
-}
-
-.face[data-seat="chief-financial-officer"] {
-  left: 34%;
-  top: 88%;
-}
-
-.face[data-seat="finance-engineer"] {
-  left: 13%;
-  top: 70%;
-}
-
-.face[data-seat="product-engineer"] {
-  left: 7%;
-  top: 43%;
-}
-
-.face[data-seat="agent-master"] {
-  left: 22%;
-  top: 20%;
-}
-
-.face:hover,
-.face:focus-visible {
-  border-color: rgba(255, 107, 0, 0.5);
-  box-shadow: 0 0 18px rgba(255, 107, 0, 0.16);
-  transform: translate(-50%, -50%) scale(1.06);
-}
-
-.face:hover .face-mark,
-.face:focus-visible .face-mark,
-.face.is-on .face-mark {
+.row:hover .row-face,
+.row:focus-visible .row-face,
+.row.is-on .row-face {
   opacity: 1;
 }
 
-.face.is-on {
-  border-color: #ff6b00;
-  box-shadow: 0 0 0 1px rgba(255, 107, 0, 0.28), 0 0 22px rgba(255, 107, 0, 0.2);
-  transform: translate(-50%, -50%) scale(1.08);
+.row.is-on {
+  background: rgba(255, 107, 0, 0.06);
+  border-left-color: #ff6b00;
 }
 
-.face:focus {
+.row.is-on .row-name {
+  color: #ff6b00;
+}
+
+.row:focus {
   outline: none;
 }
 
-.face:focus-visible {
+.row:focus-visible {
   outline: 1px solid #ff6b00;
   outline-offset: 3px;
 }
@@ -485,9 +370,9 @@ h1 {
   flex-direction: column;
   justify-content: flex-start;
   flex: 0 0 auto;
-  width: min(48rem, 100%);
-  height: 7.2rem;
-  margin-top: 0.45rem;
+  width: 100%;
+  height: 4.6rem;
+  margin-top: 0;
   overflow: hidden;
 }
 
@@ -518,16 +403,16 @@ h1 {
 }
 
 .brief-copy {
-  height: 4.5rem;
-  margin-top: 0.5rem;
+  height: 2.7rem;
+  margin-top: 0.35rem;
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   color: #c4c4bf;
-  font-size: 1.05rem;
-  line-height: 1.5rem;
+  font-size: 0.95rem;
+  line-height: 1.35rem;
 }
 
 .mast {
@@ -612,23 +497,10 @@ h1 {
 .page.profile .board .fleet-line {
   flex: 0 0 auto;
   height: calc(15px * var(--fit));
-  margin-top: calc(0.55rem * var(--fit));
+  margin-top: calc(0.7rem * var(--fit));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.crew-label {
-  flex: 0 0 auto;
-  height: calc(14px * var(--fit));
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: calc(11px * var(--fit));
-  line-height: calc(14px * var(--fit));
-  letter-spacing: 0.14em;
-  color: #7d8187;
 }
 
 .foot {
@@ -984,80 +856,50 @@ a:focus-visible {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    max-width: 100vw;
+    max-width: 46rem;
     width: 100%;
-    padding: 1.2rem 3.25vw 0.8rem;
-  }
-
-  .page.profile .crew-sky {
-    height: 64vh;
-    min-height: 58vh;
-  }
-
-  .page.profile .plinth .system {
-    width: 100%;
-    max-width: none;
-    max-height: none;
-    top: 50%;
+    padding: 4.5rem 2rem 2.5rem;
   }
 
   .page.profile .brief {
-    height: 7.2rem;
+    height: 4.6rem;
   }
 }
 
 @media (max-width: 700px) {
-  .page.profile .crew-sky {
-    height: 56vh;
-    min-height: 48vh;
+  .page.profile .stage {
+    padding: 1.4rem 1.15rem 1.8rem;
   }
 
-  .page.profile .face {
-    width: clamp(3.6rem, 14vw, 5.4rem);
-    height: clamp(3.6rem, 14vw, 5.4rem);
+  .row-id {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.18rem;
   }
 
-  .page.profile .plinth {
-    width: clamp(8.5rem, 42vw, 12.5rem);
-    height: clamp(8.5rem, 42vw, 12.5rem);
-  }
-
-  .orbit::before {
-    width: clamp(9.4rem, 46vw, 14rem);
-    height: clamp(9.4rem, 46vw, 14rem);
+  .row-blurb {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 
   .page.profile .brief {
-    height: 6.4rem;
+    height: 4.8rem;
   }
 }
 
 @media (max-height: 560px) {
   .page.profile .stage {
-    padding: 0.45rem 3vw;
-  }
-
-  .page.profile .crew-sky {
-    height: 48vh;
-    min-height: 42vh;
-  }
-
-  .page.profile .face {
-    width: clamp(3.2rem, 7vw, 4.6rem);
-    height: clamp(3.2rem, 7vw, 4.6rem);
-  }
-
-  .page.profile .plinth {
-    width: clamp(7.2rem, 18vw, 10.5rem);
-    height: clamp(7.2rem, 18vw, 10.5rem);
+    padding: 0.85rem 1.15rem 1.2rem;
   }
 
   .page.profile .brief {
-    height: 5.2rem;
+    height: 4.2rem;
   }
 
   .page.profile .brief-copy {
-    height: 3.2rem;
+    height: 2.4rem;
     -webkit-line-clamp: 2;
     line-clamp: 2;
   }
@@ -1078,9 +920,9 @@ a:focus-visible {
     animation: none;
   }
 
-  .face,
-  .spoke,
-  .orbit,
+  .row,
+  .row-face,
+  .row-name,
   .brief-name,
   .brief-copy,
   .inbox-tip {
