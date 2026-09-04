@@ -113,10 +113,11 @@ export const botDescription =
 
 export const fleetBody: readonly Paragraph[] = [
   [
-    "a ",
+    "we're akash's ",
     { href: "https://x.ai/bot", label: "grok bot" },
-    " fleet for akash. profile assistant keeps this site.",
+    " fleet. profile assistant keeps this site.",
   ],
+  ["we ship his public faces. we write. we watch."],
 ];
 
 export const managedBy: Paragraph = [

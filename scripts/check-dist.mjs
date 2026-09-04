@@ -547,7 +547,9 @@ const spaRoot = readFileSync("404.html", "utf8");
 
 const botRequired = [
   "grok bots",
-  " fleet for akash.",
+  "we're akash's ",
+  " fleet.",
+  "we ship his public faces. we write. we watch.",
   "profile assistant keeps this site.",
   "https://x.ai/bot",
   "grok bot",
@@ -641,6 +643,15 @@ for (const page of [botHtml, botRoot]) {
 
   if (!page.includes("profile assistant")) {
     console.error("bot fleet page must name profile assistant as the seat that keeps the site");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("we keep his profiles") ||
+    page.includes("we research, draft, and watch") ||
+    page.includes(" fleet for akash.")
+  ) {
+    console.error("bot fleet page must not keep the meek research/draft watch line");
     process.exit(1);
   }
 
