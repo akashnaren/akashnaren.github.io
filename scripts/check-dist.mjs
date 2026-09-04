@@ -924,6 +924,48 @@ if (
   process.exit(1);
 }
 
+if (
+  !/\.page\.profile\s+\.stage\{[^}]*align-items:\s*stretch/.test(css) &&
+  !/\.page\.profile\s+\.stage\s*\{[^}]*align-items:\s*stretch/.test(css)
+) {
+  console.error(
+    "/bot stage must align-items:stretch so the home 880px align-items:start rule cannot shrink-wrap the crew into a left column",
+  );
+  process.exit(1);
+}
+
+if (
+  !/\.board\s*\{[^}]*width:\s*100%/.test(css) &&
+  !/\.board\{[^}]*width:100%/.test(css)
+) {
+  console.error("/bot board must be width:100% so the planetarium can span the stage");
+  process.exit(1);
+}
+
+if (
+  !/\.crew-sky\s*\{[^}]*width:\s*100%/.test(css) &&
+  !/\.crew-sky\{[^}]*width:100%/.test(css)
+) {
+  console.error("/bot crew-sky must be width:100% so faces are not percentage-positioned in a collapsed strip");
+  process.exit(1);
+}
+
+if (
+  !/\.crew-sky\s*\{[^}]*flex:\s*1/.test(css) &&
+  !/\.crew-sky\{[^}]*flex:1/.test(css)
+) {
+  console.error("/bot crew-sky must flex:1 so the ring can fill the leftover viewport height");
+  process.exit(1);
+}
+
+if (
+  !css.includes('data-seat="profile-assistant"') &&
+  !css.includes("data-seat=profile-assistant")
+) {
+  console.error("/bot faces must be placed by data-seat, not nth-of-type against a collapsed parent");
+  process.exit(1);
+}
+
 if (/\.page\.fleet[\s{,]/.test(css)) {
   console.error("stylesheet must not put fleet sizing on the page root");
   process.exit(1);
