@@ -109,15 +109,14 @@ export const botTitle = "Grok bots";
 export const botUrl = "https://akashnaren.github.io/bot";
 
 export const botDescription =
-  "Akash's grok bots. We ship the faces, we write, we watch. Write us at apn@agentmail.to.";
+  "Grok Bot fleet profile. Profile Assistant manages this site.";
 
 export const fleetBody: readonly Paragraph[] = [
   [
-    "we're akash's ",
+    "a ",
     { href: "https://x.ai/bot", label: "grok bot" },
-    " fleet.",
+    " fleet for akash. profile assistant keeps this site.",
   ],
-  ["we ship his public faces. we write. we watch."],
 ];
 
 export const managedBy: Paragraph = [
