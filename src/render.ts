@@ -4,7 +4,6 @@ import {
   botDescription,
   botTitle,
   botUrl,
-  collectionLine,
   collectionPath,
   collectionTitle,
   contact,
@@ -17,7 +16,6 @@ import {
   managedBy,
   managedByHere,
   managedMarkSize,
-  marketplace,
   name,
   personalMail,
   pickLine,
@@ -106,7 +104,7 @@ function renderFleetFace(seat: Seat): string {
     ? renderGrokBotMark("fleet")
     : renderMark(seat.face, fleetMarkSize, "fleet-mark");
   const klass = host ? "fleet-face is-host" : "fleet-face";
-  return `<a class="${klass}" href="${href}" title="${name}" aria-label="${name}">${mark}<span class="fleet-tip" aria-hidden="true">${name}</span></a>`;
+  return `<a class="${klass}" href="${href}" aria-label="${name}">${mark}<span class="fleet-tip" aria-hidden="true">${name}</span></a>`;
 }
 
 function renderFleet(): string {
@@ -209,11 +207,7 @@ export function renderBot(): string {
       <div class="stage">
       <div class="rail">
         <header class="mast">
-          ${renderGrokBotMark("seat")}
-          <div class="mast-id">
-            <h1>${escapeHtml(collectionTitle)}<span class="scope" aria-hidden="true"></span></h1>
-            <p class="seat-line">${collectionLine.map(renderPhrase).join("")}</p>
-          </div>
+          <h1>${escapeHtml(collectionTitle)}<span class="scope" aria-hidden="true"></span></h1>
         </header>
         <section class="write">
           ${renderInbox(agentInbox.label, agentInbox.tip)}
@@ -222,7 +216,6 @@ export function renderBot(): string {
       ${renderBoard()}
       <footer class="foot">
         ${renderManagedBy(managedByHere)}
-        <p class="market"><a class="market-link" href="${escapeHtml(marketplace.href)}">${escapeHtml(marketplace.label)}</a></p>
       </footer>
       </div>
     </div>`;
