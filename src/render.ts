@@ -2,9 +2,10 @@ import {
   agentInbox,
   body,
   botDescription,
-  botName,
   botTitle,
   botUrl,
+  collectionLine,
+  collectionTitle,
   contact,
   crewLabel,
   description,
@@ -19,8 +20,6 @@ import {
   name,
   personalMail,
   pickLine,
-  profileLinks,
-  seatLine,
   seats,
   url,
   type Contact,
@@ -105,16 +104,44 @@ function renderFleet(): string {
           <p class="fleet-line">${escapeHtml(fleetLine)}</p>`;
 }
 
-function renderInbox(label: string = agentInbox.label): string {
-  return `<p class="inbox"><span class="inbox-label">${escapeHtml(label)}</span><a class="inbox-address" href="${escapeHtml(agentInbox.href)}">${escapeHtml(agentInbox.address)}</a></p>`;
+function renderInbox(label: string = agentInbox.label, tip = ""): string {
+  const described = tip ? ` aria-describedby="inbox-tip"` : "";
+  const titled = tip ? ` title="${escapeHtml(tip)}"` : "";
+  const tipHtml = tip
+    ? `<span id="inbox-tip" class="inbox-tip" role="tooltip">${escapeHtml(tip)}</span>`
+    : "";
+  const extra = tip ? " has-tip" : "";
+  return `<p class="inbox${extra}"><span class="inbox-label">${escapeHtml(label)}</span><a class="inbox-address" href="${escapeHtml(agentInbox.href)}"${described}${titled}>${escapeHtml(agentInbox.address)}</a>${tipHtml}</p>`;
 }
 
 function renderFact(): string {
   return `<p class="fact">${escapeHtml(fleetFact)}</p>`;
 }
 
-function renderProfileLinks(): string {
-  return `<p class="contact-marks profile-links">${profileLinks.map(renderContactLink).join("")}</p>`;
+function renderSolarSystem(): string {
+  return `<svg class="system" viewBox="0 0 240 240" focusable="false">
+          <g class="orbits" fill="none" stroke="rgba(250,250,247,0.1)" stroke-width="0.45">
+            <circle cx="120" cy="120" r="16"/>
+            <circle cx="120" cy="120" r="26"/>
+            <circle cx="120" cy="120" r="38"/>
+            <circle cx="120" cy="120" r="52"/>
+            <circle cx="120" cy="120" r="68"/>
+            <circle cx="120" cy="120" r="84"/>
+            <circle cx="120" cy="120" r="98"/>
+            <circle cx="120" cy="120" r="110"/>
+          </g>
+          <g transform="translate(120 120)">
+            <circle class="sun" cx="0" cy="0" r="4.4" fill="#d4b56a"/>
+            <g class="spin spin-1"><circle cx="16" cy="0" r="1.05" fill="#9a9590"/></g>
+            <g class="spin spin-2"><circle cx="26" cy="0" r="1.45" fill="#b8a078"/></g>
+            <g class="spin spin-3"><circle cx="38" cy="0" r="1.55" fill="#6d8a9a"/></g>
+            <g class="spin spin-4"><circle cx="52" cy="0" r="1.2" fill="#a86a50"/></g>
+            <g class="spin spin-5"><circle cx="68" cy="0" r="2.25" fill="#b89870"/></g>
+            <g class="spin spin-6"><circle cx="84" cy="0" r="1.9" fill="#c4b48a"/></g>
+            <g class="spin spin-7"><circle cx="98" cy="0" r="1.45" fill="#7a9aa8"/></g>
+            <g class="spin spin-8"><circle cx="110" cy="0" r="1.35" fill="#5a6f9a"/></g>
+          </g>
+        </svg>`;
 }
 
 export function renderSite(): string {
@@ -139,51 +166,32 @@ export function renderSite(): string {
       </aside>
       </div>
       <div class="sky" aria-hidden="true">
-        <svg class="system" viewBox="0 0 240 240" focusable="false">
-          <g class="orbits" fill="none" stroke="rgba(250,250,247,0.1)" stroke-width="0.45">
-            <circle cx="120" cy="120" r="16"/>
-            <circle cx="120" cy="120" r="26"/>
-            <circle cx="120" cy="120" r="38"/>
-            <circle cx="120" cy="120" r="52"/>
-            <circle cx="120" cy="120" r="68"/>
-            <circle cx="120" cy="120" r="84"/>
-            <circle cx="120" cy="120" r="98"/>
-            <circle cx="120" cy="120" r="110"/>
-          </g>
-          <g transform="translate(120 120)">
-            <circle class="sun" cx="0" cy="0" r="4.4" fill="#d4b56a"/>
-            <g class="spin spin-1"><circle cx="16" cy="0" r="1.05" fill="#9a9590"/></g>
-            <g class="spin spin-2"><circle cx="26" cy="0" r="1.45" fill="#b8a078"/></g>
-            <g class="spin spin-3"><circle cx="38" cy="0" r="1.55" fill="#6d8a9a"/></g>
-            <g class="spin spin-4"><circle cx="52" cy="0" r="1.2" fill="#a86a50"/></g>
-            <g class="spin spin-5"><circle cx="68" cy="0" r="2.25" fill="#b89870"/></g>
-            <g class="spin spin-6"><circle cx="84" cy="0" r="1.9" fill="#c4b48a"/></g>
-            <g class="spin spin-7"><circle cx="98" cy="0" r="1.45" fill="#7a9aa8"/></g>
-            <g class="spin spin-8"><circle cx="110" cy="0" r="1.35" fill="#5a6f9a"/></g>
-          </g>
-        </svg>
+        ${renderSolarSystem()}
       </div>
     </div>`;
 }
 
-function renderFace(seat: Seat): string {
-  return `<button type="button" class="face" role="listitem" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" data-blurb="${escapeHtml(seat.blurb)}" aria-pressed="false" aria-label="${escapeHtml(seat.name)}">${renderMark(seat.face, 80, "face-mark")}</button>`;
+function renderFace(seat: Seat, on = false): string {
+  const pressed = on ? "true" : "false";
+  const klass = on ? "face is-on" : "face";
+  return `<button type="button" class="${klass}" role="listitem" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" data-blurb="${escapeHtml(seat.blurb)}" aria-pressed="${pressed}" aria-label="${escapeHtml(seat.name)}">${renderMark(seat.face, 80, "face-mark")}</button>`;
 }
 
-function renderLead(): string {
-  const host = seats[0];
-  if (!host) return "";
-  return `<span class="orbit" aria-hidden="true"></span><span class="spoke" aria-hidden="true"></span><div class="lead" aria-hidden="true">${renderMark(host.face, 160, "lead-mark")}</div>`;
+function renderPlinth(): string {
+  return `<span class="orbit" aria-hidden="true"></span><span class="spoke" aria-hidden="true"></span><div class="plinth" aria-hidden="true">${renderSolarSystem()}</div>`;
 }
 
 function renderBoard(): string {
-  const faces = seats.map(renderFace).join("");
-  return `<main class="board">
+  const host = seats[0];
+  const faces = seats.map((seat, index) => renderFace(seat, index === 0)).join("");
+  const name = host?.name ?? pickLine;
+  const copy = host?.blurb ?? "";
+  return `<main class="board" data-cycle="3000">
         <p class="crew-label">${escapeHtml(crewLabel)}</p>
-        <div class="crew-sky" role="list">${renderLead()}${faces}</div>
-        <aside class="brief" aria-live="polite">
-          <p class="brief-name">${escapeHtml(pickLine)}</p>
-          <p class="brief-copy"></p>
+        <div class="crew-sky is-lit" role="list" style="--aim: 0deg">${renderPlinth()}${faces}</div>
+        <aside class="brief is-open" aria-live="off">
+          <p class="brief-name">${escapeHtml(name)}</p>
+          <p class="brief-copy">${escapeHtml(copy)}</p>
         </aside>
         <p class="fleet-line">${escapeHtml(fleetLine)}</p>
       </main>`;
@@ -193,20 +201,19 @@ export function renderBot(): string {
   return `<div class="page profile" id="holder">
       <div class="stage">
       <div class="rail">
-        <header class="seat" data-seat="profile-assistant" tabindex="0">
+        <header class="mast">
           ${renderGrokBotMark("seat")}
-          <div class="seat-id">
-            <h1>${escapeHtml(botName)}<span class="scope" aria-hidden="true"></span></h1>
-            <p class="seat-line">${seatLine.map(renderPhrase).join("")}</p>
+          <div class="mast-id">
+            <h1>${escapeHtml(collectionTitle)}<span class="scope" aria-hidden="true"></span></h1>
+            <p class="seat-line">${collectionLine.map(renderPhrase).join("")}</p>
           </div>
         </header>
         <section class="write">
-          ${renderInbox()}
+          ${renderInbox(agentInbox.label, agentInbox.tip)}
         </section>
       </div>
       ${renderBoard()}
       <footer class="foot">
-        ${renderProfileLinks()}
         ${renderManagedBy(managedByHere)}
       </footer>
       </div>
