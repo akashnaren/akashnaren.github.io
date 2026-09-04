@@ -647,7 +647,7 @@ header p {
   flex-wrap: wrap;
   column-gap: 0.4em;
   row-gap: 0.12em;
-  margin-top: calc(1.55rem * var(--fit));
+  margin-top: calc(1.15rem * var(--fit));
   font-size: calc(11px * var(--fit));
   line-height: calc(16px * var(--fit));
   color: #6a6e74;
@@ -724,17 +724,26 @@ p.fleet {
 .fleet-face {
   position: absolute;
   display: block;
-  width: calc(24px * var(--fit));
-  height: calc(24px * var(--fit));
+  width: max(22px, calc(24px * var(--fit)));
+  height: max(22px, calc(24px * var(--fit)));
   padding: 0;
   margin: 0;
   background: none;
   overflow: visible;
   transform: translate(-50%, -50%);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 107, 0, 0.16);
 }
 
 .fleet-face::before {
   content: none;
+}
+
+.fleet-face::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 999px;
 }
 
 .fleet-face:focus-visible {
@@ -878,12 +887,14 @@ p.fleet {
 }
 
 .fleet-tip {
+  --tip-x: -50%;
+  --tip-y: 3px;
   position: absolute;
   left: 50%;
   top: calc(100% + 0.32rem);
   z-index: 4;
   width: max-content;
-  max-width: 12rem;
+  max-width: min(12rem, calc(100vw - 2.4rem));
   padding: 0.2rem 0.38rem;
   border: 1px solid rgba(255, 107, 0, 0.28);
   border-radius: 4px;
@@ -895,15 +906,43 @@ p.fleet {
   letter-spacing: 0.02em;
   white-space: nowrap;
   opacity: 0;
-  transform: translate(-50%, 3px);
+  transform: translate(var(--tip-x), var(--tip-y));
   pointer-events: none;
   transition: opacity 280ms ease, transform 280ms ease;
 }
 
-.fleet-face:hover .fleet-tip,
+.fleet-face:nth-child(1) .fleet-tip,
+.fleet-face:nth-child(4) .fleet-tip,
+.fleet-face:nth-child(7) .fleet-tip {
+  left: 0;
+  --tip-x: 0%;
+}
+
+.fleet-face:nth-child(3) .fleet-tip,
+.fleet-face:nth-child(6) .fleet-tip,
+.fleet-face:nth-child(9) .fleet-tip {
+  left: auto;
+  right: 0;
+  --tip-x: 0%;
+}
+
+.fleet-face:nth-child(7) .fleet-tip,
+.fleet-face:nth-child(8) .fleet-tip,
+.fleet-face:nth-child(9) .fleet-tip {
+  top: auto;
+  bottom: calc(100% + 0.32rem);
+}
+
 .fleet-face:focus-visible .fleet-tip {
+  --tip-y: 0;
   opacity: 1;
-  transform: translate(-50%, 0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fleet-face:hover .fleet-tip {
+    --tip-y: 0;
+    opacity: 1;
+  }
 }
 
 .fleet-line,
@@ -1007,6 +1046,34 @@ a:focus-visible {
 
   .page.profile .brief {
     height: 4.6rem;
+  }
+}
+
+@media (max-width: 879px) {
+  .panel {
+    padding-top: calc(1.05rem * var(--fit));
+  }
+
+  p.fleet {
+    max-width: min(calc(14.8rem * var(--fit)), 100%);
+    height: calc(7.2rem * var(--fit));
+    margin-top: calc(0.55rem * var(--fit));
+  }
+
+  .fleet-face::after {
+    inset: -14px;
+  }
+
+  .managed {
+    margin-top: calc(0.95rem * var(--fit));
+  }
+
+  .fleet-invite {
+    margin-top: calc(0.28rem * var(--fit));
+  }
+
+  .fleet-tip {
+    white-space: normal;
   }
 }
 

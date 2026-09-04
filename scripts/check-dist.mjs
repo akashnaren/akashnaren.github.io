@@ -541,6 +541,40 @@ if (
   process.exit(1);
 }
 
+if (
+  !css.includes("hover:hover") &&
+  !css.includes("hover: hover") &&
+  !css.includes("pointer:fine") &&
+  !css.includes("pointer: fine")
+) {
+  console.error("fleet name tips must not depend on hover alone on touch");
+  process.exit(1);
+}
+
+if (
+  !css.includes(".fleet-face::after") &&
+  !css.includes(".fleet-face:after") &&
+  !css.includes(".fleet-face:after")
+) {
+  console.error("fleet faces must keep an expanded tap pad");
+  process.exit(1);
+}
+
+if (!css.includes("touch-action:manipulation") && !css.includes("touch-action: manipulation")) {
+  console.error("fleet faces must keep touch-action manipulation");
+  process.exit(1);
+}
+
+if (!css.includes("-14px") && !css.includes("-12px")) {
+  console.error("mobile fleet faces must keep a larger tap pad than the 24px mark");
+  process.exit(1);
+}
+
+if (!css.includes("max(22px") && !css.includes("max(22px,")) {
+  console.error("fleet faces must keep a 22px floor so --fit cannot crush the marks");
+  process.exit(1);
+}
+
 if (!/@keyframes\s+fleet-idle/.test(css) || !css.includes("fleet-idle")) {
   console.error("stylesheet must keep a quiet staggered fleet idle");
   process.exit(1);
