@@ -4,6 +4,7 @@ import { defineConfig } from "vite";
 import {
   applyPageMeta,
   botMeta,
+  homeMeta,
   renderBot,
   renderSite,
   replaceHolder,
@@ -20,14 +21,15 @@ export default defineConfig({
         if (!holderPattern.test(html)) {
           throw new Error("index.html is missing the #holder root");
         }
-        return html.replace(holderPattern, renderSite());
+        return applyPageMeta(html.replace(holderPattern, renderSite()), homeMeta);
       },
       closeBundle() {
         const distHtml = resolve("dist/index.html");
         if (!existsSync(distHtml)) {
           throw new Error("inject-site: dist/index.html was not written");
         }
-        const home = readFileSync(distHtml, "utf8");
+        const home = applyPageMeta(readFileSync(distHtml, "utf8"), homeMeta);
+        writeFileSync(distHtml, home);
         mkdirSync(resolve("dist/bot"), { recursive: true });
         writeFileSync(
           resolve("dist/bot/index.html"),

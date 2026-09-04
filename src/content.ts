@@ -13,7 +13,7 @@ export type Contact = Link & {
 
 export const name = "Akash Premkumar";
 export const description =
-  "At Tesla in Redwood City. Diagnostics, telemetry, and data analysis. CS and Math, UC San Diego.";
+  "Worked at Tesla in Redwood City on vehicle service systems. Diagnostics, telemetry, and data analysis. CS and Math, UC San Diego.";
 export const url = "https://akashnaren.github.io/";
 export const themeColor = "#0a0a0a";
 
@@ -22,7 +22,7 @@ export const body: readonly Paragraph[] = [
   [
     "At ",
     { href: "https://www.tesla.com/", label: "Tesla" },
-    " I work on diagnostics, telemetry, and data analysis for service engineering.",
+    " I worked on vehicle service systems: diagnostics, telemetry, and data analysis for service.",
   ],
   [
     "Previously I worked on vehicle engineering: bill of materials, full stack applications, ",
