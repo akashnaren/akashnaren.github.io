@@ -1,7 +1,4 @@
-import { pickLine } from "./content.ts";
-
 const IDLE_MS = 1400;
-const SWAP_MS = 160;
 
 function rowsIn(board: HTMLElement): HTMLButtonElement[] {
   return [...board.querySelectorAll<HTMLButtonElement>(":scope .row")];
@@ -15,10 +12,6 @@ export function bindCrewBoard(): void {
   const board = document.querySelector<HTMLElement>(".board");
   if (!board) return;
 
-  const briefNode = board.querySelector<HTMLElement>(".brief");
-  if (!briefNode) return;
-  const brief: HTMLElement = briefNode;
-
   const rows = rowsIn(board);
   if (rows.length === 0) return;
 
@@ -27,44 +20,14 @@ export function bindCrewBoard(): void {
   let userHeld = false;
   let cycleTimer = 0;
   let idleTimer = 0;
-  let briefTimer = 0;
 
-  function paintBrief(row: HTMLButtonElement | null, fromUser: boolean): void {
-    const name = brief.querySelector<HTMLElement>(".brief-name");
-    const copy = brief.querySelector<HTMLElement>(".brief-copy");
-    if (!name || !copy) return;
-
-    const nextName = row ? (row.dataset.name ?? "") : pickLine;
-    const nextCopy = row ? (row.dataset.blurb ?? "") : "";
-    brief.setAttribute("aria-live", fromUser ? "polite" : "off");
-    brief.classList.toggle("is-open", Boolean(row));
-
-    if (name.textContent === nextName && copy.textContent === nextCopy) return;
-
-    const apply = (): void => {
-      name.textContent = nextName;
-      copy.textContent = nextCopy;
-      brief.classList.remove("is-swap");
-    };
-
-    window.clearTimeout(briefTimer);
-    if (prefersQuiet()) {
-      apply();
-      return;
-    }
-
-    brief.classList.add("is-swap");
-    briefTimer = window.setTimeout(apply, SWAP_MS);
-  }
-
-  function select(id: string | null, syncHash = false, fromUser = false): void {
+  function select(id: string | null, syncHash = false): void {
     const row = id ? (rows.find((item) => item.dataset.seat === id) ?? null) : null;
     for (const item of rows) {
       const on = item === row;
       item.classList.toggle("is-on", on);
       item.setAttribute("aria-pressed", on ? "true" : "false");
     }
-    paintBrief(row, fromUser);
     if (syncHash) {
       const next = row ? `#${row.dataset.seat ?? ""}` : `${location.pathname}${location.search}`;
       history.replaceState(null, "", next);
@@ -92,7 +55,7 @@ export function bindCrewBoard(): void {
     userHeld = true;
     window.clearTimeout(idleTimer);
     stopCycle();
-    select(row.dataset.seat ?? null, false, true);
+    select(row.dataset.seat ?? null);
   }
 
   function release(): void {
@@ -111,7 +74,7 @@ export function bindCrewBoard(): void {
     pointerArmed = false;
     const row = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>(".row");
     if (!row || !board.contains(row)) return;
-    select(row.dataset.seat ?? null, true, true);
+    select(row.dataset.seat ?? null, true);
   });
 
   for (const row of rows) {
@@ -171,6 +134,6 @@ export function bindCrewBoard(): void {
   const startId = hashed
     ? fromHash
     : (current?.dataset.seat ?? rows[0]?.dataset.seat ?? null);
-  select(startId, false);
+  select(startId);
   startCycle();
 }

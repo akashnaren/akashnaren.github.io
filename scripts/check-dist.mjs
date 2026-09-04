@@ -508,8 +508,37 @@ if (
   process.exit(1);
 }
 
-if (!css.includes(".roster") || !css.includes(".row") || !css.includes(".brief")) {
-  console.error("stylesheet must keep the roster table (roster, row, brief)");
+if (!css.includes(".roster") || !css.includes(".row")) {
+  console.error("stylesheet must keep the roster table (roster, row)");
+  process.exit(1);
+}
+
+if (css.includes(".brief") || css.includes(".rail") || css.includes(".market") || css.includes(".seat-line")) {
+  console.error("stylesheet must drop brief, rail, marketplace, and seat-line chrome");
+  process.exit(1);
+}
+
+if (
+  /\.page\.profile[^{]*\{[^}]*overflow-y:\s*auto/.test(css) ||
+  /\.page\.profile\{[^}]*overflow-y:auto/.test(css)
+) {
+  console.error("/bot must not scroll — overflow hidden like home");
+  process.exit(1);
+}
+
+if (
+  !/\.page\.profile[^{]*\{[^}]*overflow:\s*hidden/.test(css) &&
+  !/\.page\.profile\{[^}]*overflow:hidden/.test(css)
+) {
+  console.error("/bot page must overflow hidden so the roster stays in one frame");
+  process.exit(1);
+}
+
+if (
+  !/\.roster\s*\{[^}]*flex:\s*(?:1|auto)/.test(css) &&
+  !/\.roster\{[^}]*flex:(?:1|auto)/.test(css)
+) {
+  console.error("/bot roster must flex to fill the remaining viewport");
   process.exit(1);
 }
 
@@ -632,32 +661,15 @@ if (
 }
 
 if (
-  !/\.brief\s*\{[^}]*height:/.test(css) &&
-  !/\.brief\{[^}]*height:/.test(css)
+  !/\.row-blurb[^{]*\{[^}]*text-overflow:\s*ellipsis/.test(css) &&
+  !/\.row-blurb\{[^}]*text-overflow:ellipsis/.test(css)
 ) {
-  console.error("brief slot must have a reserved fixed height so copy cannot grow the page");
+  console.error("row blurbs must ellipsis so they stay one line");
   process.exit(1);
 }
 
-if (
-  !/\.brief\s*\{[^}]*overflow:\s*hidden/.test(css) &&
-  !/\.brief\{[^}]*overflow:hidden/.test(css)
-) {
-  console.error("brief slot must overflow hidden so detail text never reflows chrome");
-  process.exit(1);
-}
-
-if (
-  !css.includes("line-clamp:3") &&
-  !css.includes("line-clamp: 3") &&
-  !css.includes("-webkit-line-clamp:3") &&
-  !css.includes("-webkit-line-clamp: 3") &&
-  !css.includes("line-clamp:2") &&
-  !css.includes("line-clamp: 2") &&
-  !css.includes("-webkit-line-clamp:2") &&
-  !css.includes("-webkit-line-clamp: 2")
-) {
-  console.error("brief copy must clamp so longer blurbs cannot grow the reserved slot");
+if (/\.row-blurb[^{]*\{[^}]*white-space:\s*normal/.test(css)) {
+  console.error("row blurbs must stay one line, never wrap into text soup");
   process.exit(1);
 }
 
@@ -838,15 +850,15 @@ const botRequired = [
   "finance engineer",
   "product engineer",
   "agent master",
-  "i keep his public profiles tidy and ship this site",
-  "i live in the diffs",
-  "i read the papers and bring back the parts that matter",
+  "i keep his profiles and ship this site",
+  "quiet diffs. a clean compile",
+  "i read the papers that matter",
   "i keep the nine on the clock",
-  "i send only when he says so",
-  "tap the glass when it runs hot",
-  "small trading experiments",
-  "i file the sharp corners until the product feels finished",
-  "i build grok bots like these. seats stay tight",
+  "inbox, calendar. send when he says",
+  "i tap the glass when spend runs hot",
+  "small trades. no numbers here",
+  "i file the sharp corners",
+  "i build grok bots like these",
   "bots' email",
   "the agents' inbox — not his personal Gmail",
   'class="inbox-tip"',
@@ -858,11 +870,8 @@ const botRequired = [
   "this site is managed by",
   "mailto:apn@agentmail.to",
   "apn@agentmail.to",
-  "nine grok bots, more coming.",
   'class="page profile"',
   'class="mast"',
-  'class="rail"',
-  'class="write"',
   'class="board"',
   'data-cycle="3000"',
   'class="roster"',
@@ -870,9 +879,6 @@ const botRequired = [
   'class="row-face"',
   'class="row-name"',
   'class="row-blurb"',
-  'class="brief',
-  'class="brief-name"',
-  'class="brief-copy"',
   'class="foot"',
   'class="inbox',
   'class="managed-copy"',
@@ -956,10 +962,26 @@ for (const page of [botHtml, botRoot]) {
     page.includes('class="market"') ||
     page.includes("seat-wrap") ||
     page.includes("seat-line") ||
+    page.includes('class="rail"') ||
+    page.includes('class="write"') ||
+    page.includes('class="brief') ||
+    page.includes("nine grok bots, more coming.") ||
     page.includes("nine <a href=\"https://x.ai/bot\">grok bots</a>")
   ) {
-    console.error("bot page must not keep the mast mark, nine grok bots line, or marketplace");
+    console.error("bot page must not keep stacked chrome, brief, nine-grok-bots line, or marketplace");
     process.exit(1);
+  }
+
+  const blurbs = [...page.matchAll(/data-blurb="([^"]*)"/g)].map((match) => match[1] ?? "");
+  if (blurbs.length !== 9) {
+    console.error(`bot page must keep nine concise blurbs, found ${String(blurbs.length)}`);
+    process.exit(1);
+  }
+  for (const blurb of blurbs) {
+    if (blurb.length > 52) {
+      console.error(`bot blurb is too long for a one-line roster (${String(blurb.length)}): ${blurb}`);
+      process.exit(1);
+    }
   }
 
   if (page.includes("akashnaren@gmail.com") || page.includes("human-mail")) {
@@ -1037,8 +1059,8 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  if (!/class="write"[\s\S]{0,800}mailto:apn@agentmail\.to/.test(page)) {
-    console.error("bots' inbox must sit in the write block");
+  if (!/class="foot"[\s\S]{0,1200}mailto:apn@agentmail\.to/.test(page)) {
+    console.error("bots' inbox must sit in the quiet footer");
     process.exit(1);
   }
 
@@ -1068,7 +1090,7 @@ for (const page of [botHtml, botRoot]) {
   }
 
   if (/class="roster"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
-    console.error("bots' inbox belongs in the write block, not the roster");
+    console.error("bots' inbox belongs in the footer, not the roster");
     process.exit(1);
   }
 
@@ -1147,13 +1169,13 @@ if (/\.page\.fleet[\s{,]/.test(css)) {
   process.exit(1);
 }
 
-if (
-  !js.includes("is-on") ||
-  !js.includes("aria-pressed") ||
-  !js.includes("brief-copy") ||
-  !js.includes("is-swap")
-) {
-  console.error("script must bind roster row selection into the reserved brief slot with a crossfade");
+if (!js.includes("is-on") || !js.includes("aria-pressed")) {
+  console.error("script must bind roster row selection");
+  process.exit(1);
+}
+
+if (js.includes("brief-copy") || js.includes("brief-name") || js.includes("is-swap")) {
+  console.error("script must not keep the reserved brief crossfade");
   process.exit(1);
 }
 
@@ -1168,5 +1190,5 @@ if (!js.includes("3000") || (!js.includes("setInterval") && !js.includes("setTim
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a centered grok bot collection roster with a 46rem stage, 3s auto-cycle, brief crossfade, email tooltip, and no footer socials.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome.",
 );
