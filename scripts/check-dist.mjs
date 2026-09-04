@@ -710,7 +710,7 @@ const botRequired = [
   'class="inbox-address"',
   "https://x.ai/bot",
   "https://x.ai/bot/marketplace",
-  "grok bot marketplace",
+  "browse and add grok bots",
   'class="market"',
   "grok bot",
   "this site is managed by",
