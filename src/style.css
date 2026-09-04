@@ -924,8 +924,9 @@ p.fleet {
 }
 
 .fleet-face[data-seat="secretary"] .fleet-tip {
-  left: 50%;
-  --align-x: -50%;
+  left: auto;
+  right: 0;
+  --align-x: 0%;
 }
 
 .fleet-face[data-seat="research-advisor"] .fleet-tip {
@@ -934,10 +935,16 @@ p.fleet {
   --align-x: 0%;
 }
 
-.fleet-face[data-seat="software-engineer"] .fleet-tip,
+.fleet-face[data-seat="software-engineer"] .fleet-tip {
+  left: auto;
+  right: calc(100% + 3.6rem);
+  top: auto;
+  bottom: calc(100% + 0.55rem);
+  --align-x: 0%;
+}
+
 .fleet-face[data-seat="chief-of-staff"] .fleet-tip,
-.fleet-face[data-seat="finance-engineer"] .fleet-tip,
-.fleet-face[data-seat="product-engineer"] .fleet-tip {
+.fleet-face[data-seat="finance-engineer"] .fleet-tip {
   left: auto;
   right: calc(100% + 0.28rem);
   top: auto;
@@ -945,9 +952,24 @@ p.fleet {
   --align-x: 0%;
 }
 
-.fleet-face[data-seat="chief-financial-officer"] .fleet-tip,
-.fleet-face[data-seat="agent-master"] .fleet-tip {
+.fleet-face[data-seat="product-engineer"] .fleet-tip {
+  left: auto;
+  right: calc(100% + 3.8rem);
+  top: auto;
+  bottom: calc(100% + 0.55rem);
+  --align-x: 0%;
+}
+
+.fleet-face[data-seat="chief-financial-officer"] .fleet-tip {
   left: calc(100% + 0.28rem);
+  right: auto;
+  top: auto;
+  bottom: calc(100% + 0.55rem);
+  --align-x: 0%;
+}
+
+.fleet-face[data-seat="agent-master"] .fleet-tip {
+  left: calc(100% + 1.2rem);
   right: auto;
   top: auto;
   bottom: calc(100% + 0.55rem);
@@ -1082,7 +1104,7 @@ a:focus-visible {
   p.fleet {
     max-width: min(calc(14.8rem * var(--fit)), 100%);
     height: calc(7.2rem * var(--fit));
-    margin-top: calc(1.35rem * var(--fit));
+    margin-top: calc(2.15rem * var(--fit));
   }
 
   .fleet-face::after {
@@ -1099,6 +1121,25 @@ a:focus-visible {
 
   .fleet-tip {
     white-space: normal;
+    max-width: min(10.5rem, calc(100vw - 2rem));
+  }
+
+  .fleet-face[data-seat="software-engineer"] .fleet-tip,
+  .fleet-face[data-seat="chief-of-staff"] .fleet-tip,
+  .fleet-face[data-seat="finance-engineer"] .fleet-tip,
+  .fleet-face[data-seat="product-engineer"] .fleet-tip {
+    left: 0;
+    right: auto;
+    bottom: calc(100% + 0.5rem);
+    --align-x: 0%;
+  }
+
+  .fleet-face[data-seat="chief-financial-officer"] .fleet-tip,
+  .fleet-face[data-seat="agent-master"] .fleet-tip {
+    left: auto;
+    right: 0;
+    bottom: calc(100% + 0.5rem);
+    --align-x: 0%;
   }
 }
 
