@@ -243,6 +243,7 @@ h1 {
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
+  width: 100%;
   gap: calc(1rem * var(--fit)) 2.4rem;
 }
 
@@ -258,6 +259,7 @@ h1 {
 .board-split {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  flex: 1 1 auto;
   gap: calc(1rem * var(--fit)) 2rem;
   align-items: stretch;
   min-height: 0;
@@ -781,6 +783,7 @@ a:focus-visible {
   }
 
   .crew-grid {
+    height: 100%;
     min-height: 22rem;
   }
 
