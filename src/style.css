@@ -714,6 +714,7 @@ header p {
 
 p.fleet {
   position: relative;
+  isolation: isolate;
   width: 100%;
   max-width: calc(13.6rem * var(--fit));
   height: calc(6.9rem * var(--fit));
@@ -748,7 +749,7 @@ p.fleet {
 
 .fleet-face:hover,
 .fleet-face:focus-visible {
-  z-index: 5;
+  z-index: 8;
 }
 
 .fleet-face:focus-visible {
@@ -892,12 +893,14 @@ p.fleet {
 }
 
 .fleet-tip {
-  --tip-x: -50%;
-  --tip-y: 4px;
+  --align-x: -50%;
+  --align-y: 0px;
+  --nudge-x: 0px;
+  --nudge-y: 4px;
   position: absolute;
   left: 50%;
   top: auto;
-  bottom: calc(100% + 0.45rem);
+  bottom: calc(100% + 0.5rem);
   z-index: 6;
   width: max-content;
   max-width: min(12rem, calc(100vw - 2.4rem));
@@ -912,34 +915,67 @@ p.fleet {
   letter-spacing: 0.02em;
   white-space: nowrap;
   opacity: 0;
-  transform: translate(var(--tip-x), var(--tip-y));
+  transform: translate(var(--align-x), var(--align-y)) translate(var(--nudge-x), var(--nudge-y));
   pointer-events: none;
   transition: opacity 280ms ease, transform 280ms ease;
 }
 
-.fleet-face:nth-child(1) .fleet-tip,
-.fleet-face:nth-child(4) .fleet-tip,
-.fleet-face:nth-child(7) .fleet-tip {
+.fleet-face[data-seat="profile-assistant"] .fleet-tip {
   left: 0;
-  --tip-x: 0%;
+  --align-x: 0%;
 }
 
-.fleet-face:nth-child(3) .fleet-tip,
-.fleet-face:nth-child(6) .fleet-tip,
-.fleet-face:nth-child(9) .fleet-tip {
+.fleet-face[data-seat="secretary"] .fleet-tip {
+  left: 50%;
+  --align-x: -50%;
+}
+
+.fleet-face[data-seat="research-advisor"] .fleet-tip {
   left: auto;
   right: 0;
-  --tip-x: 0%;
+  --align-x: 0%;
+}
+
+.fleet-face[data-seat="software-engineer"] .fleet-tip,
+.fleet-face[data-seat="chief-of-staff"] .fleet-tip,
+.fleet-face[data-seat="finance-engineer"] .fleet-tip,
+.fleet-face[data-seat="product-engineer"] .fleet-tip {
+  left: auto;
+  right: calc(100% + 0.45rem);
+  top: 50%;
+  bottom: auto;
+  --align-x: 0%;
+  --align-y: -50%;
+  --nudge-x: 4px;
+  --nudge-y: 0px;
+}
+
+.fleet-face[data-seat="chief-financial-officer"] .fleet-tip,
+.fleet-face[data-seat="agent-master"] .fleet-tip {
+  left: calc(100% + 0.45rem);
+  right: auto;
+  top: 50%;
+  bottom: auto;
+  --align-x: 0%;
+  --align-y: -50%;
+  --nudge-x: -4px;
+  --nudge-y: 0px;
 }
 
 .fleet-face:focus-visible .fleet-tip {
-  --tip-y: 0;
+  --nudge-x: 0;
+  --nudge-y: 0;
   opacity: 1;
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .fleet-face::after {
+    pointer-events: none;
+  }
+
   .fleet-face:hover .fleet-tip {
-    --tip-y: 0;
+    --nudge-x: 0;
+    --nudge-y: 0;
     opacity: 1;
   }
 }

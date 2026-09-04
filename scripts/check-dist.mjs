@@ -313,17 +313,19 @@ if (/job assistant/i.test(html) || /job assistant/i.test(root)) {
   process.exit(1);
 }
 
-const seatNames = [
-  "profile assistant",
-  "software engineer",
-  "research advisor",
-  "chief of staff",
-  "secretary",
-  "chief financial officer",
-  "finance engineer",
-  "product engineer",
-  "agent master",
+const seats = [
+  ["profile-assistant", "profile assistant"],
+  ["software-engineer", "software engineer"],
+  ["research-advisor", "research advisor"],
+  ["chief-of-staff", "chief of staff"],
+  ["secretary", "secretary"],
+  ["chief-financial-officer", "chief financial officer"],
+  ["finance-engineer", "finance engineer"],
+  ["product-engineer", "product engineer"],
+  ["agent-master", "agent master"],
 ];
+
+const seatNames = seats.map(([, name]) => name);
 
 function assertHomeFleetInvite(page, label) {
   if (!page.includes("click on any bot") || !page.includes('class="fleet-invite"')) {
@@ -346,14 +348,15 @@ function assertHomeFleetInvite(page, label) {
     process.exit(1);
   }
 
-  for (const name of seatNames) {
+  for (const [id, name] of seats) {
     const face = faces.find(
       (markup) =>
         markup.includes('href="/bot"') &&
+        markup.includes(`data-seat="${id}"`) &&
         markup.includes(`aria-label="${name}"`),
     );
     if (!face) {
-      console.error(`${label} must aria-label a /bot fleet face as ${name}`);
+      console.error(`${label} must data-seat and aria-label a /bot fleet face as ${name}`);
       process.exit(1);
     }
     if (!page.includes(`<span class="fleet-tip" aria-hidden="true">${name}</span>`)) {
@@ -547,6 +550,22 @@ if (
 
 if (!css.includes("bottom: calc(100%") && !css.includes("bottom:calc(100%")) {
   console.error("fleet name tips must sit above the face, not over the mark");
+  process.exit(1);
+}
+
+for (const [id] of seats) {
+  if (!css.includes(`[data-seat="${id}"]`) && !css.includes(`[data-seat=${id}]`)) {
+    console.error(`stylesheet must place a name tip for ${id}, not only the host`);
+    process.exit(1);
+  }
+}
+
+if (
+  !css.includes(".fleet-face:after{pointer-events:none") &&
+  !css.includes(".fleet-face::after{pointer-events:none") &&
+  !css.includes(".fleet-face::after {\n    pointer-events: none")
+) {
+  console.error("fine-pointer hover must use the face mark, not the overlapping tap pad");
   process.exit(1);
 }
 

@@ -104,7 +104,7 @@ function renderFleetFace(seat: Seat): string {
     ? renderGrokBotMark("fleet")
     : renderMark(seat.face, fleetMarkSize, "fleet-mark");
   const klass = host ? "fleet-face is-host" : "fleet-face";
-  return `<a class="${klass}" href="${href}" aria-label="${name}">${mark}<span class="fleet-tip" aria-hidden="true">${name}</span></a>`;
+  return `<a class="${klass}" href="${href}" data-seat="${escapeHtml(seat.id)}" aria-label="${name}">${mark}<span class="fleet-tip" aria-hidden="true">${name}</span></a>`;
 }
 
 function renderFleet(): string {
