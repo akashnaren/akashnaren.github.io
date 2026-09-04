@@ -1,13 +1,15 @@
 import {
   agentInbox,
   body,
+  botBody,
   botDescription,
+  botInboxLabel,
   botName,
   botTitle,
   botUrl,
   contact,
+  crewLabel,
   description,
-  fleetBody,
   fleetFact,
   fleetLine,
   fleetMarkSize,
@@ -19,6 +21,7 @@ import {
   name,
   personalMail,
   profileLinks,
+  seatLine,
   url,
   type Contact,
   type Paragraph,
@@ -66,9 +69,12 @@ function renderMark(src: string, size: number, className: string): string {
   return `<img class="${className}" src="${escapeHtml(src)}" alt="" width="${String(size)}" height="${String(size)}" decoding="async" />`;
 }
 
-function renderGrokBotMark(): string {
-  const size = String(managedMarkSize);
-  return `<span class="grok-bot-wrap" aria-hidden="true"><svg class="grok-bot-photon" viewBox="0 0 32 32" width="20" height="20" focusable="false"><circle class="grok-bot-photon-halo" cx="16" cy="16" r="14.6" fill="none" stroke="#ff6b00" stroke-width="0.7" opacity="0.22"/></svg><svg class="grok-bot-mark" viewBox="0 0 32 32" width="${size}" height="${size}" focusable="false"><g class="grok-bot-body"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><g class="grok-bot-eyes"><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></g></g></svg></span>`;
+function renderGrokBotMark(kind: "managed" | "seat" = "managed"): string {
+  const seat = kind === "seat";
+  const size = String(seat ? 36 : managedMarkSize);
+  const photon = seat ? "40" : "20";
+  const wrap = seat ? "grok-bot-wrap seat-wrap" : "grok-bot-wrap";
+  return `<span class="${wrap}" aria-hidden="true"><svg class="grok-bot-photon" viewBox="0 0 32 32" width="${photon}" height="${photon}" focusable="false"><circle class="grok-bot-photon-halo" cx="16" cy="16" r="14.6" fill="none" stroke="#ff6b00" stroke-width="0.7" opacity="0.22"/></svg><svg class="grok-bot-mark" viewBox="0 0 32 32" width="${size}" height="${size}" focusable="false"><g class="grok-bot-body"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><g class="grok-bot-eyes"><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></g></g></svg></span>`;
 }
 
 function renderManagedBy(line: Paragraph = managedBy): string {
@@ -98,8 +104,8 @@ function renderFleet(): string {
           <p class="fleet-line">${escapeHtml(fleetLine)}</p>`;
 }
 
-function renderInbox(): string {
-  return `<p class="inbox"><span class="inbox-label">${escapeHtml(agentInbox.label)}</span><a class="inbox-address" href="${escapeHtml(agentInbox.href)}">${escapeHtml(agentInbox.address)}</a></p>`;
+function renderInbox(label: string = agentInbox.label): string {
+  return `<p class="inbox"><span class="inbox-label">${escapeHtml(label)}</span><a class="inbox-address" href="${escapeHtml(agentInbox.href)}">${escapeHtml(agentInbox.address)}</a></p>`;
 }
 
 function renderFact(): string {
@@ -160,27 +166,31 @@ export function renderSite(): string {
 }
 
 export function renderBot(): string {
-  const paragraphs = fleetBody.map(renderParagraph).join("\n          ");
+  const paragraphs = botBody.map(renderParagraph).join("\n          ");
 
   return `<div class="page profile" id="holder">
       <div class="stage">
-      <main class="him">
-        <div class="room">
-          <header>
-            <h1>${escapeHtml(botName)}<span class="scope" aria-hidden="true"></span></h1>
-          </header>
-          ${paragraphs}
+      <header class="seat">
+        ${renderGrokBotMark("seat")}
+        <div class="seat-id">
+          <h1>${escapeHtml(botName)}<span class="scope" aria-hidden="true"></span></h1>
+          <p class="seat-line">${seatLine.map(renderPhrase).join("")}</p>
         </div>
-        <div class="contact">
-          ${renderInbox()}
-          ${renderProfileLinks()}
-        </div>
+      </header>
+      <main class="work">
+        ${paragraphs}
       </main>
-      <aside class="panel">
-        ${renderFact()}
+      <section class="write">
+        ${renderInbox(botInboxLabel)}
+      </section>
+      <aside class="crew">
+        <p class="crew-label">${escapeHtml(crewLabel)}</p>
         ${renderFleet()}
-        ${renderManagedBy(managedByHere)}
       </aside>
+      <footer class="foot">
+        ${renderProfileLinks()}
+        ${renderManagedBy(managedByHere)}
+      </footer>
       </div>
     </div>`;
 }

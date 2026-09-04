@@ -213,12 +213,12 @@ h1 {
 }
 
 .bio,
-.room {
+.work {
   color: #fafaf7;
 }
 
 .bio > p,
-.room > p {
+.work > p {
   padding-top: calc(16px * var(--fit));
   line-height: calc(23px * var(--fit));
 }
@@ -228,26 +228,99 @@ h1 {
 }
 
 .page.profile .stage {
+  display: flex;
+  flex-direction: column;
   flex: 0 1 auto;
   width: 100%;
-  max-width: 56rem;
-  padding: calc(2.4rem * var(--fit)) 1.4rem;
+  max-width: 36rem;
+  padding: calc(2.2rem * var(--fit)) 1.4rem;
+}
+
+.seat {
+  display: flex;
+  align-items: center;
+  gap: calc(0.9rem * var(--fit));
+  min-width: 0;
+}
+
+.seat-id {
+  min-width: 0;
+}
+
+.seat-wrap {
+  width: calc(40px * var(--fit));
+  height: calc(40px * var(--fit));
+}
+
+.seat-wrap .grok-bot-photon {
+  width: calc(40px * var(--fit));
+  height: calc(40px * var(--fit));
+}
+
+.seat-wrap .grok-bot-mark {
+  width: calc(36px * var(--fit));
+  height: calc(36px * var(--fit));
+}
+
+.seat-line {
+  padding-top: calc(6px * var(--fit));
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(12px * var(--fit));
+  line-height: calc(16px * var(--fit));
+  letter-spacing: 0.08em;
+  color: #7d8187;
+}
+
+.page.profile .work > p {
+  color: #c4c4bf;
+}
+
+.page.profile .write {
+  margin-top: calc(1.55rem * var(--fit));
+  padding-top: calc(1.15rem * var(--fit));
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .page.profile .inbox {
   margin-top: 0;
 }
 
-.page.profile .profile-links {
-  margin-top: calc(1.15rem * var(--fit));
+.page.profile .inbox-address {
+  font-size: calc(15px * var(--fit));
+  line-height: calc(22px * var(--fit));
 }
 
-.page.profile .contact {
-  margin-top: calc(1.55rem * var(--fit));
+.crew {
+  margin-top: calc(1.65rem * var(--fit));
+}
+
+.crew-label {
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(11px * var(--fit));
+  line-height: calc(14px * var(--fit));
+  letter-spacing: 0.14em;
+  color: #7d8187;
+}
+
+.page.profile p.fleet {
+  max-width: calc(11.2rem * var(--fit));
+  height: calc(5.6rem * var(--fit));
+  margin-top: calc(0.55rem * var(--fit));
+}
+
+.page.profile .fleet-mark {
+  width: calc(20px * var(--fit));
+  height: calc(20px * var(--fit));
+}
+
+.foot {
+  margin-top: calc(1.45rem * var(--fit));
+  padding-top: calc(1.05rem * var(--fit));
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .page.profile .managed {
-  margin-top: calc(1.1rem * var(--fit));
+  margin-top: calc(0.95rem * var(--fit));
 }
 
 header p {
@@ -553,8 +626,7 @@ a:focus-visible {
     padding-right: 3.6rem;
   }
 
-  .bio,
-  .room {
+  .bio {
     max-width: 38em;
   }
 
@@ -585,15 +657,20 @@ a:focus-visible {
   }
 
   .page.profile .stage {
-    padding: calc(3.4rem * var(--fit)) 3.25rem;
+    display: flex;
+    flex-direction: column;
+    max-width: 38rem;
+    padding: calc(3.1rem * var(--fit)) 3.25rem;
   }
 
-  .page.profile .him {
-    padding-right: 3.2rem;
+  .page.profile .write {
+    margin-top: calc(1.75rem * var(--fit));
+    padding-top: calc(1.25rem * var(--fit));
   }
 
-  .page.profile .contact {
-    margin-top: calc(1.85rem * var(--fit));
+  .page.profile p.fleet {
+    max-width: calc(12.2rem * var(--fit));
+    height: calc(6.1rem * var(--fit));
   }
 }
 

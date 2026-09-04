@@ -386,15 +386,23 @@ if (
   !css.includes(".page.profile") &&
   !css.includes(".page.profile ")
 ) {
-  console.error("stylesheet must keep a .page.profile fleet-room layout");
+  console.error("stylesheet must keep a .page.profile studio layout");
   process.exit(1);
 }
 
 if (
-  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*56rem/.test(css) &&
-  !/\.page\.profile\s+\.stage\{[^}]*max-width:56rem/.test(css)
+  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*38rem/.test(css) &&
+  !/\.page\.profile\s+\.stage\{[^}]*max-width:38rem/.test(css)
 ) {
-  console.error("fleet room stage must keep a 56rem profile width, not the face-cluster strip");
+  console.error("/bot stage must keep a 38rem studio width, not the face-cluster strip");
+  process.exit(1);
+}
+
+if (
+  /\.page\.profile\s+\.stage\{[^}]*max-width:13\.6rem/.test(css) ||
+  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*13\.6rem/.test(css)
+) {
+  console.error("/bot stage must not reuse the face-cluster max-width");
   process.exit(1);
 }
 
@@ -531,7 +539,7 @@ for (const page of [html, root]) {
 }
 
 if (!existsSync("dist/bot/index.html") || !existsSync("bot/index.html")) {
-  console.error("bot fleet page must exist at dist/bot/index.html and bot/index.html");
+  console.error("bot page must exist at dist/bot/index.html and bot/index.html");
   process.exit(1);
 }
 
@@ -546,15 +554,16 @@ const spa = readFileSync("dist/404.html", "utf8");
 const spaRoot = readFileSync("404.html", "utf8");
 
 const botRequired = [
-  "grok bots",
-  "we're akash's ",
-  " fleet.",
-  "we ship his public faces. we write. we watch.",
-  "profile assistant keeps this site.",
+  "profile assistant",
+  "i keep his public profiles.",
+  "i ship this site.",
+  "i write the sparse copy.",
+  "i watch him.",
+  "the crew",
+  "write the bots",
   "https://x.ai/bot",
   "grok bot",
   "this site is managed by",
-  "bots' email",
   "mailto:apn@agentmail.to",
   "apn@agentmail.to",
   'href="/"',
@@ -567,33 +576,35 @@ const botRequired = [
   ">x</span>",
   "nine grok bots, more coming.",
   'class="page profile"',
-  'class="room"',
-  'class="contact"',
+  'class="seat"',
+  'class="work"',
+  'class="write"',
+  'class="crew"',
+  'class="foot"',
   'class="inbox"',
   'class="managed-copy"',
   'class="fleet"',
-  'class="fact"',
-  "nine",
+  'class="grok-bot-eyes"',
+  "seat-wrap",
   'src="/fleet/01.png"',
   'src="/fleet/09.png"',
   'property="og:url" content="https://akashnaren.github.io/bot"',
-  "<title>Grok bots</title>",
-  "Grok Bot fleet profile.",
-  "Profile Assistant manages this site.",
+  "<title>Profile Assistant</title>",
+  "Profile Assistant, a grok bot. I manage this site.",
   ...fleetSrcs.map((src) => `src="${src}"`),
 ];
 
 for (const page of [botHtml, botRoot]) {
   const missingBot = botRequired.filter((needle) => !page.includes(needle));
   if (missingBot.length > 0) {
-    console.error("bot fleet page is missing required copy:");
+    console.error("bot page is missing required copy:");
     for (const needle of missingBot) console.error(`  - ${needle}`);
     process.exit(1);
   }
 
   const botFleet = fleetSrcs.filter((src) => page.includes(`src="${src}"`));
   if (botFleet.length !== 9) {
-    console.error("bot fleet page must include all nine unlabeled fleet marks");
+    console.error("bot page must include all nine unlabeled fleet marks");
     process.exit(1);
   }
 
@@ -605,7 +616,7 @@ for (const page of [botHtml, botRoot]) {
     /Raytheon/.test(page) ||
     /NASA/.test(page)
   ) {
-    console.error("bot fleet page must not carry Tesla or home bio copy");
+    console.error("bot page must not carry Tesla or home bio copy");
     process.exit(1);
   }
 
@@ -615,12 +626,12 @@ for (const page of [botHtml, botRoot]) {
     page.includes('class="well"') ||
     page.includes("well-canvas")
   ) {
-    console.error("bot fleet page must not keep the solar system or the well");
+    console.error("bot page must not keep the solar system or the well");
     process.exit(1);
   }
 
   if (page.includes("akashnaren@gmail.com") || page.includes("human-mail")) {
-    console.error("bot fleet page should omit Gmail; it stays on home");
+    console.error("bot page should omit Gmail; it stays on home");
     process.exit(1);
   }
 
@@ -630,7 +641,7 @@ for (const page of [botHtml, botRoot]) {
     /looking for a job/i.test(page) ||
     /job search/i.test(page)
   ) {
-    console.error("bot fleet page must not name Job Assistant, Startup Advisor, or job-hunt");
+    console.error("bot page must not name Job Assistant, Startup Advisor, or job-hunt");
     process.exit(1);
   }
 
@@ -641,8 +652,13 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
+  if (page.includes('class="him"') || page.includes('class="panel"')) {
+    console.error("bot page must not reuse the home him/panel split");
+    process.exit(1);
+  }
+
   if (!page.includes("profile assistant")) {
-    console.error("bot fleet page must name profile assistant as the seat that keeps the site");
+    console.error("bot page must name profile assistant as the seat that keeps the site");
     process.exit(1);
   }
 
@@ -659,39 +675,42 @@ for (const page of [botHtml, botRoot]) {
     page.includes("fleet that manages") ||
     page.includes("managed by the fleet") ||
     page.includes("we run the site") ||
-    page.includes("we manage the site")
+    page.includes("we manage the site") ||
+    page.includes("we're akash") ||
+    page.includes("we ship his") ||
+    page.includes("fleet for akash")
   ) {
-    console.error("bot fleet page must not say the fleet manages the site");
+    console.error("bot page must speak as profile assistant, and must not say the fleet manages the site");
     process.exit(1);
   }
 
   if (!page.includes("by grok") && !page.includes("by <a")) {
-    console.error("bot fleet page must keep a real space in managed-by");
+    console.error("bot page must keep a real space in managed-by");
     process.exit(1);
   }
 
-  if (!/class="him"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
-    console.error("bots' inbox must sit in the fleet room column");
+  if (!/class="write"[\s\S]{0,800}mailto:apn@agentmail\.to/.test(page)) {
+    console.error("bots' inbox must sit in the write block");
     process.exit(1);
   }
 
-  if (/class="panel"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
-    console.error("bots' inbox belongs in the room column on /bot, not the face panel");
+  if (/class="crew"[\s\S]{0,2000}mailto:apn@agentmail\.to/.test(page)) {
+    console.error("bots' inbox belongs in the write block, not the crew cluster");
     process.exit(1);
   }
 
   if (!/\/assets\/index-[^"]+\.js/.test(page)) {
-    console.error("bot fleet page must reference hashed /assets/index-*.js");
+    console.error("bot page must reference hashed /assets/index-*.js");
     process.exit(1);
   }
 
   if (/279M|Longest Streak|Current Streak|15 agents/i.test(page) || page.includes("tokens")) {
-    console.error("bot fleet page must not invent Cursor token or streak stats");
+    console.error("bot page must not invent Cursor token or streak stats");
     process.exit(1);
   }
 
   if (/\bprofessor\b/i.test(page) || page.includes("chief of staff")) {
-    console.error("bot fleet page must not name bots");
+    console.error("bot page must not name other bots");
     process.exit(1);
   }
 }
@@ -706,7 +725,7 @@ for (const page of [spa, spaRoot]) {
     process.exit(1);
   }
   if (page.includes('class="page"') || page.includes('class="sky"')) {
-    console.error("404.html must not pre-paint home or the bot fleet page");
+    console.error("404.html must not pre-paint home or the bot page");
     process.exit(1);
   }
 }
@@ -716,6 +735,19 @@ if (!existsSync("dist/.nojekyll") && !existsSync(".nojekyll")) {
   process.exit(1);
 }
 
+if (
+  !/\.page\.profile\s+\.stage\{[^}]*display:flex/.test(css) &&
+  !/\.page\.profile\s+\.stage\s*\{[^}]*display:\s*flex/.test(css)
+) {
+  console.error("stylesheet must keep /bot as a flex studio, not the home two-column grid");
+  process.exit(1);
+}
+
+if (/\.page\.fleet[\s{,]/.test(css)) {
+  console.error("stylesheet must not put fleet sizing on the page root");
+  process.exit(1);
+}
+
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is the fleet room with a 404 SPA fallback.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is Profile Assistant's seat with a 404 SPA fallback.",
 );
