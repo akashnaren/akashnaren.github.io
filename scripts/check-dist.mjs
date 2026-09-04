@@ -313,17 +313,19 @@ if (/job assistant/i.test(html) || /job assistant/i.test(root)) {
   process.exit(1);
 }
 
-const seatNames = [
-  "profile assistant",
-  "software engineer",
-  "research advisor",
-  "chief of staff",
-  "secretary",
-  "chief financial officer",
-  "finance engineer",
-  "product engineer",
-  "agent master",
+const seats = [
+  ["profile-assistant", "profile assistant"],
+  ["software-engineer", "software engineer"],
+  ["research-advisor", "research advisor"],
+  ["chief-of-staff", "chief of staff"],
+  ["secretary", "secretary"],
+  ["chief-financial-officer", "chief financial officer"],
+  ["finance-engineer", "finance engineer"],
+  ["product-engineer", "product engineer"],
+  ["agent-master", "agent master"],
 ];
+
+const seatNames = seats.map(([, name]) => name);
 
 function assertHomeFleetInvite(page, label) {
   if (!page.includes("click on any bot") || !page.includes('class="fleet-invite"')) {
@@ -341,15 +343,20 @@ function assertHomeFleetInvite(page, label) {
     process.exit(1);
   }
 
-  for (const name of seatNames) {
+  if (faces.some((markup) => /\stitle=/.test(markup))) {
+    console.error(`${label} must not put a native title on fleet faces; the custom tip is the only hover name`);
+    process.exit(1);
+  }
+
+  for (const [id, name] of seats) {
     const face = faces.find(
       (markup) =>
         markup.includes('href="/bot"') &&
-        markup.includes(`title="${name}"`) &&
+        markup.includes(`data-seat="${id}"`) &&
         markup.includes(`aria-label="${name}"`),
     );
     if (!face) {
-      console.error(`${label} must title and aria-label a /bot fleet face as ${name}`);
+      console.error(`${label} must data-seat and aria-label a /bot fleet face as ${name}`);
       process.exit(1);
     }
     if (!page.includes(`<span class="fleet-tip" aria-hidden="true">${name}</span>`)) {
@@ -369,7 +376,7 @@ assertHomeFleetInvite(html, "dist/index.html");
 assertHomeFleetInvite(root, "root index.html");
 
 if (html.includes("https://x.ai/bot/marketplace") || root.includes("https://x.ai/bot/marketplace")) {
-  console.error("home must not carry the grok bot marketplace link; that sits on /bot");
+  console.error("home must not carry the grok bot marketplace link");
   process.exit(1);
 }
 
@@ -541,6 +548,27 @@ if (
   process.exit(1);
 }
 
+if (!css.includes("bottom: calc(100%") && !css.includes("bottom:calc(100%")) {
+  console.error("fleet name tips must sit above the face, not over the mark");
+  process.exit(1);
+}
+
+for (const [id] of seats) {
+  if (!css.includes(`[data-seat="${id}"]`) && !css.includes(`[data-seat=${id}]`)) {
+    console.error(`stylesheet must place a name tip for ${id}, not only the host`);
+    process.exit(1);
+  }
+}
+
+if (
+  !css.includes(".fleet-face:after{pointer-events:none") &&
+  !css.includes(".fleet-face::after{pointer-events:none") &&
+  !css.includes(".fleet-face::after {\n    pointer-events: none")
+) {
+  console.error("fine-pointer hover must use the face mark, not the overlapping tap pad");
+  process.exit(1);
+}
+
 if (
   !css.includes("hover:hover") &&
   !css.includes("hover: hover") &&
@@ -582,11 +610,6 @@ if (!/@keyframes\s+fleet-idle/.test(css) || !css.includes("fleet-idle")) {
 
 if (!/@keyframes\s+grok-glance/.test(css) || !css.includes("grok-glance")) {
   console.error("stylesheet must keep the grok-bot eye glance");
-  process.exit(1);
-}
-
-if (!css.includes(".market")) {
-  console.error("stylesheet must keep the quiet grok bot marketplace line");
   process.exit(1);
 }
 
@@ -831,9 +854,6 @@ const botRequired = [
   'class="inbox-label"',
   'class="inbox-address"',
   "https://x.ai/bot",
-  "https://x.ai/bot/marketplace",
-  "browse and add grok bots",
-  'class="market"',
   "grok bot",
   "this site is managed by",
   "mailto:apn@agentmail.to",
@@ -857,7 +877,6 @@ const botRequired = [
   'class="inbox',
   'class="managed-copy"',
   'class="grok-bot-eyes"',
-  "seat-wrap",
   "data-seat=",
   "data-blurb=",
   'src="/fleet/01.png"',
@@ -923,6 +942,23 @@ for (const page of [botHtml, botRoot]) {
 
   if (page.includes("<title>Profile Assistant</title>") || page.includes(">profile assistant<span")) {
     console.error("bot page top title must be grok bot collection, not Profile Assistant");
+    process.exit(1);
+  }
+
+  if (!/<header class="mast">\s*<h1>grok bot collection<span class="scope" aria-hidden="true"><\/span><\/h1>\s*<\/header>/.test(page)) {
+    console.error("bot page mast must be only the grok bot collection title");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("https://x.ai/bot/marketplace") ||
+    page.includes("browse and add grok bots") ||
+    page.includes('class="market"') ||
+    page.includes("seat-wrap") ||
+    page.includes("seat-line") ||
+    page.includes("nine <a href=\"https://x.ai/bot\">grok bots</a>")
+  ) {
+    console.error("bot page must not keep the mast mark, nine grok bots line, or marketplace");
     process.exit(1);
   }
 

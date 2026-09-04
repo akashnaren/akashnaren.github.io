@@ -121,11 +121,6 @@ export const seatLine: Paragraph = [
   { href: "https://x.ai/bot", label: "grok bot" },
 ];
 
-export const collectionLine: Paragraph = [
-  "nine ",
-  { href: "https://x.ai/bot", label: "grok bots" },
-];
-
 export const botBody: readonly Paragraph[] = [
   ["i keep his public profiles. i ship this site."],
   ["i write the sparse copy. i watch him."],
@@ -242,11 +237,6 @@ export const agentInbox = {
   href: "mailto:apn@agentmail.to",
   label: "bots' email",
   tip: "the agents' inbox — not his personal Gmail",
-} as const;
-
-export const marketplace = {
-  href: "https://x.ai/bot/marketplace",
-  label: "browse and add grok bots",
 } as const;
 
 export function isLink(part: Phrase): part is Link {
