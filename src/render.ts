@@ -166,22 +166,19 @@ export function renderSite(): string {
     </div>`;
 }
 
-function renderTile(seat: Seat): string {
-  return `<button type="button" class="tile" role="listitem" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" data-blurb="${escapeHtml(seat.blurb)}" aria-pressed="false" aria-label="${escapeHtml(seat.name)}">${renderMark(seat.face, 56, "tile-face")}</button>`;
+function renderFace(seat: Seat): string {
+  return `<button type="button" class="face" role="listitem" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" data-blurb="${escapeHtml(seat.blurb)}" aria-pressed="false" aria-label="${escapeHtml(seat.name)}">${renderMark(seat.face, 40, "face-mark")}</button>`;
 }
 
 function renderBoard(): string {
-  const tiles = seats.map(renderTile).join("");
+  const faces = seats.map(renderFace).join("");
   return `<main class="board">
         <p class="crew-label">${escapeHtml(crewLabel)}</p>
-        <div class="board-split">
-          <div class="crew-grid" role="list">${tiles}</div>
-          <aside class="brief" aria-live="polite">
-            <p class="brief-hint">${escapeHtml(pickLine)}</p>
-            <p class="brief-name"></p>
-            <p class="brief-copy"></p>
-          </aside>
-        </div>
+        <div class="crew-sky" role="list">${faces}</div>
+        <aside class="brief" aria-live="polite">
+          <p class="brief-name">${escapeHtml(pickLine)}</p>
+          <p class="brief-copy"></p>
+        </aside>
         <p class="fleet-line">${escapeHtml(fleetLine)}</p>
       </main>`;
 }
