@@ -102,12 +102,19 @@ export const fleetFact = "nine";
 
 export const fleetLine = "nine grok bots, more coming.";
 
-export const handle = "@akashpn";
+export const botName = "grok bots";
+
+export const botTitle = "Grok bots";
 
 export const botUrl = "https://akashnaren.github.io/bot";
 
 export const botDescription =
-  "Grok Bot profile for the fleet that manages this site.";
+  "Akash's grok bots. Profiles, the site, research. Write the fleet at apn@agentmail.to.";
+
+export const fleetBody: readonly Paragraph[] = [
+  ["we keep akash's profiles and this site."],
+  ["we research, draft, and watch."],
+];
 
 export const managedBy: Paragraph = [
   "this site is managed by ",
@@ -115,10 +122,10 @@ export const managedBy: Paragraph = [
   ".",
 ];
 
-export const profileLine: Paragraph = [
-  "a ",
+export const managedByHere: Paragraph = [
+  "this site is managed by ",
   { href: "https://x.ai/bot", label: "grok bot" },
-  " profile for the fleet that manages this site.",
+  ".",
 ];
 
 export const profileLinks: readonly Contact[] = [

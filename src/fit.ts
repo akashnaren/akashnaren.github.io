@@ -13,8 +13,8 @@ export function fitStage(): void {
   root.style.setProperty("--fit", "1");
 
   const pageH = Math.min(page.clientHeight, viewportHeight());
-  const profile = page.classList.contains("profile");
-  const floor = profile
+  const fleet = page.classList.contains("fleet");
+  const floor = fleet
     ? Math.max(32, Math.round(pageH * 0.08))
     : Math.max(140, Math.round(pageH * 0.28));
   const stageH = stage.scrollHeight;

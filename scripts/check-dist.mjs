@@ -504,7 +504,7 @@ for (const page of [html, root]) {
 }
 
 if (!existsSync("dist/bot/index.html") || !existsSync("bot/index.html")) {
-  console.error("bot profile must exist at dist/bot/index.html and bot/index.html");
+  console.error("bot fleet page must exist at dist/bot/index.html and bot/index.html");
   process.exit(1);
 }
 
@@ -519,12 +519,12 @@ const spa = readFileSync("dist/404.html", "utf8");
 const spaRoot = readFileSync("404.html", "utf8");
 
 const botRequired = [
-  "Akash Premkumar",
-  "@akashpn",
-  "a ",
+  "grok bots",
+  "we keep akash's profiles and this site.",
+  "we research, draft, and watch.",
   "https://x.ai/bot",
   "grok bot",
-  "profile for the fleet that manages this site.",
+  "this site is managed by",
   "bots' email",
   "mailto:apn@agentmail.to",
   "apn@agentmail.to",
@@ -537,29 +537,34 @@ const botRequired = [
   ">cursor</span>",
   ">x</span>",
   "nine grok bots, more coming.",
-  'class="page profile"',
-  'class="handle"',
+  'class="page fleet"',
+  'class="room"',
+  'class="contact"',
+  'class="inbox"',
+  'class="managed-copy"',
   'class="fleet"',
   'class="fact"',
   "nine",
   'src="/fleet/01.png"',
   'src="/fleet/09.png"',
   'property="og:url" content="https://akashnaren.github.io/bot"',
-  "Grok Bot profile for the fleet that manages this site.",
+  "<title>Grok bots</title>",
+  "Akash's grok bots.",
+  "Write the fleet at apn@agentmail.to.",
   ...fleetSrcs.map((src) => `src="${src}"`),
 ];
 
 for (const page of [botHtml, botRoot]) {
   const missingBot = botRequired.filter((needle) => !page.includes(needle));
   if (missingBot.length > 0) {
-    console.error("bot profile is missing required copy:");
+    console.error("bot fleet page is missing required copy:");
     for (const needle of missingBot) console.error(`  - ${needle}`);
     process.exit(1);
   }
 
   const botFleet = fleetSrcs.filter((src) => page.includes(`src="${src}"`));
   if (botFleet.length !== 9) {
-    console.error("bot profile must include all nine unlabeled fleet marks");
+    console.error("bot fleet page must include all nine unlabeled fleet marks");
     process.exit(1);
   }
 
@@ -567,9 +572,11 @@ for (const page of [botHtml, botRoot]) {
     /Tesla/.test(page) ||
     /tesla\.com/.test(page) ||
     /engineer\s*@/i.test(page) ||
-    /Redwood City/.test(page)
+    /Redwood City/.test(page) ||
+    /Raytheon/.test(page) ||
+    /NASA/.test(page)
   ) {
-    console.error("bot profile must not carry Tesla or home bio copy");
+    console.error("bot fleet page must not carry Tesla or home bio copy");
     process.exit(1);
   }
 
@@ -579,31 +586,62 @@ for (const page of [botHtml, botRoot]) {
     page.includes('class="well"') ||
     page.includes("well-canvas")
   ) {
-    console.error("bot profile must not keep the solar system or the well");
+    console.error("bot fleet page must not keep the solar system or the well");
     process.exit(1);
   }
 
   if (page.includes("akashnaren@gmail.com") || page.includes("human-mail")) {
-    console.error("bot profile should omit Gmail; it stays on home");
+    console.error("bot fleet page should omit Gmail; it stays on home");
     process.exit(1);
   }
 
   if (
     /job assistant/i.test(page) ||
     /startup advisor/i.test(page) ||
-    /looking for a job/i.test(page)
+    /profile assistant/i.test(page) ||
+    /looking for a job/i.test(page) ||
+    /job search/i.test(page)
   ) {
-    console.error("bot profile must not name bot roles or job-hunt");
+    console.error("bot fleet page must not name bot roles or job-hunt");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("fleet that manages") ||
+    page.includes("managed by the fleet") ||
+    /manages this site/.test(page)
+  ) {
+    console.error("bot fleet page must not say the fleet manages the site");
+    process.exit(1);
+  }
+
+  if (!page.includes("by grok") && !page.includes("by <a")) {
+    console.error("bot fleet page must keep a real space in managed-by");
+    process.exit(1);
+  }
+
+  if (!/class="him"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
+    console.error("bots' inbox must sit in the fleet room column");
+    process.exit(1);
+  }
+
+  if (/class="panel"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
+    console.error("bots' inbox belongs in the room column on /bot, not the face panel");
     process.exit(1);
   }
 
   if (!/\/assets\/index-[^"]+\.js/.test(page)) {
-    console.error("bot profile must reference hashed /assets/index-*.js");
+    console.error("bot fleet page must reference hashed /assets/index-*.js");
     process.exit(1);
   }
 
   if (/279M|Longest Streak|Current Streak|15 agents/i.test(page) || page.includes("tokens")) {
-    console.error("bot profile must not invent Cursor token or streak stats");
+    console.error("bot fleet page must not invent Cursor token or streak stats");
+    process.exit(1);
+  }
+
+  if (/\bprofessor\b/i.test(page) || page.includes("chief of staff")) {
+    console.error("bot fleet page must not name bots");
     process.exit(1);
   }
 }
@@ -618,7 +656,7 @@ for (const page of [spa, spaRoot]) {
     process.exit(1);
   }
   if (page.includes('class="page"') || page.includes('class="sky"')) {
-    console.error("404.html must not pre-paint home or the bot profile");
+    console.error("404.html must not pre-paint home or the bot fleet page");
     process.exit(1);
   }
 }
@@ -629,5 +667,5 @@ if (!existsSync("dist/.nojekyll") && !existsSync(".nojekyll")) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a quiet profile with a 404 SPA fallback.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine unlabeled faces, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is the fleet room with a 404 SPA fallback.",
 );
