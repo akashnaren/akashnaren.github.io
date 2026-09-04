@@ -520,8 +520,8 @@ const spaRoot = readFileSync("404.html", "utf8");
 
 const botRequired = [
   "grok bots",
-  "we keep akash's profiles and this site.",
-  "we research, draft, and watch.",
+  " fleet for akash.",
+  "we keep his profiles. we research, draft, and watch.",
   "https://x.ai/bot",
   "grok bot",
   "this site is managed by",

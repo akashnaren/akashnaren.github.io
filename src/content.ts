@@ -112,8 +112,12 @@ export const botDescription =
   "Akash's grok bots. Profiles, the site, research. Write the fleet at apn@agentmail.to.";
 
 export const fleetBody: readonly Paragraph[] = [
-  ["we keep akash's profiles and this site."],
-  ["we research, draft, and watch."],
+  [
+    "a ",
+    { href: "https://x.ai/bot", label: "grok bot" },
+    " fleet for akash.",
+  ],
+  ["we keep his profiles. we research, draft, and watch."],
 ];
 
 export const managedBy: Paragraph = [
