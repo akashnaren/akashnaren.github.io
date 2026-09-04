@@ -2,23 +2,26 @@ import {
   agentInbox,
   body,
   botDescription,
+  botName,
+  botTitle,
   botUrl,
   contact,
   description,
+  fleetBody,
   fleetFact,
   fleetLine,
   fleetMarkSize,
   fleetMarks,
-  handle,
   isLink,
   managedBy,
+  managedByHere,
   managedMarkSize,
   name,
   personalMail,
-  profileLine,
   profileLinks,
   url,
   type Contact,
+  type Paragraph,
   type Phrase,
 } from "./content.ts";
 
@@ -35,7 +38,7 @@ export const homeMeta: PageMeta = {
 };
 
 export const botMeta: PageMeta = {
-  title: name,
+  title: botTitle,
   description: botDescription,
   url: botUrl,
 };
@@ -68,8 +71,8 @@ function renderGrokBotMark(): string {
   return `<span class="grok-bot-wrap" aria-hidden="true"><svg class="grok-bot-photon" viewBox="0 0 32 32" width="20" height="20" focusable="false"><circle class="grok-bot-photon-halo" cx="16" cy="16" r="14.6" fill="none" stroke="#ff6b00" stroke-width="0.7" opacity="0.22"/></svg><svg class="grok-bot-mark" viewBox="0 0 32 32" width="${size}" height="${size}" focusable="false"><g class="grok-bot-body"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><g class="grok-bot-eyes"><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></g></g></svg></span>`;
 }
 
-function renderManagedBy(): string {
-  return `<p class="managed">${renderGrokBotMark()}<span class="managed-copy">${managedBy.map(renderPhrase).join("")}</span></p>`;
+function renderManagedBy(line: Paragraph = managedBy): string {
+  return `<p class="managed">${renderGrokBotMark()}<span class="managed-copy">${line.map(renderPhrase).join("")}</span></p>`;
 }
 
 function renderContactLink(item: Contact): string {
@@ -157,20 +160,26 @@ export function renderSite(): string {
 }
 
 export function renderBot(): string {
-  return `<div class="page profile" id="holder">
+  const paragraphs = fleetBody.map(renderParagraph).join("\n          ");
+
+  return `<div class="page fleet" id="holder">
       <div class="stage">
       <main class="him">
-        <header>
-          <h1>${escapeHtml(name)}<span class="scope" aria-hidden="true"></span></h1>
-          <p class="handle">${escapeHtml(handle)}</p>
-        </header>
-        <p class="profile-line">${profileLine.map(renderPhrase).join("")}</p>
-        ${renderInbox()}
-        ${renderProfileLinks()}
+        <div class="room">
+          <header>
+            <h1>${escapeHtml(botName)}<span class="scope" aria-hidden="true"></span></h1>
+          </header>
+          ${paragraphs}
+        </div>
+        <div class="contact">
+          ${renderInbox()}
+          ${renderProfileLinks()}
+        </div>
       </main>
       <aside class="panel">
         ${renderFact()}
         ${renderFleet()}
+        ${renderManagedBy(managedByHere)}
       </aside>
       </div>
     </div>`;

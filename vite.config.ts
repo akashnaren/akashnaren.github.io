@@ -12,9 +12,28 @@ import {
 
 const holderPattern = /<div id="holder"><\/div>/;
 
+function rewriteBotIndex(req: { url?: string }): void {
+  if (req.url === "/bot") req.url = "/bot/";
+}
+
 export default defineConfig({
   base: "/",
   plugins: [
+    {
+      name: "rewrite-bot-index",
+      configureServer(server) {
+        server.middlewares.use((req, _res, next) => {
+          rewriteBotIndex(req);
+          next();
+        });
+      },
+      configurePreviewServer(server) {
+        server.middlewares.use((req, _res, next) => {
+          rewriteBotIndex(req);
+          next();
+        });
+      },
+    },
     {
       name: "inject-site",
       transformIndexHtml(html) {

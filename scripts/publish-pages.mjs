@@ -83,5 +83,5 @@ if (!existsSync("bot/index.html") || !existsSync("404.html")) {
 }
 
 console.log(
-  "published dist to repo root for Files Pages (hashed assets, /bot profile, 404 SPA fallback).",
+  "published dist to repo root for Files Pages (hashed assets, /bot fleet page, 404 SPA fallback).",
 );
