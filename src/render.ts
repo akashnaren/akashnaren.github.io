@@ -18,7 +18,6 @@ import {
   managedMarkSize,
   name,
   personalMail,
-  pickLine,
   seats,
   url,
   type Contact,
@@ -188,33 +187,21 @@ function renderRow(seat: Seat, on = false): string {
 }
 
 function renderBoard(): string {
-  const host = seats[0];
   const rows = seats.map((seat, index) => renderRow(seat, index === 0)).join("");
-  const name = host?.name ?? pickLine;
-  const copy = host?.blurb ?? "";
   return `<main class="board" data-cycle="3000">
-        <aside class="brief is-open" aria-live="off">
-          <p class="brief-name">${escapeHtml(name)}</p>
-          <p class="brief-copy">${escapeHtml(copy)}</p>
-        </aside>
         <div class="roster" role="list">${rows}</div>
-        <p class="fleet-line">${escapeHtml(fleetLine)}</p>
       </main>`;
 }
 
 export function renderBot(): string {
   return `<div class="page profile" id="holder">
       <div class="stage">
-      <div class="rail">
-        <header class="mast">
-          <h1>${escapeHtml(collectionTitle)}<span class="scope" aria-hidden="true"></span></h1>
-        </header>
-        <section class="write">
-          ${renderInbox(agentInbox.label, agentInbox.tip)}
-        </section>
-      </div>
+      <header class="mast">
+        <h1>${escapeHtml(collectionTitle)}<span class="scope" aria-hidden="true"></span></h1>
+      </header>
       ${renderBoard()}
       <footer class="foot">
+        ${renderInbox(agentInbox.label, agentInbox.tip)}
         ${renderManagedBy(managedByHere)}
       </footer>
       </div>
