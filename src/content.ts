@@ -25,10 +25,10 @@ export const body: readonly Paragraph[] = [
     " I worked on vehicle service systems: diagnostics, telemetry, and data analysis for service.",
   ],
   [
-    "Previously I worked on vehicle engineering: bill of materials, full stack applications, ",
+    "Previously I worked on vehicle engineering: bill of materials, fullstack applications, ",
     { href: "https://www.tesla.com/robotaxi", label: "robotaxi" },
     ", ",
-    { href: "https://www.tesla.com/AI", label: "optimus" },
+    { href: "https://www.tesla.com/AI", label: "Optimus" },
     ", and ",
     { href: "https://grok.com", label: "grok" },
     " integrations.",
