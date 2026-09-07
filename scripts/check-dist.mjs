@@ -26,11 +26,11 @@ const required = [
   "Worked at Tesla in Redwood City on vehicle service systems",
   "Previously I worked on vehicle engineering",
   "bill of materials",
-  "full stack applications",
+  "fullstack applications",
   "https://www.tesla.com/robotaxi",
   "robotaxi",
   "https://www.tesla.com/AI",
-  "optimus",
+  "Optimus",
   "https://grok.com",
   "grok",
   "https://www.rtx.com/raytheon",
@@ -88,6 +88,8 @@ const required = [
 ];
 
 const forbidden = [
+  "full stack applications",
+  ">optimus</a>",
   "AI engineer",
   "AI Engineer",
   "usage stats",
@@ -793,6 +795,14 @@ for (const page of [html, root]) {
   }
   if (!page.includes("I worked on vehicle service systems")) {
     console.error("home bio must say Tesla vehicle service work in the past tense");
+    process.exit(1);
+  }
+  if (!page.includes("fullstack applications") || page.includes("full stack applications")) {
+    console.error("vehicle engineering bio must say fullstack, not full stack");
+    process.exit(1);
+  }
+  if (!page.includes(">Optimus</a>") || page.includes(">optimus</a>")) {
+    console.error("vehicle engineering bio must capitalize the Optimus product link");
     process.exit(1);
   }
   if (!page.includes("Worked at Tesla in Redwood City on vehicle service systems")) {
