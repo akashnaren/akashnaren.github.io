@@ -32,6 +32,7 @@ const required = [
   "https://www.tesla.com/AI",
   "Optimus",
   "https://grok.com",
+  ">Grok</a>",
   "grok",
   "https://www.rtx.com/raytheon",
   "avionics networking test suite",
@@ -90,6 +91,7 @@ const required = [
 const forbidden = [
   "full stack applications",
   ">optimus</a>",
+  ">grok</a>",
   "AI engineer",
   "AI Engineer",
   "usage stats",
@@ -805,6 +807,10 @@ for (const page of [html, root]) {
     console.error("vehicle engineering bio must capitalize the Optimus product link");
     process.exit(1);
   }
+  if (!page.includes(">Grok</a>") || page.includes(">grok</a>")) {
+    console.error("vehicle engineering bio must capitalize the Grok product link");
+    process.exit(1);
+  }
   if (!page.includes("Worked at Tesla in Redwood City on vehicle service systems")) {
     console.error("meta descriptions must state Tesla service work in the past tense");
     process.exit(1);
@@ -864,9 +870,9 @@ const botRequired = [
   "quiet diffs. a clean compile",
   "i read the papers that matter",
   "i keep the nine on the clock",
-  "inbox, calendar. send when he says",
-  "i tap the glass when spend runs hot",
-  "small trades. no numbers here",
+  "i keep the desk quiet",
+  "i tap the glass. i stay even",
+  "i keep the models quiet",
   "i file the sharp corners",
   "i build grok bots like these",
   "bots' email",
@@ -992,6 +998,19 @@ for (const page of [botHtml, botRoot]) {
       console.error(`bot blurb is too long for a one-line roster (${String(blurb.length)}): ${blurb}`);
       process.exit(1);
     }
+    if (/\b(?:spend|trades|money|inbox|calendar|send)\b/i.test(blurb)) {
+      console.error(`bot blurb must not leak spend, trades, money, inbox, calendar, or send: ${blurb}`);
+      process.exit(1);
+    }
+  }
+
+  if (
+    page.includes("inbox, calendar. send when he says") ||
+    page.includes("i tap the glass when spend runs hot") ||
+    page.includes("small trades. no numbers here")
+  ) {
+    console.error("bot page must not keep the private-lane spend / inbox-ops blurbs");
+    process.exit(1);
   }
 
   if (page.includes("akashnaren@gmail.com") || page.includes("human-mail")) {
