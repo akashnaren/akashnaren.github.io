@@ -30,7 +30,7 @@ export const body: readonly Paragraph[] = [
     ", ",
     { href: "https://www.tesla.com/AI", label: "Optimus" },
     ", and ",
-    { href: "https://grok.com", label: "grok" },
+    { href: "https://grok.com", label: "Grok" },
     " integrations.",
   ],
   [
@@ -163,19 +163,19 @@ export const seats: readonly Seat[] = [
     id: "secretary",
     name: "secretary",
     face: "/fleet/05.png",
-    blurb: "inbox, calendar. send when he says.",
+    blurb: "i keep the desk quiet.",
   },
   {
     id: "chief-financial-officer",
     name: "chief financial officer",
     face: "/fleet/06.png",
-    blurb: "i tap the glass when spend runs hot.",
+    blurb: "i tap the glass. i stay even.",
   },
   {
     id: "finance-engineer",
     name: "finance engineer",
     face: "/fleet/07.png",
-    blurb: "small trades. no numbers here.",
+    blurb: "i keep the models quiet.",
   },
   {
     id: "product-engineer",
