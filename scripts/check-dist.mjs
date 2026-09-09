@@ -1256,6 +1256,7 @@ const researchRequired = [
   "Open problems and drafts. Updates as research continues.",
   'property="og:url" content="https://akashnaren.github.io/research"',
   "updates as research continues",
+  "I keep a short list of open threads",
   "Agent-native UI protocols",
   "ARC-AGI vs hallucination risk",
   "Gap-aware entity resolution",
@@ -1264,13 +1265,13 @@ const researchRequired = [
   "MiniShop",
   "screenshot, a11y/DOM, flat tools",
   "structured view-document",
-  "ARC-AGI-2 or ARC-AGI-3",
+  "ARC-AGI-1",
   "hallucination likelihood",
   "held-out probes",
   "time-indexed graph",
-  "refuse to invent edges",
+  "invent edges",
   "https://github.com/akashnaren/research",
-  "akashnaren/research",
+  ">repo</a>",
   'class="page research"',
   'class="threads"',
   'class="thread"',
@@ -1313,6 +1314,16 @@ for (const page of [researchHtml, researchRoot]) {
 
   if ((page.match(/https:\/\/github\.com\/akashnaren\/research/g) ?? []).length < 1) {
     console.error("research page must link thread 1 to github.com/akashnaren/research");
+    process.exit(1);
+  }
+
+  if (page.includes("ARC-AGI-2") || page.includes("ARC-AGI-3")) {
+    console.error("research page must name ARC-AGI-1 only, never ARC-AGI-2 or ARC-AGI-3");
+    process.exit(1);
+  }
+
+  if (page.includes("class=\"dot\"") || page.includes("is-live")) {
+    console.error("research status must stay quiet secondary text, not live pills");
     process.exit(1);
   }
 
@@ -1397,6 +1408,11 @@ for (const page of [researchHtml, researchRoot]) {
   }
 }
 
+if (js.includes("ARC-AGI-2") || js.includes("ARC-AGI-3")) {
+  console.error("bundled script must name ARC-AGI-1 only, never ARC-AGI-2 or ARC-AGI-3");
+  process.exit(1);
+}
+
 if (
   !css.includes(".page.research") ||
   !css.includes(".threads") ||
@@ -1440,5 +1456,5 @@ if (
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a no-scroll living notebook with three open threads, a quiet live cue, and SVG sketches.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a living notebook: title, one interest line, three scannable threads with quiet status, ARC-AGI-1 only, and small SVG marks.",
 );
