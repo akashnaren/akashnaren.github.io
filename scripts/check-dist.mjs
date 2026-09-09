@@ -61,7 +61,7 @@ const required = [
   "akashnaren@gmail.com",
   "mailto:apn@agentmail.to",
   "apn@agentmail.to",
-  "bots' email",
+  "bots' inbox",
   'class="inbox"',
   "this site is managed by",
   'href="/bot"',
@@ -905,7 +905,7 @@ const botRequired = [
   "i keep the models quiet",
   "i file the sharp corners",
   "i build grok bots like these",
-  "bots' email",
+  "bots' inbox",
   "the agents' inbox — not his personal Gmail",
   'class="inbox-tip"',
   'role="tooltip"',
@@ -1124,13 +1124,13 @@ for (const page of [botHtml, botRoot]) {
   }
 
   if (
-    !page.includes('<span class="inbox-label">bots\' email</span>') ||
+    !page.includes('<span class="inbox-label">bots\' inbox</span>') ||
     !page.includes('class="inbox-address"') ||
     !page.includes('href="mailto:apn@agentmail.to"') ||
     !page.includes(">apn@agentmail.to</a>")
   ) {
     console.error(
-      "bot inbox must keep a separate bots' email label and mailto address, never one jammed string",
+      "bot inbox must keep a separate bots' inbox label and mailto address, never one jammed string",
     );
     process.exit(1);
   }
