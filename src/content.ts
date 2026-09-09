@@ -201,13 +201,9 @@ export const researchTitle = "research";
 
 export const researchUrl = "https://akashnaren.github.io/research";
 
-export const researchDescription =
-  "I work on how agents see interfaces, how puzzle scores relate to truthfulness, and how to fuse records without inventing the missing pieces.";
+export const researchDescription = "still researching";
 
-export const researchLede =
-  "I work on how agents see interfaces, how puzzle scores relate to truthfulness, and how to fuse records without inventing the missing pieces.";
-
-export const researchCue = "notes update as the work moves";
+export const researchNote = "still researching";
 
 export const researchLinkLabel = "Research";
 
