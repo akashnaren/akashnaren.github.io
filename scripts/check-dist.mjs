@@ -1253,28 +1253,28 @@ const researchRoot = readFileSync("research/index.html", "utf8");
 
 const researchRequired = [
   "<title>research</title>",
-  "Open problems and drafts. Updates as research continues.",
+  "I work on how agents see interfaces, how puzzle scores relate to truthfulness, and how to fuse records without inventing the missing pieces.",
   'property="og:url" content="https://akashnaren.github.io/research"',
-  "updates as research continues",
-  "I keep a short list of open threads",
+  "notes update as the work moves",
   "Agent-native UI protocols",
   "ARC-AGI vs hallucination risk",
   "Gap-aware entity resolution",
   "drafting",
   "exploring",
   "MiniShop",
-  "screenshot, a11y/DOM, flat tools",
-  "structured view-document",
+  "screenshots or a flat accessibility tree",
+  "structured view document",
+  "success, tokens, steps, and illegal actions",
   "ARC-AGI-1",
-  "hallucination likelihood",
-  "held-out probes",
-  "time-indexed graph",
-  "invent edges",
+  "held out probes",
+  "time indexed graph",
+  "missing links visible",
   "https://github.com/akashnaren/research",
-  ">repo</a>",
+  ">code</a>",
   'class="page research"',
   'class="threads"',
   'class="thread"',
+  'class="lede"',
   'class="cue"',
   'class="status"',
   'class="live-mark"',
@@ -1307,6 +1307,30 @@ for (const page of [researchHtml, researchRoot]) {
     process.exit(1);
   }
 
+  const articles = page.match(/<article class="thread"[\s\S]*?<\/article>/g) ?? [];
+  if (articles.length !== 3) {
+    console.error("research page must expose three complete thread articles");
+    process.exit(1);
+  }
+  for (const [index, article] of articles.entries()) {
+    const fig = article.indexOf('class="thread-fig"');
+    const copy = article.indexOf('class="thread-copy"');
+    if (fig < 0 || copy < 0 || fig > copy) {
+      console.error(`research thread ${String(index + 1)} must keep the teaser figure left of the copy`);
+      process.exit(1);
+    }
+    if (!article.includes('class="status"')) {
+      console.error(`research thread ${String(index + 1)} must keep a quiet status line`);
+      process.exit(1);
+    }
+    const abstracts = article.match(/<div class="thread-copy">[\s\S]*?<\/div>/)?.[0] ?? "";
+    const bodyParagraphs = (abstracts.match(/<p(?:\s|>)/g) ?? []).length;
+    if (bodyParagraphs > 3) {
+      console.error(`research thread ${String(index + 1)} must stay to title, status, and one short abstract`);
+      process.exit(1);
+    }
+  }
+
   if ((page.match(/drafting/g) ?? []).length < 1 || (page.match(/exploring/g) ?? []).length < 2) {
     console.error("research page must mark thread 1 drafting and threads 2 and 3 exploring");
     process.exit(1);
@@ -1317,13 +1341,36 @@ for (const page of [researchHtml, researchRoot]) {
     process.exit(1);
   }
 
-  if (page.includes("ARC-AGI-2") || page.includes("ARC-AGI-3")) {
-    console.error("research page must name ARC-AGI-1 only, never ARC-AGI-2 or ARC-AGI-3");
+  if ((page.match(/>code<\/a>/g) ?? []).length !== 1) {
+    console.error("research page must label the only public repo link as code");
     process.exit(1);
   }
 
-  if (page.includes("class=\"dot\"") || page.includes("is-live")) {
-    console.error("research status must stay quiet secondary text, not live pills");
+  if (page.includes("ARC-AGI-2") || page.includes("ARC-AGI-3")) {
+    console.error("research page must stay on ARC-AGI-1");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("open question") ||
+    page.includes("in this work") ||
+    page.includes("delve") ||
+    page.includes("leverage") ||
+    page.includes("robust pipeline") ||
+    page.includes("held-out") ||
+    page.includes("time-indexed")
+  ) {
+    console.error("research page must keep the human short copy, not AI essay phrasing");
+    process.exit(1);
+  }
+
+  if (page.includes("status-pill") || page.includes("badge") || page.includes("chip")) {
+    console.error("research page must not use product status pills");
+    process.exit(1);
+  }
+
+  if (page.includes("\u2014") || page.includes("\u2013")) {
+    console.error("research page must not use dash punctuation");
     process.exit(1);
   }
 
@@ -1408,11 +1455,6 @@ for (const page of [researchHtml, researchRoot]) {
   }
 }
 
-if (js.includes("ARC-AGI-2") || js.includes("ARC-AGI-3")) {
-  console.error("bundled script must name ARC-AGI-1 only, never ARC-AGI-2 or ARC-AGI-3");
-  process.exit(1);
-}
-
 if (
   !css.includes(".page.research") ||
   !css.includes(".threads") ||
@@ -1421,28 +1463,40 @@ if (
   !css.includes(".thread-fig") ||
   !css.includes(".page-link")
 ) {
-  console.error("stylesheet must keep the research notebook and home Research link");
+  console.error("stylesheet must keep the research list and home Research link");
   process.exit(1);
 }
 
 if (
-  /\.page\.research[^{]*\{[^}]*overflow-y:\s*auto/.test(css) ||
-  /\.page\.research\{[^}]*overflow-y:auto/.test(css)
+  !/\.page\.research[^{]*\{[^}]*overflow-y:\s*auto/.test(css) &&
+  !/\.page\.research\{[^}]*overflow-y:auto/.test(css) &&
+  !/\.page\.research\{[^}]*overflow:hidden\s+auto/.test(css)
 ) {
-  console.error("/research must not scroll — overflow hidden like home and /bot");
+  console.error("/research must scroll as a readable academic list");
   process.exit(1);
 }
 
-if (
-  !/\.page\.research[^{]*\{[^}]*overflow:\s*hidden/.test(css) &&
-  !/\.page\.research\{[^}]*overflow:hidden/.test(css)
-) {
-  console.error("/research page must overflow hidden so the notebook stays in one frame");
+if (!css.includes("font-weight:600") && !css.includes("font-weight: 600")) {
+  console.error("research titles must be bold like an academic paper list");
   process.exit(1);
 }
 
 if (!/@keyframes\s+live-pulse/.test(css) || !css.includes("live-pulse")) {
   console.error("stylesheet must keep a quiet live pulse on open research work");
+  process.exit(1);
+}
+
+if (
+  !css.includes("140px") ||
+  (!css.includes("grid-template-columns:calc(140px") &&
+    !css.includes("grid-template-columns: calc(140px"))
+) {
+  console.error("research rows must keep a 140px left teaser column");
+  process.exit(1);
+}
+
+if (!css.includes(".lede")) {
+  console.error("stylesheet must keep the research interest sentence");
   process.exit(1);
 }
 
@@ -1456,5 +1510,5 @@ if (
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a living notebook: title, one interest line, three scannable threads with quiet status, ARC-AGI-1 only, and small SVG marks.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with three figure-left rows, bold titles, a short interest sentence, and quiet SVG teasers.",
 );

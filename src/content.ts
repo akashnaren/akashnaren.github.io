@@ -202,10 +202,12 @@ export const researchTitle = "research";
 export const researchUrl = "https://akashnaren.github.io/research";
 
 export const researchDescription =
-  "Open problems and drafts. Updates as research continues.";
+  "I work on how agents see interfaces, how puzzle scores relate to truthfulness, and how to fuse records without inventing the missing pieces.";
 
-export const researchCue =
-  "I keep a short list of open threads. The page updates as research continues.";
+export const researchLede =
+  "I work on how agents see interfaces, how puzzle scores relate to truthfulness, and how to fuse records without inventing the missing pieces.";
+
+export const researchCue = "notes update as the work moves";
 
 export const researchLinkLabel = "Research";
 
@@ -218,7 +220,7 @@ export type Thread = {
   readonly title: string;
   readonly status: ThreadStatus;
   readonly figure: ThreadFigure;
-  readonly scope: readonly string[];
+  readonly abstract: string;
   readonly href?: string;
   readonly linkLabel?: string;
 };
@@ -229,32 +231,26 @@ export const threads: readonly Thread[] = [
     title: "Agent-native UI protocols",
     status: "drafting",
     figure: "protocol",
-    scope: [
-      "I am running a controlled MiniShop study that holds the tasks fixed and compares screenshot, a11y/DOM, flat tools, and a structured view-document.",
-      "I score success, tokens, steps, and illegal actions.",
-    ],
+    abstract:
+      "Agents still drive apps through screenshots or a flat accessibility tree. I am comparing those to a structured view document on the same MiniShop tasks, and scoring success, tokens, steps, and illegal actions.",
     href: "https://github.com/akashnaren/research",
-    linkLabel: "repo",
+    linkLabel: "code",
   },
   {
     id: "arc-agi-vs-hallucination-risk",
     title: "ARC-AGI vs hallucination risk",
     status: "exploring",
     figure: "axes",
-    scope: [
-      "I am testing whether ARC-AGI-1 scores correlate with hallucination likelihood on held-out probes.",
-      "I want task outcomes tied to hallucination metrics rather than treating a puzzle score as truthfulness.",
-    ],
+    abstract:
+      "ARC-AGI-1 measures puzzle solving. I am checking whether those scores track how often a model invents on held out probes.",
   },
   {
     id: "gap-aware-entity-resolution",
     title: "Gap-aware entity resolution",
     status: "exploring",
     figure: "gaps",
-    scope: [
-      "I fuse fragmented records into a time-indexed graph that represents missing links explicitly.",
-      "I do not invent edges.",
-    ],
+    abstract:
+      "Records arrive in pieces and out of order. I build a time indexed graph that keeps missing links visible instead of filling them in.",
   },
 ];
 
