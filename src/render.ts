@@ -224,33 +224,31 @@ export function renderBot(): string {
 }
 
 function renderProtocolFigure(): string {
-  return `<svg class="thread-fig" viewBox="0 0 112 48" width="112" height="48" focusable="false" aria-hidden="true">
-            <rect x="4" y="16" width="22" height="16" rx="1.5" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.85"/>
-            <path d="M27 24h12" fill="none" stroke="rgba(250,250,247,0.32)" stroke-width="0.85"/>
-            <rect x="40" y="12" width="32" height="24" rx="1.5" fill="none" stroke="rgba(250,250,247,0.72)" stroke-width="1.05"/>
-            <path d="M73 24h12" fill="none" stroke="rgba(250,250,247,0.32)" stroke-width="0.85"/>
-            <rect x="86" y="16" width="22" height="16" rx="1.5" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.85"/>
-            <path d="M8 38h3M12 38h3M16 38h3M8 41h3M12 41h3M16 41h3" stroke="rgba(250,250,247,0.18)" stroke-width="0.7"/>
+  return `<svg class="thread-fig" viewBox="0 0 72 28" width="72" height="28" focusable="false" aria-hidden="true">
+            <rect x="2" y="8" width="14" height="12" rx="1.2" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.8"/>
+            <path d="M17 14h8" fill="none" stroke="rgba(250,250,247,0.22)" stroke-width="0.8"/>
+            <rect x="26" y="6" width="20" height="16" rx="1.2" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.9"/>
+            <path d="M47 14h8" fill="none" stroke="rgba(250,250,247,0.22)" stroke-width="0.8"/>
+            <rect x="56" y="8" width="14" height="12" rx="1.2" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.8"/>
           </svg>`;
 }
 
 function renderAxesFigure(): string {
-  return `<svg class="thread-fig" viewBox="0 0 112 48" width="112" height="48" focusable="false" aria-hidden="true">
-            <path d="M16 42V10M16 42h80" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.85"/>
-            <circle cx="40" cy="30" r="1.7" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.8"/>
-            <circle cx="58" cy="22" r="1.7" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.8"/>
-            <circle cx="78" cy="18" r="1.7" fill="none" stroke="rgba(250,250,247,0.55)" stroke-width="0.8"/>
+  return `<svg class="thread-fig" viewBox="0 0 72 28" width="72" height="28" focusable="false" aria-hidden="true">
+            <path d="M8 24V6M8 24h56" fill="none" stroke="rgba(250,250,247,0.24)" stroke-width="0.8"/>
+            <circle cx="24" cy="18" r="1.4" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.75"/>
+            <circle cx="38" cy="13" r="1.4" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.75"/>
+            <circle cx="52" cy="10" r="1.4" fill="none" stroke="rgba(250,250,247,0.4)" stroke-width="0.75"/>
           </svg>`;
 }
 
 function renderGapsFigure(): string {
-  return `<svg class="thread-fig" viewBox="0 0 112 48" width="112" height="48" focusable="false" aria-hidden="true">
-            <path d="M8 36h96" fill="none" stroke="rgba(250,250,247,0.16)" stroke-width="0.7"/>
-            <circle cx="18" cy="24" r="3.2" fill="none" stroke="rgba(250,250,247,0.55)" stroke-width="0.85"/>
-            <circle cx="44" cy="24" r="3.2" fill="none" stroke="rgba(250,250,247,0.55)" stroke-width="0.85"/>
-            <circle cx="78" cy="24" r="3.2" fill="none" stroke="rgba(250,250,247,0.55)" stroke-width="0.85"/>
-            <path d="M21.4 24h19.2" fill="none" stroke="rgba(250,250,247,0.45)" stroke-width="0.85"/>
-            <path d="M47.4 24h27.2" fill="none" stroke="rgba(250,250,247,0.32)" stroke-width="0.85" stroke-dasharray="2.2 2.1"/>
+  return `<svg class="thread-fig" viewBox="0 0 72 28" width="72" height="28" focusable="false" aria-hidden="true">
+            <circle cx="10" cy="14" r="2.4" fill="none" stroke="rgba(250,250,247,0.36)" stroke-width="0.8"/>
+            <circle cx="30" cy="14" r="2.4" fill="none" stroke="rgba(250,250,247,0.36)" stroke-width="0.8"/>
+            <circle cx="56" cy="14" r="2.4" fill="none" stroke="rgba(250,250,247,0.36)" stroke-width="0.8"/>
+            <path d="M12.6 14h15" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.8"/>
+            <path d="M32.6 14h21" fill="none" stroke="rgba(250,250,247,0.22)" stroke-width="0.8" stroke-dasharray="1.8 1.7"/>
           </svg>`;
 }
 
@@ -261,20 +259,17 @@ function renderThreadFigure(figure: Thread["figure"]): string {
 }
 
 function renderThread(thread: Thread): string {
-  const live = thread.status === "drafting";
   const paragraphs = thread.scope.map((line) => `<p>${escapeHtml(line)}</p>`).join("");
   const link = thread.href
-    ? `<p class="thread-link"><a href="${escapeHtml(thread.href)}">${escapeHtml(thread.linkLabel ?? thread.href)}</a></p>`
+    ? `<p class="thread-link"><a href="${escapeHtml(thread.href)}">${escapeHtml(thread.linkLabel ?? "repo")}</a></p>`
     : "";
   return `<article class="thread" data-thread="${escapeHtml(thread.id)}">
           <div class="thread-head">
             <h2>${escapeHtml(thread.title)}</h2>
-            <p class="status"><span class="dot${live ? " is-live" : ""}" aria-hidden="true"></span>${escapeHtml(thread.status)}</p>
-          </div>
-          <div class="thread-body">
-            <div class="thread-copy">${paragraphs}${link}</div>
+            <p class="status">${escapeHtml(thread.status)}</p>
             ${renderThreadFigure(thread.figure)}
           </div>
+          <div class="thread-copy">${paragraphs}${link}</div>
         </article>`;
 }
 

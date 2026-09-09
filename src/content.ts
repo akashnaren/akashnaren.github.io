@@ -204,7 +204,8 @@ export const researchUrl = "https://akashnaren.github.io/research";
 export const researchDescription =
   "Open problems and drafts. Updates as research continues.";
 
-export const researchCue = "updates as research continues";
+export const researchCue =
+  "I keep a short list of open threads. The page updates as research continues.";
 
 export const researchLinkLabel = "Research";
 
@@ -229,12 +230,11 @@ export const threads: readonly Thread[] = [
     status: "drafting",
     figure: "protocol",
     scope: [
-      "Computer-use agents still act through pixels or a flattened accessibility tree.",
-      "I am running a controlled MiniShop study that holds the tasks fixed and varies the surface: screenshot, a11y/DOM, flat tools, and a structured view-document.",
-      "The open question is whether a protocol the agent can read as structure changes success, tokens, steps, and illegal actions against those baselines.",
+      "I am running a controlled MiniShop study that holds the tasks fixed and compares screenshot, a11y/DOM, flat tools, and a structured view-document.",
+      "I score success, tokens, steps, and illegal actions.",
     ],
     href: "https://github.com/akashnaren/research",
-    linkLabel: "akashnaren/research",
+    linkLabel: "repo",
   },
   {
     id: "arc-agi-vs-hallucination-risk",
@@ -242,9 +242,8 @@ export const threads: readonly Thread[] = [
     status: "exploring",
     figure: "axes",
     scope: [
-      "A high ARC-AGI-2 or ARC-AGI-3 score does not say how often a frontier model invents.",
-      "I want to test whether those scores correlate with hallucination likelihood on held-out probes.",
-      "The draft is to link task outcomes to hallucination metrics rather than treat a puzzle score as a stand-in for truthfulness.",
+      "I am testing whether ARC-AGI-1 scores correlate with hallucination likelihood on held-out probes.",
+      "I want task outcomes tied to hallucination metrics rather than treating a puzzle score as truthfulness.",
     ],
   },
   {
@@ -253,9 +252,8 @@ export const threads: readonly Thread[] = [
     status: "exploring",
     figure: "gaps",
     scope: [
-      "Records of one entity arrive fragmented and out of order.",
-      "I am drafting a time-indexed graph that fuses those records while leaving missing links visible.",
-      "The method should represent gaps explicitly and refuse to invent edges.",
+      "I fuse fragmented records into a time-indexed graph that represents missing links explicitly.",
+      "I do not invent edges.",
     ],
   },
 ];
