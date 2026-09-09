@@ -254,7 +254,7 @@ h1 {
 .page.research .stage {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   align-items: stretch;
   justify-content: flex-start;
   gap: 0;
@@ -262,9 +262,9 @@ h1 {
   max-width: 46rem;
   margin: 0 auto;
   min-height: 0;
-  height: 100%;
-  overflow: hidden;
-  padding: calc(1.7rem * var(--fit)) 1.4rem calc(0.85rem * var(--fit));
+  height: auto;
+  overflow: visible;
+  padding: calc(1.9rem * var(--fit)) 1.4rem calc(1.4rem * var(--fit));
 }
 
 .board {
@@ -393,18 +393,22 @@ h1 {
   align-items: flex-start;
   gap: 0;
   border-bottom: 0;
-  padding-bottom: calc(1.55rem * var(--fit));
+  padding-bottom: calc(2rem * var(--fit));
 }
 
 .page.research h1 {
   display: inline-block;
+  font-size: calc(22px * var(--fit));
+  font-weight: 600;
+  line-height: calc(28px * var(--fit));
+  letter-spacing: -0.03em;
 }
 
 .lede {
-  max-width: 36em;
+  max-width: 38em;
   color: #fafaf7;
-  padding-top: calc(0.7rem * var(--fit));
-  line-height: calc(22px * var(--fit));
+  padding-top: calc(0.85rem * var(--fit));
+  line-height: calc(23px * var(--fit));
 }
 
 .live-mark,
@@ -459,51 +463,56 @@ h1 {
 
 .thread {
   display: grid;
-  grid-template-columns: calc(140px * var(--fit)) minmax(0, 1fr);
+  grid-template-columns: calc(160px * var(--fit)) minmax(0, 1fr);
   align-items: start;
-  column-gap: 1.5rem;
+  column-gap: 1.6rem;
   flex: 0 0 auto;
   min-height: 0;
-  padding: calc(1.85rem * var(--fit)) 0;
+  padding: calc(1.35rem * var(--fit)) 0;
 }
 
 .thread + .thread {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: calc(0.85rem * var(--fit));
+  padding-top: calc(1.35rem * var(--fit));
+}
+
+.thread-thumb {
+  width: calc(160px * var(--fit));
 }
 
 .thread h2 {
-  font-size: calc(15px * var(--fit));
+  font-size: calc(16px * var(--fit));
   font-weight: 600;
-  line-height: calc(21px * var(--fit));
-  letter-spacing: -0.018em;
+  line-height: calc(22px * var(--fit));
+  letter-spacing: -0.02em;
 }
 
 .status {
-  color: #6a6e74;
-  font-size: calc(12px * var(--fit));
-  line-height: calc(16px * var(--fit));
-  letter-spacing: 0.01em;
-  padding-top: calc(0.14rem * var(--fit));
-}
-
-.thread-copy > p:not(.status):not(.thread-link) {
-  max-width: 38em;
-  color: #c4c4bf;
-  padding-top: calc(0.48rem * var(--fit));
+  color: #8a8e86;
   font-size: calc(13px * var(--fit));
-  line-height: calc(21px * var(--fit));
+  line-height: calc(18px * var(--fit));
+  letter-spacing: 0;
+  padding-top: calc(0.18rem * var(--fit));
 }
 
 .thread-link {
-  padding-top: calc(0.48rem * var(--fit));
+  padding-top: calc(0.16rem * var(--fit));
   color: #8a8e86;
-  font-size: calc(12px * var(--fit));
-  line-height: calc(16px * var(--fit));
+  font-size: calc(13px * var(--fit));
+  line-height: calc(18px * var(--fit));
+}
+
+.thread-abs {
+  max-width: 38em;
+  color: #c4c4bf;
+  padding-top: calc(0.55rem * var(--fit));
+  font-size: calc(14px * var(--fit));
+  line-height: calc(22px * var(--fit));
 }
 
 .thread-fig {
   display: block;
-  width: calc(140px * var(--fit));
+  width: 100%;
   height: auto;
   overflow: visible;
 }
@@ -1151,7 +1160,9 @@ a:focus-visible {
     align-items: stretch;
     max-width: 46rem;
     width: 100%;
-    padding: calc(2.2rem * var(--fit)) 2rem calc(1rem * var(--fit));
+    height: auto;
+    overflow: visible;
+    padding: calc(2.4rem * var(--fit)) 2rem calc(1.6rem * var(--fit));
   }
 }
 
@@ -1217,13 +1228,18 @@ a:focus-visible {
   }
 
   .thread {
-    grid-template-columns: calc(120px * var(--fit)) minmax(0, 1fr);
-    column-gap: 0.95rem;
-    padding: calc(1.45rem * var(--fit)) 0;
+    grid-template-columns: calc(128px * var(--fit)) minmax(0, 1fr);
+    column-gap: 1.05rem;
+    padding: calc(1.15rem * var(--fit)) 0;
   }
 
-  .thread-fig {
-    width: calc(120px * var(--fit));
+  .thread + .thread {
+    margin-top: calc(0.55rem * var(--fit));
+    padding-top: calc(1.15rem * var(--fit));
+  }
+
+  .thread-thumb {
+    width: calc(128px * var(--fit));
   }
 }
 

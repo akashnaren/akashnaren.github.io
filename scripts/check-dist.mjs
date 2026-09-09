@@ -1279,6 +1279,8 @@ const researchRequired = [
   'class="status"',
   'class="live-mark"',
   'class="thread-fig"',
+  'class="thread-thumb"',
+  'class="thread-abs"',
   'class="mast"',
   'class="foot"',
   'class="managed-copy"',
@@ -1327,6 +1329,17 @@ for (const page of [researchHtml, researchRoot]) {
     const bodyParagraphs = (abstracts.match(/<p(?:\s|>)/g) ?? []).length;
     if (bodyParagraphs > 3) {
       console.error(`research thread ${String(index + 1)} must stay to title, status, and one short abstract`);
+      process.exit(1);
+    }
+    const statusAt = abstracts.indexOf('class="status"');
+    const absAt = abstracts.indexOf('class="thread-abs"');
+    if (statusAt < 0 || absAt < 0 || statusAt > absAt) {
+      console.error(`research thread ${String(index + 1)} must keep status above the abstract`);
+      process.exit(1);
+    }
+    const linkAt = abstracts.indexOf('class="thread-link"');
+    if (linkAt >= 0 && (linkAt < statusAt || linkAt > absAt)) {
+      console.error(`research thread ${String(index + 1)} must keep the code link between status and abstract`);
       process.exit(1);
     }
   }
@@ -1487,11 +1500,11 @@ if (!/@keyframes\s+live-pulse/.test(css) || !css.includes("live-pulse")) {
 }
 
 if (
-  !css.includes("140px") ||
-  (!css.includes("grid-template-columns:calc(140px") &&
-    !css.includes("grid-template-columns: calc(140px"))
+  !css.includes("160px") ||
+  (!css.includes("grid-template-columns:calc(160px") &&
+    !css.includes("grid-template-columns: calc(160px"))
 ) {
-  console.error("research rows must keep a 140px left teaser column");
+  console.error("research rows must keep a 160px left teaser column");
   process.exit(1);
 }
 

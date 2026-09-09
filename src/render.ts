@@ -305,12 +305,12 @@ function renderThread(thread: Thread): string {
     ? `<p class="thread-link"><a href="${escapeHtml(thread.href)}">${escapeHtml(thread.linkLabel ?? "code")}</a></p>`
     : "";
   return `<article class="thread" data-thread="${escapeHtml(thread.id)}">
-          ${renderThreadFigure(thread.figure)}
+          <div class="thread-thumb">${renderThreadFigure(thread.figure)}</div>
           <div class="thread-copy">
             <h2>${escapeHtml(thread.title)}</h2>
             <p class="status">${escapeHtml(thread.status)}</p>
-            <p>${escapeHtml(thread.abstract)}</p>
             ${link}
+            <p class="thread-abs">${escapeHtml(thread.abstract)}</p>
           </div>
         </article>`;
 }

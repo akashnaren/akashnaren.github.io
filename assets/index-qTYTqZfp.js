@@ -120,12 +120,12 @@
             <path d="M61.2 40h49.6" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.85" stroke-dasharray="2.4 2.2"/>
             <path d="M33.2 68h49.6" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.85" stroke-dasharray="2.4 2.2"/>
           </svg>`}function ae(e){return e===`protocol`?ne():e===`axes`?re():ie()}function oe(e){let t=e.href?`<p class="thread-link"><a href="${L(e.href)}">${L(e.linkLabel??`code`)}</a></p>`:``;return`<article class="thread" data-thread="${L(e.id)}">
-          ${ae(e.figure)}
+          <div class="thread-thumb">${ae(e.figure)}</div>
           <div class="thread-copy">
             <h2>${L(e.title)}</h2>
             <p class="status">${L(e.status)}</p>
-            <p>${L(e.abstract)}</p>
             ${t}
+            <p class="thread-abs">${L(e.abstract)}</p>
           </div>
         </article>`}function $(){return`<main class="threads">${w.map(oe).join(``)}</main>`}function se(){return`<div class="page research" id="holder">
       <div class="stage">
