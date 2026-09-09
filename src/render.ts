@@ -18,12 +18,20 @@ import {
   managedMarkSize,
   name,
   personalMail,
+  researchCue,
+  researchDescription,
+  researchLinkLabel,
+  researchPath,
+  researchTitle,
+  researchUrl,
   seats,
+  threads,
   url,
   type Contact,
   type Paragraph,
   type Phrase,
   type Seat,
+  type Thread,
 } from "./content.ts";
 
 export type PageMeta = {
@@ -42,6 +50,12 @@ export const botMeta: PageMeta = {
   title: botTitle,
   description: botDescription,
   url: botUrl,
+};
+
+export const researchMeta: PageMeta = {
+  title: researchTitle,
+  description: researchDescription,
+  url: researchUrl,
 };
 
 function escapeHtml(value: string): string {
@@ -110,7 +124,8 @@ function renderFleet(): string {
   const marks = seats.map(renderFleetFace).join("");
   return `<p class="fleet">${marks}</p>
           <p class="fleet-line">${escapeHtml(fleetLine)}</p>
-          <p class="fleet-invite"><a href="${escapeHtml(collectionPath)}">${escapeHtml(fleetInvite)}</a></p>`;
+          <p class="fleet-invite"><a href="${escapeHtml(collectionPath)}">${escapeHtml(fleetInvite)}</a></p>
+          <p class="page-link"><a href="${escapeHtml(researchPath)}">${escapeHtml(researchLinkLabel)}</a></p>`;
 }
 
 function renderInbox(label: string = agentInbox.label, tip = ""): string {
@@ -202,6 +217,80 @@ export function renderBot(): string {
       ${renderBoard()}
       <footer class="foot">
         ${renderInbox(agentInbox.label, agentInbox.tip)}
+        ${renderManagedBy(managedByHere)}
+      </footer>
+      </div>
+    </div>`;
+}
+
+function renderProtocolFigure(): string {
+  return `<svg class="thread-fig" viewBox="0 0 112 48" width="112" height="48" focusable="false" aria-hidden="true">
+            <rect x="4" y="16" width="22" height="16" rx="1.5" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.85"/>
+            <path d="M27 24h12" fill="none" stroke="rgba(250,250,247,0.32)" stroke-width="0.85"/>
+            <rect x="40" y="12" width="32" height="24" rx="1.5" fill="none" stroke="rgba(250,250,247,0.72)" stroke-width="1.05"/>
+            <path d="M73 24h12" fill="none" stroke="rgba(250,250,247,0.32)" stroke-width="0.85"/>
+            <rect x="86" y="16" width="22" height="16" rx="1.5" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.85"/>
+            <path d="M8 38h3M12 38h3M16 38h3M8 41h3M12 41h3M16 41h3" stroke="rgba(250,250,247,0.18)" stroke-width="0.7"/>
+          </svg>`;
+}
+
+function renderAxesFigure(): string {
+  return `<svg class="thread-fig" viewBox="0 0 112 48" width="112" height="48" focusable="false" aria-hidden="true">
+            <path d="M16 42V10M16 42h80" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.85"/>
+            <circle cx="40" cy="30" r="1.7" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.8"/>
+            <circle cx="58" cy="22" r="1.7" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.8"/>
+            <circle cx="78" cy="18" r="1.7" fill="none" stroke="rgba(250,250,247,0.55)" stroke-width="0.8"/>
+          </svg>`;
+}
+
+function renderGapsFigure(): string {
+  return `<svg class="thread-fig" viewBox="0 0 112 48" width="112" height="48" focusable="false" aria-hidden="true">
+            <path d="M8 36h96" fill="none" stroke="rgba(250,250,247,0.16)" stroke-width="0.7"/>
+            <circle cx="18" cy="24" r="3.2" fill="none" stroke="rgba(250,250,247,0.55)" stroke-width="0.85"/>
+            <circle cx="44" cy="24" r="3.2" fill="none" stroke="rgba(250,250,247,0.55)" stroke-width="0.85"/>
+            <circle cx="78" cy="24" r="3.2" fill="none" stroke="rgba(250,250,247,0.55)" stroke-width="0.85"/>
+            <path d="M21.4 24h19.2" fill="none" stroke="rgba(250,250,247,0.45)" stroke-width="0.85"/>
+            <path d="M47.4 24h27.2" fill="none" stroke="rgba(250,250,247,0.32)" stroke-width="0.85" stroke-dasharray="2.2 2.1"/>
+          </svg>`;
+}
+
+function renderThreadFigure(figure: Thread["figure"]): string {
+  if (figure === "protocol") return renderProtocolFigure();
+  if (figure === "axes") return renderAxesFigure();
+  return renderGapsFigure();
+}
+
+function renderThread(thread: Thread): string {
+  const live = thread.status === "drafting";
+  const paragraphs = thread.scope.map((line) => `<p>${escapeHtml(line)}</p>`).join("");
+  const link = thread.href
+    ? `<p class="thread-link"><a href="${escapeHtml(thread.href)}">${escapeHtml(thread.linkLabel ?? thread.href)}</a></p>`
+    : "";
+  return `<article class="thread" data-thread="${escapeHtml(thread.id)}">
+          <div class="thread-head">
+            <h2>${escapeHtml(thread.title)}</h2>
+            <p class="status"><span class="dot${live ? " is-live" : ""}" aria-hidden="true"></span>${escapeHtml(thread.status)}</p>
+          </div>
+          <div class="thread-body">
+            <div class="thread-copy">${paragraphs}${link}</div>
+            ${renderThreadFigure(thread.figure)}
+          </div>
+        </article>`;
+}
+
+function renderThreads(): string {
+  return `<main class="threads">${threads.map(renderThread).join("")}</main>`;
+}
+
+export function renderResearch(): string {
+  return `<div class="page research" id="holder">
+      <div class="stage">
+      <header class="mast">
+        <h1>${escapeHtml(researchTitle)}<span class="live-mark" aria-hidden="true"></span><span class="scope" aria-hidden="true"></span></h1>
+        <p class="cue">${escapeHtml(researchCue)}</p>
+      </header>
+      ${renderThreads()}
+      <footer class="foot">
         ${renderManagedBy(managedByHere)}
       </footer>
       </div>

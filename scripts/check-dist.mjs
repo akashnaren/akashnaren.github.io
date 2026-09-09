@@ -79,6 +79,9 @@ const required = [
   'class="fleet-invite"',
   "click on any bot",
   "nine grok bots, more coming.",
+  'class="page-link"',
+  'href="/research"',
+  ">Research</a>",
   'class="him"',
   'class="panel"',
   'class="fact"',
@@ -376,8 +379,30 @@ function assertHomeFleetInvite(page, label) {
   }
 }
 
+function assertHomeResearchLink(page, label) {
+  if (!page.includes('<p class="page-link"><a href="/research">Research</a></p>')) {
+    console.error(`${label} must keep a peer Research link to /research`);
+    process.exit(1);
+  }
+  if (page.includes(">Papers</a>") || page.includes(">Lab</a>")) {
+    console.error(`${label} must label the research surface Research, not Papers or Lab`);
+    process.exit(1);
+  }
+  if (/class="managed-copy"[\s\S]{0,400}href="\/research"/.test(page)) {
+    console.error(`${label} must not bury Research under the managed-by /bot line`);
+    process.exit(1);
+  }
+  const him = page.match(/<main class="him">[\s\S]*?<\/main>/)?.[0] ?? "";
+  if (him.includes('href="/research"')) {
+    console.error(`${label} must not put Research in the left bio`);
+    process.exit(1);
+  }
+}
+
 assertHomeFleetInvite(html, "dist/index.html");
 assertHomeFleetInvite(root, "root index.html");
+assertHomeResearchLink(html, "dist/index.html");
+assertHomeResearchLink(root, "root index.html");
 
 if (html.includes("https://x.ai/bot/marketplace") || root.includes("https://x.ai/bot/marketplace")) {
   console.error("home must not carry the grok bot marketplace link");
@@ -845,6 +870,11 @@ if (!existsSync("dist/bot/index.html") || !existsSync("bot/index.html")) {
   process.exit(1);
 }
 
+if (!existsSync("dist/research/index.html") || !existsSync("research/index.html")) {
+  console.error("research page must exist at dist/research/index.html and research/index.html");
+  process.exit(1);
+}
+
 if (!existsSync("dist/404.html") || !existsSync("404.html")) {
   console.error("GitHub Pages SPA fallback 404.html is missing");
   process.exit(1);
@@ -1218,6 +1248,197 @@ if (!js.includes("3000") || (!js.includes("setInterval") && !js.includes("setTim
   process.exit(1);
 }
 
+const researchHtml = readFileSync("dist/research/index.html", "utf8");
+const researchRoot = readFileSync("research/index.html", "utf8");
+
+const researchRequired = [
+  "<title>research</title>",
+  "Open problems and drafts. Updates as research continues.",
+  'property="og:url" content="https://akashnaren.github.io/research"',
+  "updates as research continues",
+  "Agent-native UI protocols",
+  "ARC-AGI vs hallucination risk",
+  "Gap-aware entity resolution",
+  "drafting",
+  "exploring",
+  "MiniShop",
+  "screenshot, a11y/DOM, flat tools",
+  "structured view-document",
+  "ARC-AGI-2 or ARC-AGI-3",
+  "hallucination likelihood",
+  "held-out probes",
+  "time-indexed graph",
+  "refuse to invent edges",
+  "https://github.com/akashnaren/research",
+  "akashnaren/research",
+  'class="page research"',
+  'class="threads"',
+  'class="thread"',
+  'class="cue"',
+  'class="status"',
+  'class="live-mark"',
+  'class="thread-fig"',
+  'class="mast"',
+  'class="foot"',
+  'class="managed-copy"',
+  "this site is managed by",
+  "https://x.ai/bot",
+  "grok bot",
+];
+
+for (const page of [researchHtml, researchRoot]) {
+  const missingResearch = researchRequired.filter((needle) => !page.includes(needle));
+  if (missingResearch.length > 0) {
+    console.error("research page is missing required copy:");
+    for (const needle of missingResearch) console.error(`  - ${needle}`);
+    process.exit(1);
+  }
+
+  const threadCount = (page.match(/<article class="thread"/g) ?? []).length;
+  if (threadCount !== 3) {
+    console.error(`research page must paint three thread blocks, found ${String(threadCount)}`);
+    process.exit(1);
+  }
+
+  const figureCount = (page.match(/class="thread-fig"/g) ?? []).length;
+  if (figureCount !== 3) {
+    console.error(`research page must keep one SVG figure per thread, found ${String(figureCount)}`);
+    process.exit(1);
+  }
+
+  if ((page.match(/drafting/g) ?? []).length < 1 || (page.match(/exploring/g) ?? []).length < 2) {
+    console.error("research page must mark thread 1 drafting and threads 2 and 3 exploring");
+    process.exit(1);
+  }
+
+  if ((page.match(/https:\/\/github\.com\/akashnaren\/research/g) ?? []).length < 1) {
+    console.error("research page must link thread 1 to github.com/akashnaren/research");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("agent-ui-metrics") ||
+    page.includes("huggingface.co/collections") ||
+    page.includes("agent-ui-lab")
+  ) {
+    console.error("research page must not invent extra public repos or collections");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("last updated") ||
+    page.includes("last-updated") ||
+    page.includes("updated 20") ||
+    page.includes("KPI") ||
+    page.includes("dashboard")
+  ) {
+    console.error("research page must not invent timestamps, KPIs, or dashboard chrome");
+    process.exit(1);
+  }
+
+  if (
+    /Tesla/.test(page) ||
+    /tesla\.com/.test(page) ||
+    /Redwood City/.test(page) ||
+    /Raytheon/.test(page) ||
+    /NASA/.test(page)
+  ) {
+    console.error("research page must not carry Tesla or home bio copy");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("apn@agentmail.to") ||
+    page.includes("agentmail") ||
+    page.includes("akashnaren@gmail.com") ||
+    page.includes("human-mail") ||
+    page.includes('class="inbox"')
+  ) {
+    console.error("research page must not leak AgentMail, Gmail, or the bots' inbox");
+    process.exit(1);
+  }
+
+  if (
+    page.includes('class="sky"') ||
+    page.includes('class="system"') ||
+    page.includes('class="board"') ||
+    page.includes('class="roster"') ||
+    page.includes('class="row-blurb"') ||
+    page.includes("profile assistant") ||
+    page.includes("click on any bot")
+  ) {
+    console.error("research page must not duplicate home sky or /bot roster cards");
+    process.exit(1);
+  }
+
+  if (
+    /job assistant/i.test(page) ||
+    /startup advisor/i.test(page) ||
+    /looking for a job/i.test(page) ||
+    /job search/i.test(page)
+  ) {
+    console.error("research page must not name Job Assistant, Startup Advisor, or job-hunt");
+    process.exit(1);
+  }
+
+  if (/279M|Longest Streak|Current Streak|15 agents/i.test(page)) {
+    console.error("research page must not invent Cursor token or streak stats");
+    process.exit(1);
+  }
+
+  if (!/\/assets\/index-[^"]+\.js/.test(page)) {
+    console.error("research page must reference hashed /assets/index-*.js");
+    process.exit(1);
+  }
+
+  if (!page.includes("by grok") && !page.includes("by <a")) {
+    console.error("research page must keep a real space in managed-by");
+    process.exit(1);
+  }
+}
+
+if (
+  !css.includes(".page.research") ||
+  !css.includes(".threads") ||
+  !css.includes(".thread") ||
+  !css.includes(".cue") ||
+  !css.includes(".thread-fig") ||
+  !css.includes(".page-link")
+) {
+  console.error("stylesheet must keep the research notebook and home Research link");
+  process.exit(1);
+}
+
+if (
+  /\.page\.research[^{]*\{[^}]*overflow-y:\s*auto/.test(css) ||
+  /\.page\.research\{[^}]*overflow-y:auto/.test(css)
+) {
+  console.error("/research must not scroll — overflow hidden like home and /bot");
+  process.exit(1);
+}
+
+if (
+  !/\.page\.research[^{]*\{[^}]*overflow:\s*hidden/.test(css) &&
+  !/\.page\.research\{[^}]*overflow:hidden/.test(css)
+) {
+  console.error("/research page must overflow hidden so the notebook stays in one frame");
+  process.exit(1);
+}
+
+if (!/@keyframes\s+live-pulse/.test(css) || !css.includes("live-pulse")) {
+  console.error("stylesheet must keep a quiet live pulse on open research work");
+  process.exit(1);
+}
+
+if (
+  !/\.page\.research\s+\.stage\{[^}]*max-width:\s*46rem/.test(css) &&
+  !/\.page\.research\s+\.stage\s*\{[^}]*max-width:\s*46rem/.test(css) &&
+  !/\.page\.research\s+\.stage\{[^}]*max-width:46rem/.test(css)
+) {
+  console.error("/research stage must use a 46rem readable max-width, matching /bot");
+  process.exit(1);
+}
+
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a no-scroll living notebook with three open threads, a quiet live cue, and SVG sketches.",
 );

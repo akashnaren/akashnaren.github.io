@@ -15,7 +15,7 @@ export function fitStage(): void {
   const pageH = Math.min(page.clientHeight, viewportHeight());
   const stageH = stage.scrollHeight;
 
-  if (page.classList.contains("profile")) {
+  if (page.classList.contains("profile") || page.classList.contains("research")) {
     if (stageH <= pageH) return;
     const fit = Math.max(0.78, pageH / stageH);
     root.style.setProperty("--fit", fit.toFixed(3));
