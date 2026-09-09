@@ -1262,11 +1262,10 @@ const researchRequired = [
   "exploring",
   "screenshots or a flat accessibility tree",
   "structured view the agent can read",
-  "measuring how the task goes",
   "ARC-AGI-1",
-  "held out probes",
+  "how often a model hallucinates",
   "time indexed graph",
-  "missing links visible",
+  "do not invent edges",
   'class="page research"',
   'class="threads"',
   'class="thread"',
@@ -1306,7 +1305,12 @@ for (const page of [researchHtml, researchRoot]) {
     page.includes("live-mark") ||
     page.includes("MiniShop") ||
     page.includes("structured view document") ||
-    page.includes("illegal actions")
+    page.includes("illegal actions") ||
+    page.includes("measuring how the task goes") ||
+    page.includes("held out probes") ||
+    page.includes("invents on") ||
+    page.includes("missing links visible") ||
+    page.includes("Records arrive in pieces")
   ) {
     console.error("research page must drop the old lede, live-dot cue, MiniShop, and their paraphrases");
     process.exit(1);
