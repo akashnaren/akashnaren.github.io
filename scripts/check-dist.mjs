@@ -1264,8 +1264,8 @@ const researchRequired = [
   "structured view the agent can read",
   "ARC-AGI-1",
   "how often a model hallucinates",
-  "time indexed graph",
-  "do not invent edges",
+  "reason over fragmented records",
+  "link events to the right address",
   'class="page research"',
   'class="threads"',
   'class="thread"',
@@ -1310,7 +1310,11 @@ for (const page of [researchHtml, researchRoot]) {
     page.includes("held out probes") ||
     page.includes("invents on") ||
     page.includes("missing links visible") ||
-    page.includes("Records arrive in pieces")
+    page.includes("Records arrive in pieces") ||
+    page.includes("do not invent edges") ||
+    page.includes("I show the gaps") ||
+    page.includes("time indexed graph") ||
+    page.includes("fuse fragmented records")
   ) {
     console.error("research page must drop the old lede, live-dot cue, MiniShop, and their paraphrases");
     process.exit(1);

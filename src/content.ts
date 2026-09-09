@@ -244,7 +244,7 @@ export const threads: readonly Thread[] = [
     status: "exploring",
     figure: "gaps",
     abstract:
-      "I fuse fragmented records into a time indexed graph. I show the gaps and do not invent edges.",
+      "I am looking at how to reason over fragmented records and link events to the right address over time.",
   },
 ];
 
