@@ -1260,16 +1260,13 @@ const researchRequired = [
   "Gap-aware entity resolution",
   "drafting",
   "exploring",
-  "MiniShop",
   "screenshots or a flat accessibility tree",
-  "structured view document",
-  "success, tokens, steps, and illegal actions",
+  "structured view the agent can read",
+  "measuring how the task goes",
   "ARC-AGI-1",
   "held out probes",
   "time indexed graph",
   "missing links visible",
-  "https://github.com/akashnaren/research",
-  ">code</a>",
   'class="page research"',
   'class="threads"',
   'class="thread"',
@@ -1306,9 +1303,12 @@ for (const page of [researchHtml, researchRoot]) {
     page.includes("puzzle scores relate to truthfulness") ||
     page.includes("fuse records without inventing") ||
     page.includes("notes update as the work moves") ||
-    page.includes("live-mark")
+    page.includes("live-mark") ||
+    page.includes("MiniShop") ||
+    page.includes("structured view document") ||
+    page.includes("illegal actions")
   ) {
-    console.error("research page must drop the old lede, live-dot cue, and their paraphrases");
+    console.error("research page must drop the old lede, live-dot cue, MiniShop, and their paraphrases");
     process.exit(1);
   }
 
@@ -1342,7 +1342,7 @@ for (const page of [researchHtml, researchRoot]) {
     }
     const abstracts = article.match(/<div class="thread-copy">[\s\S]*?<\/div>/)?.[0] ?? "";
     const bodyParagraphs = (abstracts.match(/<p(?:\s|>)/g) ?? []).length;
-    if (bodyParagraphs > 3) {
+    if (bodyParagraphs > 2) {
       console.error(`research thread ${String(index + 1)} must stay to title, status, and one short abstract`);
       process.exit(1);
     }
@@ -1353,13 +1353,12 @@ for (const page of [researchHtml, researchRoot]) {
     process.exit(1);
   }
 
-  if ((page.match(/https:\/\/github\.com\/akashnaren\/research/g) ?? []).length < 1) {
-    console.error("research page must link thread 1 to github.com/akashnaren/research");
-    process.exit(1);
-  }
-
-  if ((page.match(/>code<\/a>/g) ?? []).length !== 1) {
-    console.error("research page must label the only public repo link as code");
+  if (
+    page.includes("https://github.com/akashnaren/research") ||
+    page.includes(">code</a>") ||
+    page.includes("thread-link")
+  ) {
+    console.error("research page must not keep a code or repo link on any thread");
     process.exit(1);
   }
 
