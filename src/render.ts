@@ -18,10 +18,9 @@ import {
   managedMarkSize,
   name,
   personalMail,
-  researchCue,
   researchDescription,
-  researchLede,
   researchLinkLabel,
+  researchNote,
   researchPath,
   researchTitle,
   researchUrl,
@@ -324,8 +323,7 @@ export function renderResearch(): string {
       <div class="stage">
       <header class="mast">
         <h1>${escapeHtml(researchTitle)}<span class="scope" aria-hidden="true"></span></h1>
-        <p class="lede">${escapeHtml(researchLede)}</p>
-        <p class="cue"><span class="live-mark" aria-hidden="true"></span>${escapeHtml(researchCue)}</p>
+        <p class="cue">${escapeHtml(researchNote)}</p>
       </header>
       ${renderThreads()}
       <footer class="foot">

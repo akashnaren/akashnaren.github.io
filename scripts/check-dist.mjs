@@ -1253,9 +1253,8 @@ const researchRoot = readFileSync("research/index.html", "utf8");
 
 const researchRequired = [
   "<title>research</title>",
-  "I work on how agents see interfaces, how puzzle scores relate to truthfulness, and how to fuse records without inventing the missing pieces.",
+  "still researching",
   'property="og:url" content="https://akashnaren.github.io/research"',
-  "notes update as the work moves",
   "Agent-native UI protocols",
   "ARC-AGI vs hallucination risk",
   "Gap-aware entity resolution",
@@ -1274,10 +1273,8 @@ const researchRequired = [
   'class="page research"',
   'class="threads"',
   'class="thread"',
-  'class="lede"',
   'class="cue"',
   'class="status"',
-  'class="live-mark"',
   'class="thread-fig"',
   'class="mast"',
   'class="foot"',
@@ -1292,6 +1289,26 @@ for (const page of [researchHtml, researchRoot]) {
   if (missingResearch.length > 0) {
     console.error("research page is missing required copy:");
     for (const needle of missingResearch) console.error(`  - ${needle}`);
+    process.exit(1);
+  }
+
+  if (
+    !/<header class="mast">\s*<h1>research<span class="scope" aria-hidden="true"><\/span><\/h1>\s*<p class="cue">still researching<\/p>\s*<\/header>/.test(
+      page,
+    )
+  ) {
+    console.error("research mast must be the title plus one quiet still researching line");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("how agents see interfaces") ||
+    page.includes("puzzle scores relate to truthfulness") ||
+    page.includes("fuse records without inventing") ||
+    page.includes("notes update as the work moves") ||
+    page.includes("live-mark")
+  ) {
+    console.error("research page must drop the old lede, live-dot cue, and their paraphrases");
     process.exit(1);
   }
 
@@ -1527,7 +1544,7 @@ if (!css.includes("54rem")) {
 }
 
 if (!css.includes(".lede")) {
-  console.error("stylesheet must keep the research interest sentence");
+  console.error("stylesheet must keep the unused research lede rule so mast spacing stays put");
   process.exit(1);
 }
 
@@ -1541,5 +1558,5 @@ if (
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a short interest sentence, and quiet SVG teasers.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, and quiet SVG teasers.",
 );
