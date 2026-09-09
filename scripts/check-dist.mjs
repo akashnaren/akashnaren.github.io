@@ -1468,18 +1468,16 @@ if (
 }
 
 if (
-  /\.page\.research[^{]*\{[^}]*overflow-y:\s*auto/.test(css) ||
-  /\.page\.research\{[^}]*overflow-y:auto/.test(css)
+  !/\.page\.research[^{]*\{[^}]*overflow-y:\s*auto/.test(css) &&
+  !/\.page\.research\{[^}]*overflow-y:auto/.test(css) &&
+  !/\.page\.research\{[^}]*overflow:hidden\s+auto/.test(css)
 ) {
-  console.error("/research must not scroll — overflow hidden like home and /bot");
+  console.error("/research must scroll as a readable academic list");
   process.exit(1);
 }
 
-if (
-  !/\.page\.research[^{]*\{[^}]*overflow:\s*hidden/.test(css) &&
-  !/\.page\.research\{[^}]*overflow:hidden/.test(css)
-) {
-  console.error("/research page must overflow hidden so the list stays in one frame");
+if (!css.includes("font-weight:600") && !css.includes("font-weight: 600")) {
+  console.error("research titles must be bold like an academic paper list");
   process.exit(1);
 }
 
@@ -1512,5 +1510,5 @@ if (
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a no-scroll academic list with three figure-left rows, a short interest sentence, and quiet SVG teasers.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with three figure-left rows, bold titles, a short interest sentence, and quiet SVG teasers.",
 );
