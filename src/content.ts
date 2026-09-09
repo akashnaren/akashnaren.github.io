@@ -228,9 +228,7 @@ export const threads: readonly Thread[] = [
     status: "drafting",
     figure: "protocol",
     abstract:
-      "Agents still drive apps through screenshots or a flat accessibility tree. I am comparing those to a structured view document on the same MiniShop tasks, and scoring success, tokens, steps, and illegal actions.",
-    href: "https://github.com/akashnaren/research",
-    linkLabel: "code",
+      "Agents still drive apps through screenshots or a flat accessibility tree. I am comparing those to a structured view the agent can read.",
   },
   {
     id: "arc-agi-vs-hallucination-risk",
@@ -238,7 +236,7 @@ export const threads: readonly Thread[] = [
     status: "exploring",
     figure: "axes",
     abstract:
-      "ARC-AGI-1 measures puzzle solving. I am checking whether those scores track how often a model invents on held out probes.",
+      "ARC-AGI-1 measures puzzle solving. I am checking whether those scores track how often a model hallucinates.",
   },
   {
     id: "gap-aware-entity-resolution",
@@ -246,7 +244,7 @@ export const threads: readonly Thread[] = [
     status: "exploring",
     figure: "gaps",
     abstract:
-      "Records arrive in pieces and out of order. I build a time indexed graph that keeps missing links visible instead of filling them in.",
+      "I fuse fragmented records into a time indexed graph. I show the gaps and do not invent edges.",
   },
 ];
 
