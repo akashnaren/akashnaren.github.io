@@ -288,7 +288,7 @@ export const personalMail = {
 export const agentInbox = {
   address: "apn@agentmail.to",
   href: "mailto:apn@agentmail.to",
-  label: "bots' email",
+  label: "bots' inbox",
   tip: "the agents' inbox — not his personal Gmail",
 } as const;
 
