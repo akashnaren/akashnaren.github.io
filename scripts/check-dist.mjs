@@ -1495,6 +1495,37 @@ if (
   process.exit(1);
 }
 
+if (
+  !css.includes("max-width:700px") &&
+  !css.includes("max-width: 700px") &&
+  !css.includes("width<=700px") &&
+  !css.includes("width <= 700px")
+) {
+  console.error("stylesheet must keep a 700px research stack breakpoint");
+  process.exit(1);
+}
+
+if (
+  !css.includes("grid-template-columns:minmax(0,1fr)") &&
+  !css.includes("grid-template-columns: minmax(0, 1fr)")
+) {
+  console.error("research threads must stack figure over copy below 700px");
+  process.exit(1);
+}
+
+if (
+  css.includes("grid-template-columns:calc(120px") ||
+  css.includes("grid-template-columns: calc(120px")
+) {
+  console.error("research threads must not keep a narrow side-by-side figure column on small screens");
+  process.exit(1);
+}
+
+if (!css.includes("54rem")) {
+  console.error("/research desktop stage should widen past the 46rem strip");
+  process.exit(1);
+}
+
 if (!css.includes(".lede")) {
   console.error("stylesheet must keep the research interest sentence");
   process.exit(1);
@@ -1510,5 +1541,5 @@ if (
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with three figure-left rows, bold titles, a short interest sentence, and quiet SVG teasers.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a short interest sentence, and quiet SVG teasers.",
 );
