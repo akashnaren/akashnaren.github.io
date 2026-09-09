@@ -6,30 +6,33 @@ import {
   botMeta,
   homeMeta,
   renderBot,
+  renderResearch,
   renderSite,
   replaceHolder,
+  researchMeta,
 } from "./src/render.ts";
 
 const holderPattern = /<div id="holder"><\/div>/;
 
-function rewriteBotIndex(req: { url?: string }): void {
+function rewritePageIndex(req: { url?: string }): void {
   if (req.url === "/bot") req.url = "/bot/";
+  if (req.url === "/research") req.url = "/research/";
 }
 
 export default defineConfig({
   base: "/",
   plugins: [
     {
-      name: "rewrite-bot-index",
+      name: "rewrite-page-index",
       configureServer(server) {
         server.middlewares.use((req, _res, next) => {
-          rewriteBotIndex(req);
+          rewritePageIndex(req);
           next();
         });
       },
       configurePreviewServer(server) {
         server.middlewares.use((req, _res, next) => {
-          rewriteBotIndex(req);
+          rewritePageIndex(req);
           next();
         });
       },
@@ -53,6 +56,11 @@ export default defineConfig({
         writeFileSync(
           resolve("dist/bot/index.html"),
           applyPageMeta(replaceHolder(home, renderBot()), botMeta),
+        );
+        mkdirSync(resolve("dist/research"), { recursive: true });
+        writeFileSync(
+          resolve("dist/research/index.html"),
+          applyPageMeta(replaceHolder(home, renderResearch()), researchMeta),
         );
         writeFileSync(
           resolve("dist/404.html"),

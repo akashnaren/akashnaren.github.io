@@ -195,6 +195,71 @@ export const crewLabel = "the crew";
 
 export const pickLine = "pick a seat.";
 
+export const researchPath = "/research";
+
+export const researchTitle = "research";
+
+export const researchUrl = "https://akashnaren.github.io/research";
+
+export const researchDescription =
+  "Open problems and drafts. Updates as research continues.";
+
+export const researchCue = "updates as research continues";
+
+export const researchLinkLabel = "Research";
+
+export type ThreadStatus = "drafting" | "exploring";
+
+export type ThreadFigure = "protocol" | "axes" | "gaps";
+
+export type Thread = {
+  readonly id: string;
+  readonly title: string;
+  readonly status: ThreadStatus;
+  readonly figure: ThreadFigure;
+  readonly scope: readonly string[];
+  readonly href?: string;
+  readonly linkLabel?: string;
+};
+
+export const threads: readonly Thread[] = [
+  {
+    id: "agent-native-ui-protocols",
+    title: "Agent-native UI protocols",
+    status: "drafting",
+    figure: "protocol",
+    scope: [
+      "Computer-use agents still act through pixels or a flattened accessibility tree.",
+      "I am running a controlled MiniShop study that holds the tasks fixed and varies the surface: screenshot, a11y/DOM, flat tools, and a structured view-document.",
+      "The open question is whether a protocol the agent can read as structure changes success, tokens, steps, and illegal actions against those baselines.",
+    ],
+    href: "https://github.com/akashnaren/research",
+    linkLabel: "akashnaren/research",
+  },
+  {
+    id: "arc-agi-vs-hallucination-risk",
+    title: "ARC-AGI vs hallucination risk",
+    status: "exploring",
+    figure: "axes",
+    scope: [
+      "A high ARC-AGI-2 or ARC-AGI-3 score does not say how often a frontier model invents.",
+      "I want to test whether those scores correlate with hallucination likelihood on held-out probes.",
+      "The draft is to link task outcomes to hallucination metrics rather than treat a puzzle score as a stand-in for truthfulness.",
+    ],
+  },
+  {
+    id: "gap-aware-entity-resolution",
+    title: "Gap-aware entity resolution",
+    status: "exploring",
+    figure: "gaps",
+    scope: [
+      "Records of one entity arrive fragmented and out of order.",
+      "I am drafting a time-indexed graph that fuses those records while leaving missing links visible.",
+      "The method should represent gaps explicitly and refuse to invent edges.",
+    ],
+  },
+];
+
 export const managedBy: Paragraph = [
   "this site is managed by ",
   { href: "/bot", label: "grok bot" },
@@ -246,4 +311,9 @@ export function isLink(part: Phrase): part is Link {
 export function isBotPath(pathname: string): boolean {
   const path = pathname.split(/[?#]/, 1)[0] ?? "";
   return /\/bot\/?$/.test(path) || /\/bot\/index\.html$/.test(path);
+}
+
+export function isResearchPath(pathname: string): boolean {
+  const path = pathname.split(/[?#]/, 1)[0] ?? "";
+  return /\/research\/?$/.test(path) || /\/research\/index\.html$/.test(path);
 }

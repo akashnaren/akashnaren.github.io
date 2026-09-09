@@ -50,6 +50,7 @@ syncDir("dist/assets", "assets");
 syncDir("dist/fleet", "fleet");
 syncDir("dist/marks", "marks");
 syncDir("dist/bot", "bot");
+syncDir("dist/research", "research");
 
 for (const file of [
   "favicon.svg",
@@ -77,11 +78,11 @@ if (html.includes("/src/main.ts")) {
   process.exit(1);
 }
 
-if (!existsSync("bot/index.html") || !existsSync("404.html")) {
-  console.error("publish-pages: bot/index.html or 404.html missing at repo root");
+if (!existsSync("bot/index.html") || !existsSync("research/index.html") || !existsSync("404.html")) {
+  console.error("publish-pages: bot/index.html, research/index.html, or 404.html missing at repo root");
   process.exit(1);
 }
 
 console.log(
-  "published dist to repo root for Files Pages (hashed assets, /bot grok bot collection roster, 404 SPA fallback).",
+  "published dist to repo root for Files Pages (hashed assets, /bot roster, /research notebook, 404 SPA fallback).",
 );
