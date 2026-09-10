@@ -225,7 +225,7 @@ export const threads: readonly Thread[] = [
   {
     id: "agent-native-ui-protocols",
     title: "Agent-native UI protocols",
-    status: "drafting",
+    status: "exploring",
     figure: "protocol",
     abstract:
       "Agents still drive apps through screenshots or a flat accessibility tree. I am comparing those to a structured view the agent can read.",
@@ -239,12 +239,14 @@ export const threads: readonly Thread[] = [
       "ARC-AGI-1 measures puzzle solving. I am checking whether those scores track how often a model hallucinates.",
   },
   {
-    id: "gap-aware-entity-resolution",
-    title: "Gap-aware entity resolution",
+    id: "entity-investigation",
+    title: "Entity Investigation",
     status: "exploring",
     figure: "gaps",
     abstract:
       "I am looking at how to reason over fragmented records and link events to the right address over time.",
+    href: "https://temporal-buddies5.vercel.app/",
+    linkLabel: "demo",
   },
 ];
 
