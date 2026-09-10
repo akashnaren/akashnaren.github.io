@@ -1178,7 +1178,12 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  if (/class="roster"[\s\S]{0,4000}mailto:apn@agentmail\.to/.test(page)) {
+  const roster = page.match(/<div class="roster"[^>]*>[\s\S]*?<\/div>/)?.[0] ?? "";
+  if (!roster) {
+    console.error("bot page must keep a roster");
+    process.exit(1);
+  }
+  if (roster.includes("mailto:apn@agentmail.to")) {
     console.error("bots' inbox belongs in the footer, not the roster");
     process.exit(1);
   }
