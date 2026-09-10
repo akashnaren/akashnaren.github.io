@@ -14,7 +14,6 @@ import {
   fleetMarkSize,
   isLink,
   managedBy,
-  managedByHere,
   managedMarkSize,
   name,
   personalMail,
@@ -217,7 +216,7 @@ export function renderBot(): string {
       ${renderBoard()}
       <footer class="foot">
         ${renderInbox(agentInbox.label, agentInbox.tip)}
-        ${renderManagedBy(managedByHere)}
+        ${renderManagedBy()}
       </footer>
       </div>
     </div>`;
@@ -327,7 +326,7 @@ export function renderResearch(): string {
       </header>
       ${renderThreads()}
       <footer class="foot">
-        ${renderManagedBy(managedByHere)}
+        ${renderManagedBy()}
       </footer>
       </div>
     </div>`;

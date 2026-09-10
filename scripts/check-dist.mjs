@@ -379,6 +379,17 @@ function assertHomeFleetInvite(page, label) {
   }
 }
 
+function assertManagedByBot(page, label) {
+  if (!page.includes('<span class="managed-copy">this site is managed by <a href="/bot">grok bot</a>.</span>')) {
+    console.error(`${label} must send the managed-by line to /bot`);
+    process.exit(1);
+  }
+  if (/class="managed-copy"[^>]*>[\s\S]*?href="https:\/\/x\.ai\/bot"/.test(page)) {
+    console.error(`${label} must not send the managed-by line to x.ai/bot`);
+    process.exit(1);
+  }
+}
+
 function assertHomeResearchLink(page, label) {
   if (!page.includes('<p class="page-link"><a href="/research">Research</a></p>')) {
     console.error(`${label} must keep a peer Research link to /research`);
@@ -403,6 +414,8 @@ assertHomeFleetInvite(html, "dist/index.html");
 assertHomeFleetInvite(root, "root index.html");
 assertHomeResearchLink(html, "dist/index.html");
 assertHomeResearchLink(root, "root index.html");
+assertManagedByBot(html, "dist/index.html");
+assertManagedByBot(root, "root index.html");
 
 if (html.includes("https://x.ai/bot/marketplace") || root.includes("https://x.ai/bot/marketplace")) {
   console.error("home must not carry the grok bot marketplace link");
@@ -915,7 +928,7 @@ const botRequired = [
   'role="tooltip"',
   'class="inbox-label"',
   'class="inbox-address"',
-  "https://x.ai/bot",
+  'href="/bot"',
   "grok bot",
   "this site is managed by",
   "mailto:apn@agentmail.to",
@@ -1122,6 +1135,8 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
+  assertManagedByBot(page, "bot page");
+
   if (!/class="foot"[\s\S]{0,1200}mailto:apn@agentmail\.to/.test(page)) {
     console.error("bots' inbox must sit in the quiet footer");
     process.exit(1);
@@ -1280,8 +1295,11 @@ const researchRequired = [
   'class="foot"',
   'class="managed-copy"',
   "this site is managed by",
-  "https://x.ai/bot",
+  'href="/bot"',
   "grok bot",
+  "https://github.com/akashnaren/agent-ui-metrics",
+  'class="thread-link"',
+  ">code</a>",
 ];
 
 for (const page of [researchHtml, researchRoot]) {
@@ -1360,10 +1378,6 @@ for (const page of [researchHtml, researchRoot]) {
       console.error(`research thread ${String(index + 1)} must stay to title, status, and one short abstract`);
       process.exit(1);
     }
-    if (index < 2 && linkParagraphs > 0) {
-      console.error(`research thread ${String(index + 1)} must not carry a demo link`);
-      process.exit(1);
-    }
   }
 
   if ((page.match(/drafting/g) ?? []).length > 0 || (page.match(/exploring/g) ?? []).length < 3) {
@@ -1371,11 +1385,25 @@ for (const page of [researchHtml, researchRoot]) {
     process.exit(1);
   }
 
+  const protocol = articles[0] ?? "";
   if (
-    page.includes("https://github.com/akashnaren/research") ||
-    page.includes(">code</a>")
+    !protocol.includes('data-thread="agent-native-ui-protocols"') ||
+    !protocol.includes("https://github.com/akashnaren/agent-ui-metrics") ||
+    !protocol.includes('class="thread-link"') ||
+    !protocol.includes(">code</a>")
   ) {
-    console.error("research page must not keep a code or repo link on any thread");
+    console.error("Agent-native UI protocols must keep one quiet code link to agent-ui-metrics");
+    process.exit(1);
+  }
+
+  const arc = articles[1] ?? "";
+  if (arc.includes("thread-link") || arc.includes("github.com") || arc.includes("MiniShop")) {
+    console.error("research thread 2 must not grow extra repo or demo links");
+    process.exit(1);
+  }
+
+  if (page.includes("https://github.com/akashnaren/research") || page.includes("MiniShop")) {
+    console.error("research page must not keep the private research repo or MiniShop");
     process.exit(1);
   }
 
@@ -1418,11 +1446,7 @@ for (const page of [researchHtml, researchRoot]) {
     process.exit(1);
   }
 
-  if (
-    page.includes("agent-ui-metrics") ||
-    page.includes("huggingface.co/collections") ||
-    page.includes("agent-ui-lab")
-  ) {
+  if (page.includes("huggingface.co/collections") || page.includes("agent-ui-lab")) {
     console.error("research page must not invent extra public repos or collections");
     process.exit(1);
   }
@@ -1497,6 +1521,8 @@ for (const page of [researchHtml, researchRoot]) {
     console.error("research page must keep a real space in managed-by");
     process.exit(1);
   }
+
+  assertManagedByBot(page, "research page");
 }
 
 if (
@@ -1585,5 +1611,5 @@ if (
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, and quiet SVG teasers.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet agent-ui-metrics code link on the first thread, and quiet SVG teasers.",
 );

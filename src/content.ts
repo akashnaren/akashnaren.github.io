@@ -229,6 +229,8 @@ export const threads: readonly Thread[] = [
     figure: "protocol",
     abstract:
       "Agents still drive apps through screenshots or a flat accessibility tree. I am comparing those to a structured view the agent can read.",
+    href: "https://github.com/akashnaren/agent-ui-metrics",
+    linkLabel: "code",
   },
   {
     id: "arc-agi-vs-hallucination-risk",
@@ -253,12 +255,6 @@ export const threads: readonly Thread[] = [
 export const managedBy: Paragraph = [
   "this site is managed by ",
   { href: "/bot", label: "grok bot" },
-  ".",
-];
-
-export const managedByHere: Paragraph = [
-  "this site is managed by ",
-  { href: "https://x.ai/bot", label: "grok bot" },
   ".",
 ];
 
