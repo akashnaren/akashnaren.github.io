@@ -28,7 +28,7 @@ const required = [
   "bill of materials",
   "fullstack applications",
   "https://www.tesla.com/robotaxi",
-  "robotaxi",
+  ">Robotaxi</a>",
   "https://www.tesla.com/AI",
   "Optimus",
   "https://grok.com",
@@ -95,7 +95,6 @@ const forbidden = [
   "full stack applications",
   ">optimus</a>",
   ">grok</a>",
-  ">Robotaxi</a>",
   "AI engineer",
   "AI Engineer",
   "usage stats",
@@ -842,6 +841,10 @@ for (const page of [html, root]) {
     console.error("vehicle engineering bio must say fullstack, not full stack");
     process.exit(1);
   }
+  if (!page.includes(">Robotaxi</a>") || page.includes(">robotaxi</a>")) {
+    console.error("vehicle engineering bio must capitalize the Robotaxi product link");
+    process.exit(1);
+  }
   if (!page.includes(">Optimus</a>") || page.includes(">optimus</a>")) {
     console.error("vehicle engineering bio must capitalize the Optimus product link");
     process.exit(1);
@@ -1273,8 +1276,7 @@ const researchRequired = [
   'property="og:url" content="https://akashnaren.github.io/research"',
   "Agent-native UI protocols",
   "ARC-AGI vs hallucination risk",
-  "Gap-aware entity resolution",
-  "drafting",
+  "Entity Investigation",
   "exploring",
   "screenshots or a flat accessibility tree",
   "structured view the agent can read",
@@ -1282,6 +1284,7 @@ const researchRequired = [
   "how often a model hallucinates",
   "reason over fragmented records",
   "link events to the right address",
+  "https://temporal-buddies5.vercel.app/",
   'class="page research"',
   'class="threads"',
   'class="thread"',
@@ -1333,7 +1336,8 @@ for (const page of [researchHtml, researchRoot]) {
     page.includes("do not invent edges") ||
     page.includes("I show the gaps") ||
     page.includes("time indexed graph") ||
-    page.includes("fuse fragmented records")
+    page.includes("fuse fragmented records") ||
+    page.includes("Gap-aware entity resolution")
   ) {
     console.error("research page must drop the old lede, live-dot cue, MiniShop, and their paraphrases");
     process.exit(1);
@@ -1369,15 +1373,15 @@ for (const page of [researchHtml, researchRoot]) {
     }
     const abstracts = article.match(/<div class="thread-copy">[\s\S]*?<\/div>/)?.[0] ?? "";
     const bodyParagraphs = (abstracts.match(/<p(?:\s|>)/g) ?? []).length;
-    const limit = article.includes('class="thread-link"') ? 3 : 2;
-    if (bodyParagraphs > limit) {
+    const linkParagraphs = (abstracts.match(/<p class="thread-link"/g) ?? []).length;
+    if (bodyParagraphs - linkParagraphs > 2) {
       console.error(`research thread ${String(index + 1)} must stay to title, status, and one short abstract`);
       process.exit(1);
     }
   }
 
-  if ((page.match(/drafting/g) ?? []).length < 1 || (page.match(/exploring/g) ?? []).length < 2) {
-    console.error("research page must mark thread 1 drafting and threads 2 and 3 exploring");
+  if ((page.match(/drafting/g) ?? []).length > 0 || (page.match(/exploring/g) ?? []).length < 3) {
+    console.error("research page must mark all three threads exploring");
     process.exit(1);
   }
 
@@ -1392,16 +1396,25 @@ for (const page of [researchHtml, researchRoot]) {
     process.exit(1);
   }
 
-  for (const [index, article] of articles.entries()) {
-    if (index === 0) continue;
-    if (article.includes("thread-link") || article.includes("github.com") || article.includes("MiniShop")) {
-      console.error(`research thread ${String(index + 1)} must not grow extra repo or demo links`);
-      process.exit(1);
-    }
+  const arc = articles[1] ?? "";
+  if (arc.includes("thread-link") || arc.includes("github.com") || arc.includes("MiniShop")) {
+    console.error("research thread 2 must not grow extra repo or demo links");
+    process.exit(1);
   }
 
   if (page.includes("https://github.com/akashnaren/research") || page.includes("MiniShop")) {
     console.error("research page must not keep the private research repo or MiniShop");
+    process.exit(1);
+  }
+
+  const entityArticle =
+    articles.find((article) => article.includes("Entity Investigation")) ?? "";
+  if (
+    !entityArticle.includes('class="thread-link"') ||
+    !entityArticle.includes('href="https://temporal-buddies5.vercel.app/"') ||
+    !entityArticle.includes(">demo</a>")
+  ) {
+    console.error("entity investigation must keep one quiet demo link");
     process.exit(1);
   }
 
