@@ -28,7 +28,7 @@ const required = [
   "bill of materials",
   "fullstack applications",
   "https://www.tesla.com/robotaxi",
-  "robotaxi",
+  ">Robotaxi</a>",
   "https://www.tesla.com/AI",
   "Optimus",
   "https://grok.com",
@@ -826,6 +826,10 @@ for (const page of [html, root]) {
   }
   if (!page.includes("fullstack applications") || page.includes("full stack applications")) {
     console.error("vehicle engineering bio must say fullstack, not full stack");
+    process.exit(1);
+  }
+  if (!page.includes(">Robotaxi</a>") || page.includes(">robotaxi</a>")) {
+    console.error("vehicle engineering bio must capitalize the Robotaxi product link");
     process.exit(1);
   }
   if (!page.includes(">Optimus</a>") || page.includes(">optimus</a>")) {

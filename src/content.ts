@@ -26,7 +26,7 @@ export const body: readonly Paragraph[] = [
   ],
   [
     "Previously I worked on vehicle engineering: bill of materials, fullstack applications, ",
-    { href: "https://www.tesla.com/robotaxi", label: "robotaxi" },
+    { href: "https://www.tesla.com/robotaxi", label: "Robotaxi" },
     ", ",
     { href: "https://www.tesla.com/AI", label: "Optimus" },
     ", and ",
