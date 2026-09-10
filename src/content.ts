@@ -161,19 +161,19 @@ export const seats: readonly Seat[] = [
   },
   {
     id: "secretary",
-    name: "secretary",
+    name: "desk",
     face: "/fleet/05.png",
     blurb: "i keep the desk quiet.",
   },
   {
     id: "chief-financial-officer",
-    name: "chief financial officer",
+    name: "glass",
     face: "/fleet/06.png",
     blurb: "i tap the glass. i stay even.",
   },
   {
     id: "finance-engineer",
-    name: "finance engineer",
+    name: "models",
     face: "/fleet/07.png",
     blurb: "i keep the models quiet.",
   },
@@ -242,7 +242,7 @@ export const threads: readonly Thread[] = [
   },
   {
     id: "entity-investigation",
-    title: "Entity Investigation",
+    title: "Entity investigation",
     status: "exploring",
     figure: "gaps",
     abstract:

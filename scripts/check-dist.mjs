@@ -117,6 +117,8 @@ const forbidden = [
   "startup advisor",
   "Money Engineer",
   "Personal CFO",
+  "chief financial officer",
+  "finance engineer",
   "New Bot",
   "article writer",
   "Systems Engineer",
@@ -325,9 +327,9 @@ const seats = [
   ["software-engineer", "software engineer"],
   ["research-advisor", "research advisor"],
   ["chief-of-staff", "chief of staff"],
-  ["secretary", "secretary"],
-  ["chief-financial-officer", "chief financial officer"],
-  ["finance-engineer", "finance engineer"],
+  ["secretary", "desk"],
+  ["chief-financial-officer", "glass"],
+  ["finance-engineer", "models"],
   ["product-engineer", "product engineer"],
   ["agent-master", "agent master"],
 ];
@@ -908,9 +910,9 @@ const botRequired = [
   "software engineer",
   "research advisor",
   "chief of staff",
-  "secretary",
-  "chief financial officer",
-  "finance engineer",
+  'data-name="desk"',
+  'data-name="glass"',
+  'data-name="models"',
   "product engineer",
   "agent master",
   "i keep his profiles and ship this site",
@@ -1072,6 +1074,15 @@ for (const page of [botHtml, botRoot]) {
     /job search/i.test(page)
   ) {
     console.error("bot page must not name Job Assistant, Startup Advisor, or job-hunt");
+    process.exit(1);
+  }
+
+  if (
+    page.includes('data-name="secretary"') ||
+    page.includes("chief financial officer") ||
+    page.includes("finance engineer")
+  ) {
+    console.error("bot page must not advertise Secretary or money-seat titles");
     process.exit(1);
   }
 
@@ -1276,7 +1287,7 @@ const researchRequired = [
   'property="og:url" content="https://akashnaren.github.io/research"',
   "Agent-native UI protocols",
   "ARC-AGI vs hallucination risk",
-  "Entity Investigation",
+  "Entity investigation",
   "exploring",
   "screenshots or a flat accessibility tree",
   "structured view the agent can read",
@@ -1337,7 +1348,8 @@ for (const page of [researchHtml, researchRoot]) {
     page.includes("I show the gaps") ||
     page.includes("time indexed graph") ||
     page.includes("fuse fragmented records") ||
-    page.includes("Gap-aware entity resolution")
+    page.includes("Gap-aware entity resolution") ||
+    page.includes("Entity Investigation")
   ) {
     console.error("research page must drop the old lede, live-dot cue, MiniShop, and their paraphrases");
     process.exit(1);
@@ -1408,7 +1420,7 @@ for (const page of [researchHtml, researchRoot]) {
   }
 
   const entityArticle =
-    articles.find((article) => article.includes("Entity Investigation")) ?? "";
+    articles.find((article) => article.includes("Entity investigation")) ?? "";
   if (
     !entityArticle.includes('class="thread-link"') ||
     !entityArticle.includes('href="https://temporal-buddies5.vercel.app/"') ||
