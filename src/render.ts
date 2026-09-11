@@ -113,7 +113,7 @@ function renderContact(): string {
 function renderFleetFace(seat: Seat): string {
   const name = escapeHtml(seat.name);
   const href = escapeHtml(collectionPath);
-  const host = seat.id === "profile-assistant";
+  const host = seat.id === "profile-engineer";
   const mark = host
     ? renderGrokBotMark("fleet")
     : renderMark(seat.face, fleetMarkSize, "fleet-mark");

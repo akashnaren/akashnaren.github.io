@@ -1058,6 +1058,11 @@ p.fleet {
   animation-delay: 0.25s;
 }
 
+.fleet-face:nth-child(10) .fleet-mark {
+  animation-duration: 7.6s;
+  animation-delay: 1.95s;
+}
+
 .fleet-face:hover .fleet-mark,
 .fleet-face:focus-visible .fleet-mark,
 .fleet-face:hover .fleet-wrap,
@@ -1112,6 +1117,11 @@ p.fleet {
   top: 72%;
 }
 
+.fleet-face:nth-child(10) {
+  left: 88%;
+  top: 22%;
+}
+
 .fleet-tip {
   --align-x: -50%;
   --nudge-y: 4px;
@@ -1138,7 +1148,7 @@ p.fleet {
   transition: opacity 280ms ease, transform 280ms ease;
 }
 
-.fleet-face[data-seat="profile-assistant"] .fleet-tip {
+.fleet-face[data-seat="profile-engineer"] .fleet-tip {
   left: 0;
   --align-x: 0%;
 }
@@ -1149,7 +1159,7 @@ p.fleet {
   --align-x: 0%;
 }
 
-.fleet-face[data-seat="research-advisor"] .fleet-tip {
+.fleet-face[data-seat="research-engineer"] .fleet-tip {
   left: auto;
   right: 0;
   --align-x: 0%;
@@ -1163,7 +1173,7 @@ p.fleet {
   --align-x: 0%;
 }
 
-.fleet-face[data-seat="chief-of-staff"] .fleet-tip,
+.fleet-face[data-seat="chief-executive-officer"] .fleet-tip,
 .fleet-face[data-seat="finance-engineer"] .fleet-tip {
   left: auto;
   right: calc(100% + 0.28rem);
@@ -1188,11 +1198,17 @@ p.fleet {
   --align-x: 0%;
 }
 
-.fleet-face[data-seat="agent-master"] .fleet-tip {
-  left: calc(100% + 1.2rem);
-  right: auto;
+.fleet-face[data-seat="chief-technical-officer"] .fleet-tip {
+  left: auto;
+  right: calc(100% + 0.28rem);
   top: auto;
   bottom: calc(100% + 0.55rem);
+  --align-x: 0%;
+}
+
+.fleet-face[data-seat="integration-engineer"] .fleet-tip {
+  left: auto;
+  right: 0;
   --align-x: 0%;
 }
 
@@ -1365,9 +1381,10 @@ a:focus-visible {
   }
 
   .fleet-face[data-seat="software-engineer"] .fleet-tip,
-  .fleet-face[data-seat="chief-of-staff"] .fleet-tip,
+  .fleet-face[data-seat="chief-executive-officer"] .fleet-tip,
   .fleet-face[data-seat="finance-engineer"] .fleet-tip,
-  .fleet-face[data-seat="product-engineer"] .fleet-tip {
+  .fleet-face[data-seat="product-engineer"] .fleet-tip,
+  .fleet-face[data-seat="chief-technical-officer"] .fleet-tip {
     left: 0;
     right: auto;
     bottom: calc(100% + 0.5rem);
@@ -1375,7 +1392,7 @@ a:focus-visible {
   }
 
   .fleet-face[data-seat="chief-financial-officer"] .fleet-tip,
-  .fleet-face[data-seat="agent-master"] .fleet-tip {
+  .fleet-face[data-seat="integration-engineer"] .fleet-tip {
     left: auto;
     right: 0;
     bottom: calc(100% + 0.5rem);
