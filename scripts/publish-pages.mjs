@@ -91,5 +91,5 @@ if (
 }
 
 console.log(
-  "published dist to repo root for Files Pages (hashed assets, /bot roster, /research list, /research/agent-native-ui article, 404 SPA fallback).",
+  "published dist to repo root for Files Pages (hashed assets, /bot roster, /research list, /research/agent-native-ui PDF reader, 404 SPA fallback).",
 );

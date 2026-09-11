@@ -1,42 +1,50 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
-const dest = resolve("content/research/agent-native-ui.md");
+const dest = resolve("public/research/agent-native-ui/paper.pdf");
 const localRepo = process.env.RESEARCH_REPO;
+const localFile = process.env.ARTICLE_FILE;
+const sha = process.env.ARTICLE_SHA ?? "main";
+const pdfPath = "papers/agent-native-ui/paper.pdf";
 const rawUrl =
   process.env.ARTICLE_URL ??
-  "https://raw.githubusercontent.com/akashnaren/research/main/paper/paper.md";
+  `https://raw.githubusercontent.com/akashnaren/research/${sha}/${pdfPath}`;
 
-const shell = `---
-title: Agent-native UI
-dek: Four ways to show one store to a model.
-author: Akash Premkumar
-date: 11 September 2026
-status: exploring
-source: research-repo
-code: https://github.com/akashnaren/agent-ui-metrics
-notes: https://github.com/akashnaren/research
----
-
-`;
-
-function withShell(markdown) {
-  if (markdown.startsWith("---\n") || markdown.startsWith("---\r\n")) {
-    return markdown;
+function assertPdf(bytes, origin) {
+  if (bytes.length < 5 || bytes.subarray(0, 5).toString("latin1") !== "%PDF-") {
+    console.error(`ingest: ${origin} is not a PDF`);
+    process.exit(1);
   }
-  return `${shell}${markdown}`;
 }
 
-mkdirSync(dirname(dest), { recursive: true });
+function writePdf(bytes, origin) {
+  assertPdf(bytes, origin);
+  mkdirSync(dirname(dest), { recursive: true });
+  writeFileSync(dest, bytes);
+  console.log(`ingest: wrote ${dest} (${String(bytes.length)} bytes) from ${origin}`);
+}
+
+function localPdf(root) {
+  return resolve(root, pdfPath);
+}
+
+if (localFile) {
+  const src = resolve(localFile);
+  if (!existsSync(src)) {
+    console.error(`ingest: missing ARTICLE_FILE ${src}`);
+    process.exit(1);
+  }
+  writePdf(readFileSync(src), src);
+  process.exit(0);
+}
 
 if (localRepo) {
-  const src = resolve(localRepo, "paper/paper.md");
+  const src = localPdf(localRepo);
   if (!existsSync(src)) {
     console.error(`ingest: missing ${src}`);
     process.exit(1);
   }
-  writeFileSync(dest, withShell(readFileSync(src, "utf8")));
-  console.log(`ingest: wrote ${dest} from ${src}`);
+  writePdf(readFileSync(src), src);
   process.exit(0);
 }
 
@@ -45,17 +53,16 @@ try {
   res = await fetch(rawUrl);
 } catch {
   console.error(
-    "ingest: fetch failed. Set RESEARCH_REPO to a local clone of github.com/akashnaren/research",
+    "ingest: PDF fetch failed. The research repo is private to anonymous raw.githubusercontent.com. Set RESEARCH_REPO=/path/to/research, ARTICLE_FILE=/path/to/paper.pdf, or ARTICLE_URL to a readable PDF.",
   );
   process.exit(1);
 }
 
 if (!res.ok) {
   console.error(
-    `ingest: ${rawUrl} returned ${String(res.status)}. Private repos need RESEARCH_REPO=/path/to/research`,
+    `ingest: ${rawUrl} returned ${String(res.status)}. Private repos need RESEARCH_REPO=/path/to/research, ARTICLE_FILE=/path/to/paper.pdf, or a readable ARTICLE_URL.`,
   );
   process.exit(1);
 }
 
-writeFileSync(dest, withShell(await res.text()));
-console.log(`ingest: wrote ${dest} from ${rawUrl}`);
+writePdf(Buffer.from(await res.arrayBuffer()), rawUrl);
