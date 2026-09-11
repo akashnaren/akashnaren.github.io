@@ -1,11 +1,13 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
+import { essayMetaFrom, parseArticle } from "./src/article.ts";
 import {
   applyPageMeta,
   botMeta,
   homeMeta,
   renderBot,
+  renderEssay,
   renderResearch,
   renderSite,
   replaceHolder,
@@ -17,6 +19,7 @@ const holderPattern = /<div id="holder"><\/div>/;
 function rewritePageIndex(req: { url?: string }): void {
   if (req.url === "/bot") req.url = "/bot/";
   if (req.url === "/research") req.url = "/research/";
+  if (req.url === "/research/agent-native-ui") req.url = "/research/agent-native-ui/";
 }
 
 export default defineConfig({
@@ -61,6 +64,14 @@ export default defineConfig({
         writeFileSync(
           resolve("dist/research/index.html"),
           applyPageMeta(replaceHolder(home, renderResearch()), researchMeta),
+        );
+        const essayDoc = parseArticle(
+          readFileSync(resolve("content/research/agent-native-ui.md"), "utf8"),
+        );
+        mkdirSync(resolve("dist/research/agent-native-ui"), { recursive: true });
+        writeFileSync(
+          resolve("dist/research/agent-native-ui/index.html"),
+          applyPageMeta(replaceHolder(home, renderEssay(essayDoc)), essayMetaFrom(essayDoc)),
         );
         writeFileSync(
           resolve("dist/404.html"),

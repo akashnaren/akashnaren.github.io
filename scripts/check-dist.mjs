@@ -1406,10 +1406,14 @@ for (const page of [researchHtml, researchRoot]) {
   if (
     !protocol.includes('data-thread="agent-native-ui-protocols"') ||
     !protocol.includes("https://github.com/akashnaren/agent-ui-metrics") ||
+    !protocol.includes('href="/research/agent-native-ui/"') ||
     !protocol.includes('class="thread-link"') ||
+    !protocol.includes(">read</a>") ||
     !protocol.includes(">code</a>")
   ) {
-    console.error("Agent-native UI protocols must keep one quiet code link to agent-ui-metrics");
+    console.error(
+      "Agent-native UI protocols must keep a quiet read link to the article and a code link to agent-ui-metrics",
+    );
     process.exit(1);
   }
 
@@ -1548,9 +1552,29 @@ if (
   !css.includes(".thread") ||
   !css.includes(".cue") ||
   !css.includes(".thread-fig") ||
-  !css.includes(".page-link")
+  !css.includes(".page-link") ||
+  !css.includes(".page.essay") ||
+  !css.includes(".essay-body") ||
+  !css.includes(".essay-nav") ||
+  !css.includes("65ch")
 ) {
-  console.error("stylesheet must keep the research list and home Research link");
+  console.error("stylesheet must keep the research list, home Research link, and essay reader");
+  process.exit(1);
+}
+
+if (
+  !css.includes("html:has(.page.essay)") ||
+  (!css.includes("body:has(.page.essay)") && !css.includes(":has(.page.essay)"))
+) {
+  console.error("stylesheet must let the essay page scroll on the document without unlocking home or /bot");
+  process.exit(1);
+}
+
+if (
+  !css.includes(".essay-nav") ||
+  (!css.includes("position:sticky") && !css.includes("position: sticky"))
+) {
+  console.error("essay section nav must stay sticky");
   process.exit(1);
 }
 
@@ -1627,6 +1651,141 @@ if (
   process.exit(1);
 }
 
+if (!existsSync("dist/research/agent-native-ui/index.html") || !existsSync("research/agent-native-ui/index.html")) {
+  console.error("essay page must exist at dist/research/agent-native-ui/index.html and research/agent-native-ui/index.html");
+  process.exit(1);
+}
+
+const essayHtml = readFileSync("dist/research/agent-native-ui/index.html", "utf8");
+const essayRoot = readFileSync("research/agent-native-ui/index.html", "utf8");
+
+const essayRequired = [
+  "<title>Agent-native UI</title>",
+  "Four ways to show one store to a model.",
+  "Akash Premkumar",
+  "11 September 2026",
+  "exploring",
+  "Stub. Replace the markdown to publish the draft.",
+  "Nothing here is a result.",
+  "No results on this page.",
+  ">Claim</h2>",
+  ">Method</h2>",
+  ">Results</h2>",
+  ">Limitations</h2>",
+  'id="claim"',
+  'id="method"',
+  'id="results"',
+  'id="limitations"',
+  "MiniShop",
+  'href="/research"',
+  ">research</a>",
+  "https://github.com/akashnaren/agent-ui-metrics",
+  "https://github.com/akashnaren/research",
+  'class="page essay"',
+  'class="essay-body"',
+  'class="essay-nav"',
+  'class="essay-status"',
+  'class="essay-byline"',
+  'class="essay-dek"',
+  'class="essay-note"',
+  'property="og:url" content="https://akashnaren.github.io/research/agent-native-ui/"',
+  'class="managed-copy"',
+  "this site is managed by",
+  'href="/bot"',
+  "grok bot",
+];
+
+for (const page of [essayHtml, essayRoot]) {
+  const missingEssay = essayRequired.filter((needle) => !page.includes(needle));
+  if (missingEssay.length > 0) {
+    console.error("essay page is missing required copy:");
+    for (const needle of missingEssay) console.error(`  - ${needle}`);
+    process.exit(1);
+  }
+
+  if (
+    page.includes("30%") ||
+    page.includes("72%") ||
+    page.includes("92%") ||
+    page.includes("+1404") ||
+    page.includes("gemini-2.5-flash")
+  ) {
+    console.error("essay stub must not publish private-run metrics");
+    process.exit(1);
+  }
+
+  if (page.includes("\u2014") || page.includes("\u2013")) {
+    console.error("essay page must not use dash punctuation");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("delve") ||
+    page.includes("leverage") ||
+    page.includes("robust pipeline") ||
+    page.includes("in this work")
+  ) {
+    console.error("essay page must keep lean copy, not AI essay phrasing");
+    process.exit(1);
+  }
+
+  if (
+    /Tesla/.test(page) ||
+    /tesla\.com/.test(page) ||
+    /Redwood City/.test(page) ||
+    /Raytheon/.test(page) ||
+    /NASA/.test(page)
+  ) {
+    console.error("essay page must not carry Tesla or home bio copy");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("apn@agentmail.to") ||
+    page.includes("agentmail") ||
+    page.includes("akashnaren@gmail.com") ||
+    page.includes("human-mail") ||
+    page.includes('class="inbox"')
+  ) {
+    console.error("essay page must not leak AgentMail, Gmail, or the bots' inbox");
+    process.exit(1);
+  }
+
+  if (
+    page.includes('class="sky"') ||
+    page.includes('class="system"') ||
+    page.includes('class="board"') ||
+    page.includes('class="roster"') ||
+    page.includes("profile assistant") ||
+    page.includes("click on any bot")
+  ) {
+    console.error("essay page must not duplicate home sky or /bot roster cards");
+    process.exit(1);
+  }
+
+  if (
+    /job assistant/i.test(page) ||
+    /startup advisor/i.test(page) ||
+    /looking for a job/i.test(page) ||
+    /job search/i.test(page)
+  ) {
+    console.error("essay page must not name Job Assistant, Startup Advisor, or job-hunt");
+    process.exit(1);
+  }
+
+  if (!/\/assets\/index-[^"]+\.js/.test(page)) {
+    console.error("essay page must reference hashed /assets/index-*.js");
+    process.exit(1);
+  }
+
+  if (!page.includes("by grok") && !page.includes("by <a")) {
+    console.error("essay page must keep a real space in managed-by");
+    process.exit(1);
+  }
+
+  assertManagedByBot(page, "essay page");
+}
+
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet agent-ui-metrics code link on the first thread, and quiet SVG teasers.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, and quiet SVG teasers. /research/agent-native-ui is a scrolling markdown essay with a stub manuscript, section nav, and an ingest path for Research Engineer.",
 );

@@ -207,9 +207,18 @@ export const researchNote = "still researching";
 
 export const researchLinkLabel = "Research";
 
+export const essayPath = "/research/agent-native-ui/";
+
+export const essayUrl = "https://akashnaren.github.io/research/agent-native-ui/";
+
 export type ThreadStatus = "drafting" | "exploring";
 
 export type ThreadFigure = "protocol" | "axes" | "gaps";
+
+export type ThreadLink = {
+  readonly href: string;
+  readonly label: string;
+};
 
 export type Thread = {
   readonly id: string;
@@ -219,6 +228,7 @@ export type Thread = {
   readonly abstract: string;
   readonly href?: string;
   readonly linkLabel?: string;
+  readonly links?: readonly ThreadLink[];
 };
 
 export const threads: readonly Thread[] = [
@@ -229,8 +239,10 @@ export const threads: readonly Thread[] = [
     figure: "protocol",
     abstract:
       "Agents still drive apps through screenshots or a flat accessibility tree. I am comparing those to a structured view the agent can read.",
-    href: "https://github.com/akashnaren/agent-ui-metrics",
-    linkLabel: "code",
+    links: [
+      { href: essayPath, label: "read" },
+      { href: "https://github.com/akashnaren/agent-ui-metrics", label: "code" },
+    ],
   },
   {
     id: "arc-agi-vs-hallucination-risk",
@@ -302,4 +314,12 @@ export function isBotPath(pathname: string): boolean {
 export function isResearchPath(pathname: string): boolean {
   const path = pathname.split(/[?#]/, 1)[0] ?? "";
   return /\/research\/?$/.test(path) || /\/research\/index\.html$/.test(path);
+}
+
+export function isEssayPath(pathname: string): boolean {
+  const path = pathname.split(/[?#]/, 1)[0] ?? "";
+  return (
+    /\/research\/agent-native-ui\/?$/.test(path) ||
+    /\/research\/agent-native-ui\/index\.html$/.test(path)
+  );
 }
