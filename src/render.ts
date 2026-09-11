@@ -33,12 +33,13 @@ import {
   type Thread,
   type ThreadLink,
 } from "./content.ts";
-import { type ArticleDocument } from "./article.ts";
+import { paperHref, paperTitle } from "./article.ts";
 
 export type PageMeta = {
   readonly title: string;
   readonly description: string;
   readonly url: string;
+  readonly themeColor?: string;
 };
 
 export const homeMeta: PageMeta = {
@@ -348,53 +349,12 @@ export function renderResearch(): string {
     </div>`;
 }
 
-function renderEssayLinks(doc: ArticleDocument): string {
-  const items: ThreadLink[] = [];
-  if (doc.meta.code) items.push({ href: doc.meta.code, label: "code" });
-  if (doc.meta.notes) items.push({ href: doc.meta.notes, label: "source" });
-  if (items.length === 0) return "";
-  const inner = items
-    .map((item) => `<a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a>`)
-    .join(" ");
-  return `<p class="essay-links">${inner}</p>`;
-}
-
-function renderEssayNav(doc: ArticleDocument): string {
-  if (doc.headings.length === 0) return "";
-  const links = doc.headings
-    .map(
-      (heading) =>
-        `<a href="#${escapeHtml(heading.id)}">${escapeHtml(heading.text)}</a>`,
-    )
-    .join("");
-  return `<nav class="essay-nav" aria-label="sections">${links}</nav>`;
-}
-
-export function renderEssay(doc: ArticleDocument): string {
-  const note =
-    doc.meta.source === "stub"
-      ? `<p class="essay-note">Stub. Replace the markdown to publish the draft.</p>`
-      : "";
+export function renderEssay(): string {
+  const href = escapeHtml(paperHref);
+  const title = escapeHtml(paperTitle);
   return `<div class="page essay" id="holder">
-      <div class="stage">
-      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a></p>
-      <header class="essay-mast">
-        <p class="essay-status">${escapeHtml(doc.meta.status)}</p>
-        <h1>${escapeHtml(doc.meta.title)}<span class="scope" aria-hidden="true"></span></h1>
-        <p class="essay-dek">${escapeHtml(doc.meta.dek)}</p>
-        <p class="essay-byline">${escapeHtml(doc.meta.author)}</p>
-        <p class="essay-date">${escapeHtml(doc.meta.date)}</p>
-        ${renderEssayLinks(doc)}
-        ${note}
-      </header>
-      ${renderEssayNav(doc)}
-      <article class="essay-body">
-        ${doc.bodyHtml}
-      </article>
-      <footer class="foot">
-        ${renderManagedBy()}
-      </footer>
-      </div>
+      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a> <a href="${href}">pdf</a></p>
+      <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
     </div>`;
 }
 
@@ -439,7 +399,11 @@ export function applyPageMeta(html: string, meta: PageMeta): string {
       /(<meta name="twitter:description" content=")[^"]*("\s*\/?>)/,
       `$1${desc}$2`,
     )
-    .replace(/(<link rel="canonical" href=")[^"]*("\s*\/?>)/, `$1${href}$2`);
+    .replace(/(<link rel="canonical" href=")[^"]*("\s*\/?>)/, `$1${href}$2`)
+    .replace(
+      /(<meta name="theme-color" content=")[^"]*("\s*\/?>)/,
+      `$1${escapeHtml(meta.themeColor ?? "#0a0a0a")}$2`,
+    );
 }
 
 export function applyDocumentMeta(meta: PageMeta): void {
@@ -451,6 +415,7 @@ export function applyDocumentMeta(meta: PageMeta): void {
     ['meta[property="og:url"]', meta.url],
     ['meta[name="twitter:title"]', meta.title],
     ['meta[name="twitter:description"]', meta.description],
+    ['meta[name="theme-color"]', meta.themeColor ?? "#0a0a0a"],
   ];
   for (const [selector, value] of pairs) {
     document.querySelector(selector)?.setAttribute("content", value);

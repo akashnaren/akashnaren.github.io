@@ -1,4 +1,4 @@
-import { essayMetaFrom, parseArticle } from "./article.ts";
+import { essayMetaFrom } from "./article.ts";
 import { bindCrewBoard } from "./board.ts";
 import { isBotPath, isEssayPath, isResearchPath } from "./content.ts";
 import { fitStage } from "./fit.ts";
@@ -12,7 +12,6 @@ import {
   renderSite,
   researchMeta,
 } from "./render.ts";
-import articleSource from "../content/research/agent-native-ui.md?raw";
 
 function mount(): void {
   const bot = isBotPath(location.pathname);
@@ -25,9 +24,8 @@ function mount(): void {
   const paintedEssay = root.classList.contains("essay");
   const paintedResearch = root.classList.contains("research");
   const paintedHome = Boolean(root.querySelector(".sky"));
-  const essayDoc = essay ? parseArticle(articleSource) : null;
-  if (essay && !paintedEssay && essayDoc) {
-    root.outerHTML = renderEssay(essayDoc);
+  if (essay && !paintedEssay) {
+    root.outerHTML = renderEssay();
   } else if (bot && !paintedBot) {
     root.outerHTML = renderBot();
   } else if (research && !paintedResearch) {
@@ -37,13 +35,7 @@ function mount(): void {
   }
 
   applyDocumentMeta(
-    essay && essayDoc
-      ? essayMetaFrom(essayDoc)
-      : bot
-        ? botMeta
-        : research
-          ? researchMeta
-          : homeMeta,
+    essay ? essayMetaFrom() : bot ? botMeta : research ? researchMeta : homeMeta,
   );
 }
 

@@ -1637,11 +1637,10 @@ if (
   !css.includes(".thread-fig") ||
   !css.includes(".page-link") ||
   !css.includes(".page.essay") ||
-  !css.includes(".essay-body") ||
-  !css.includes(".essay-nav") ||
-  !css.includes("65ch")
+  !css.includes(".essay-pdf") ||
+  !css.includes(".essay-back")
 ) {
-  console.error("stylesheet must keep the research list, home Research link, and essay reader");
+  console.error("stylesheet must keep the research list, home Research link, and PDF reader");
   process.exit(1);
 }
 
@@ -1649,15 +1648,20 @@ if (
   !css.includes("html:has(.page.essay)") ||
   (!css.includes("body:has(.page.essay)") && !css.includes(":has(.page.essay)"))
 ) {
-  console.error("stylesheet must let the essay page scroll on the document without unlocking home or /bot");
+  console.error("stylesheet must isolate the PDF reader without unlocking home or /bot");
   process.exit(1);
 }
 
 if (
-  !css.includes(".essay-nav") ||
-  (!css.includes("position:sticky") && !css.includes("position: sticky"))
+  !/html:has\(\.page\.essay\)[\s\S]{0,180}background:\s*#fff/.test(css) &&
+  !/html:has\(\.page\.essay\)[\s\S]{0,180}background:#fff/.test(css)
 ) {
-  console.error("essay section nav must stay sticky");
+  console.error("PDF reader must be a white page, not the dark site theme");
+  process.exit(1);
+}
+
+if (css.includes(".essay-nav") || css.includes(".essay-status") || css.includes(".essay-note")) {
+  console.error("PDF reader must not keep notebook status chips, section nav, or stub notes");
   process.exit(1);
 }
 
@@ -1741,41 +1745,40 @@ if (!existsSync("dist/research/agent-native-ui/index.html") || !existsSync("rese
 
 const essayHtml = readFileSync("dist/research/agent-native-ui/index.html", "utf8");
 const essayRoot = readFileSync("research/agent-native-ui/index.html", "utf8");
+const paperFiles = [
+  "public/research/agent-native-ui/paper.pdf",
+  "dist/research/agent-native-ui/paper.pdf",
+  "research/agent-native-ui/paper.pdf",
+];
+const missingPaper = paperFiles.filter((path) => !existsSync(path));
+if (missingPaper.length > 0) {
+  console.error("ingested paper.pdf is missing:");
+  for (const path of missingPaper) console.error(`  - ${path}`);
+  process.exit(1);
+}
+for (const path of paperFiles) {
+  const bytes = readFileSync(path);
+  if (bytes.subarray(0, 5).toString("latin1") !== "%PDF-") {
+    console.error(`${path} must be the ingested research PDF`);
+    process.exit(1);
+  }
+  if (bytes.length < 1000) {
+    console.error(`${path} is too small to be the research PDF`);
+    process.exit(1);
+  }
+}
 
 const essayRequired = [
-  "<title>Agent-native UI</title>",
-  "Four ways to show one store to a model.",
-  "Akash Premkumar",
-  "11 September 2026",
-  "exploring",
-  "Stub. Replace the markdown to publish the draft.",
-  "Nothing here is a result.",
-  "No results on this page.",
-  ">Claim</h2>",
-  ">Method</h2>",
-  ">Results</h2>",
-  ">Limitations</h2>",
-  'id="claim"',
-  'id="method"',
-  'id="results"',
-  'id="limitations"',
-  "MiniShop",
+  "<title>The Interface Is a Variable: Measuring the Cost and Reliability of Purpose-Built UI Representations for LLM Agents</title>",
   'href="/research"',
   ">research</a>",
-  "https://github.com/akashnaren/agent-ui-metrics",
-  "https://github.com/akashnaren/research",
+  'href="/research/agent-native-ui/paper.pdf"',
+  ">pdf</a>",
   'class="page essay"',
-  'class="essay-body"',
-  'class="essay-nav"',
-  'class="essay-status"',
-  'class="essay-byline"',
-  'class="essay-dek"',
-  'class="essay-note"',
+  'class="essay-pdf"',
+  'src="/research/agent-native-ui/paper.pdf"',
   'property="og:url" content="https://akashnaren.github.io/research/agent-native-ui/"',
-  'class="managed-copy"',
-  "this site is managed by",
-  'href="/bot"',
-  "grok bot",
+  'name="theme-color" content="#ffffff"',
 ];
 
 for (const page of [essayHtml, essayRoot]) {
@@ -1787,13 +1790,16 @@ for (const page of [essayHtml, essayRoot]) {
   }
 
   if (
-    page.includes("30%") ||
-    page.includes("72%") ||
-    page.includes("92%") ||
-    page.includes("+1404") ||
-    page.includes("gemini-2.5-flash")
+    page.includes("Stub. Replace the markdown") ||
+    page.includes("Nothing here is a result.") ||
+    page.includes("No results on this page.") ||
+    page.includes('class="essay-note"') ||
+    page.includes('class="essay-status"') ||
+    page.includes('class="essay-nav"') ||
+    page.includes('class="essay-body"') ||
+    page.includes("Four ways to show one store to a model.")
   ) {
-    console.error("essay stub must not publish private-run metrics");
+    console.error("essay page must not keep the stub markdown reader");
     process.exit(1);
   }
 
@@ -1861,14 +1867,12 @@ for (const page of [essayHtml, essayRoot]) {
     process.exit(1);
   }
 
-  if (!page.includes("by grok") && !page.includes("by <a")) {
-    console.error("essay page must keep a real space in managed-by");
+  if (page.includes("this site is managed by") || page.includes('class="managed-copy"')) {
+    console.error("PDF reader must not carry site-themed managed-by chrome");
     process.exit(1);
   }
-
-  assertManagedByBot(page, "essay page");
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, and quiet SVG teasers. /research/agent-native-ui is a scrolling markdown essay with a stub manuscript, section nav, and an ingest path for Research Engineer.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, and quiet SVG teasers. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf.",
 );
