@@ -12,6 +12,7 @@ const fleetSrcs = [
   "/fleet/07.png",
   "/fleet/08.png",
   "/fleet/09.png",
+  "/fleet/10.png",
 ];
 
 const homeFleetSrcs = fleetSrcs.filter((src) => src !== "/fleet/01.png");
@@ -78,13 +79,14 @@ const required = [
   'class="fleet-tip"',
   'class="fleet-invite"',
   "click on any bot",
-  "nine grok bots, more coming.",
+  "ten grok bots, more coming.",
   'class="page-link"',
   'href="/research"',
   ">Research</a>",
   'class="him"',
   'class="panel"',
   'class="fact"',
+  ">ten</p>",
   'name="twitter:card"',
   'property="og:url" content="https://akashnaren.github.io/"',
   'name="theme-color" content="#0a0a0a"',
@@ -115,6 +117,16 @@ const forbidden = [
   "looking for a job",
   "hiring",
   "startup advisor",
+  "Startup Advisor",
+  "research advisor",
+  "chief of staff",
+  "agent master",
+  "profile assistant",
+  "Profile Assistant",
+  "talent engineer",
+  "Talent Engineer",
+  "travel assistant",
+  "Travel Assistant",
   "Money Engineer",
   "Personal CFO",
   "chief financial officer",
@@ -191,8 +203,8 @@ if (/\bprofessor\b/i.test(html)) {
 }
 
 const fleetHits = homeFleetSrcs.filter((src) => html.includes(`src="${src}"`));
-if (fleetHits.length !== 8) {
-  console.error("dist/index.html must include the eight non-host unlabeled fleet marks");
+if (fleetHits.length !== 9) {
+  console.error("dist/index.html must include the nine non-host unlabeled fleet marks");
   process.exit(1);
 }
 
@@ -323,15 +335,16 @@ if (/job assistant/i.test(html) || /job assistant/i.test(root)) {
 }
 
 const seats = [
-  ["profile-assistant", "profile assistant"],
+  ["profile-engineer", "profile engineer"],
   ["software-engineer", "software engineer"],
-  ["research-advisor", "research advisor"],
-  ["chief-of-staff", "chief of staff"],
+  ["research-engineer", "research engineer"],
+  ["chief-executive-officer", "chief executive officer"],
   ["secretary", "desk"],
   ["chief-financial-officer", "glass"],
   ["finance-engineer", "models"],
   ["product-engineer", "product engineer"],
-  ["agent-master", "agent master"],
+  ["chief-technical-officer", "chief technical officer"],
+  ["integration-engineer", "integration engineer"],
 ];
 
 const seatNames = seats.map(([, name]) => name);
@@ -347,8 +360,8 @@ function assertHomeFleetInvite(page, label) {
   }
 
   const faces = [...page.matchAll(/<a class="fleet-face[^"]*"[^>]*>/g)].map((match) => match[0]);
-  if (faces.length !== 9) {
-    console.error(`${label} must wrap all nine fleet faces as /bot links, found ${String(faces.length)}`);
+  if (faces.length !== 10) {
+    console.error(`${label} must wrap all ten fleet faces as /bot links, found ${String(faces.length)}`);
     process.exit(1);
   }
 
@@ -906,24 +919,26 @@ const spaRoot = readFileSync("404.html", "utf8");
 
 const botRequired = [
   "grok bot collection",
-  "profile assistant",
+  "profile engineer",
   "software engineer",
-  "research advisor",
-  "chief of staff",
+  "research engineer",
+  "chief executive officer",
   'data-name="desk"',
   'data-name="glass"',
   'data-name="models"',
   "product engineer",
-  "agent master",
+  "chief technical officer",
+  "integration engineer",
   "i keep his profiles and ship this site",
   "quiet diffs. a clean compile",
   "i read the papers that matter",
-  "i keep the nine on the clock",
+  "i keep the ten on the clock",
   "i keep the desk quiet",
   "i tap the glass. i stay even",
   "i keep the models quiet",
   "i file the sharp corners",
   "i build grok bots like these",
+  "i wrap apis into quiet plugins",
   "bots' inbox",
   "the agents' inbox — not his personal Gmail",
   'class="inbox-tip"',
@@ -952,9 +967,10 @@ const botRequired = [
   "data-blurb=",
   'src="/fleet/01.png"',
   'src="/fleet/09.png"',
+  'src="/fleet/10.png"',
   'property="og:url" content="https://akashnaren.github.io/bot"',
   "<title>grok bot collection</title>",
-  "Nine grok bots. A quiet collection.",
+  "Ten grok bots. A quiet collection.",
   ...fleetSrcs.map((src) => `src="${src}"`),
 ];
 
@@ -967,8 +983,8 @@ for (const page of [botHtml, botRoot]) {
   }
 
   const botFleet = fleetSrcs.filter((src) => page.includes(`src="${src}"`));
-  if (botFleet.length !== 9) {
-    console.error("bot page must include all nine unlabeled fleet marks");
+  if (botFleet.length !== 10) {
+    console.error("bot page must include all ten unlabeled fleet marks");
     process.exit(1);
   }
 
@@ -1011,8 +1027,15 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  if (page.includes("<title>Profile Assistant</title>") || page.includes(">profile assistant<span")) {
-    console.error("bot page top title must be grok bot collection, not Profile Assistant");
+  if (
+    page.includes("<title>Profile Assistant</title>") ||
+    page.includes("<title>Talent Engineer</title>") ||
+    page.includes("<title>Profile Engineer</title>") ||
+    page.includes(">profile assistant<span") ||
+    page.includes(">talent engineer<span") ||
+    page.includes(">profile engineer<span")
+  ) {
+    console.error("bot page top title must be grok bot collection, not a seat name");
     process.exit(1);
   }
 
@@ -1030,16 +1053,20 @@ for (const page of [botHtml, botRoot]) {
     page.includes('class="rail"') ||
     page.includes('class="write"') ||
     page.includes('class="brief') ||
+    page.includes("ten grok bots, more coming.") ||
+    page.includes("eleven grok bots, more coming.") ||
     page.includes("nine grok bots, more coming.") ||
+    page.includes("ten <a href=\"https://x.ai/bot\">grok bots</a>") ||
+    page.includes("eleven <a href=\"https://x.ai/bot\">grok bots</a>") ||
     page.includes("nine <a href=\"https://x.ai/bot\">grok bots</a>")
   ) {
-    console.error("bot page must not keep stacked chrome, brief, nine-grok-bots line, or marketplace");
+    console.error("bot page must not keep stacked chrome, brief, ten-grok-bots line, or marketplace");
     process.exit(1);
   }
 
   const blurbs = [...page.matchAll(/data-blurb="([^"]*)"/g)].map((match) => match[1] ?? "");
-  if (blurbs.length !== 9) {
-    console.error(`bot page must keep nine concise blurbs, found ${String(blurbs.length)}`);
+  if (blurbs.length !== 10) {
+    console.error(`bot page must keep ten concise blurbs, found ${String(blurbs.length)}`);
     process.exit(1);
   }
   for (const blurb of blurbs) {
@@ -1070,10 +1097,18 @@ for (const page of [botHtml, botRoot]) {
   if (
     /job assistant/i.test(page) ||
     /startup advisor/i.test(page) ||
+    /article writer/i.test(page) ||
+    /new bot/i.test(page) ||
+    /research advisor/i.test(page) ||
+    /chief of staff/i.test(page) ||
+    /agent master/i.test(page) ||
+    /profile assistant/i.test(page) ||
+    /talent engineer/i.test(page) ||
+    /travel assistant/i.test(page) ||
     /looking for a job/i.test(page) ||
     /job search/i.test(page)
   ) {
-    console.error("bot page must not name Job Assistant, Startup Advisor, or job-hunt");
+    console.error("bot page must not name Job Assistant, Startup Advisor, Travel Assistant, Article Writer, New Bot, or stale seats");
     process.exit(1);
   }
 
@@ -1104,8 +1139,8 @@ for (const page of [botHtml, botRoot]) {
   }
 
   const rowCount = (page.match(/<button[^>]*class="row/g) ?? []).length;
-  if (rowCount !== 9) {
-    console.error(`bot page must paint nine roster rows, found ${String(rowCount)}`);
+  if (rowCount !== 10) {
+    console.error(`bot page must paint ten roster rows, found ${String(rowCount)}`);
     process.exit(1);
   }
 
@@ -1114,8 +1149,8 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
-  if (!page.includes("profile assistant")) {
-    console.error("bot page must name profile assistant as the seat that keeps the site");
+  if (!page.includes("profile engineer")) {
+    console.error("bot page must name profile engineer as the seat that keeps the site");
     process.exit(1);
   }
 
@@ -1137,7 +1172,7 @@ for (const page of [botHtml, botRoot]) {
     page.includes("we ship his") ||
     page.includes("fleet for akash")
   ) {
-    console.error("bot page must speak as profile assistant, and must not say the fleet manages the site");
+    console.error("bot page must speak as profile engineer, and must not say the fleet manages the site");
     process.exit(1);
   }
 
@@ -1508,6 +1543,8 @@ for (const page of [researchHtml, researchRoot]) {
     page.includes('class="roster"') ||
     page.includes('class="row-blurb"') ||
     page.includes("profile assistant") ||
+    page.includes("talent engineer") ||
+    page.includes("profile engineer") ||
     page.includes("click on any bot")
   ) {
     console.error("research page must not duplicate home sky or /bot roster cards");
@@ -1517,10 +1554,11 @@ for (const page of [researchHtml, researchRoot]) {
   if (
     /job assistant/i.test(page) ||
     /startup advisor/i.test(page) ||
+    /travel assistant/i.test(page) ||
     /looking for a job/i.test(page) ||
     /job search/i.test(page)
   ) {
-    console.error("research page must not name Job Assistant, Startup Advisor, or job-hunt");
+    console.error("research page must not name Job Assistant, Startup Advisor, Travel Assistant, or job-hunt");
     process.exit(1);
   }
 
@@ -1628,5 +1666,5 @@ if (
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, nine /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet agent-ui-metrics code link on the first thread, and quiet SVG teasers.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet agent-ui-metrics code link on the first thread, and quiet SVG teasers.",
 );
