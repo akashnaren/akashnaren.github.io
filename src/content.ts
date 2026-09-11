@@ -162,19 +162,19 @@ export const seats: readonly Seat[] = [
   },
   {
     id: "secretary",
-    name: "desk",
+    name: "secretary",
     face: "/fleet/05.png",
     blurb: "i keep the desk quiet.",
   },
   {
     id: "chief-financial-officer",
-    name: "glass",
+    name: "chief financial officer",
     face: "/fleet/06.png",
     blurb: "i tap the glass. i stay even.",
   },
   {
     id: "finance-engineer",
-    name: "models",
+    name: "finance engineer",
     face: "/fleet/07.png",
     blurb: "i keep the models quiet.",
   },
