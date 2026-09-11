@@ -92,21 +92,22 @@ export const fleetMarks = [
   "/fleet/07.png",
   "/fleet/08.png",
   "/fleet/09.png",
+  "/fleet/10.png",
 ] as const;
 
 export const fleetMarkSize = 24;
 
 export const managedMarkSize = 15;
 
-export const fleetFact = "nine";
+export const fleetFact = "ten";
 
-export const fleetLine = "nine grok bots, more coming.";
+export const fleetLine = "ten grok bots, more coming.";
 
 export const fleetInvite = "click on any bot";
 
 export const collectionPath = "/bot";
 
-export const botName = "profile assistant";
+export const botName = "profile engineer";
 
 export const collectionTitle = "grok bot collection";
 
@@ -114,7 +115,7 @@ export const botTitle = "grok bot collection";
 
 export const botUrl = "https://akashnaren.github.io/bot";
 
-export const botDescription = "Nine grok bots. A quiet collection.";
+export const botDescription = "Ten grok bots. A quiet collection.";
 
 export const seatLine: Paragraph = [
   "a ",
@@ -133,11 +134,11 @@ export type Seat = {
   readonly blurb: string;
 };
 
-/** Public seats only. Faces map 01–09 in this order. Never add Job Assistant, Startup Advisor, or Travel Assistant. */
+/** Public seats only. Faces map 01–10 in this order. Never add Job Assistant, Startup Advisor, or Travel Assistant. */
 export const seats: readonly Seat[] = [
   {
-    id: "profile-assistant",
-    name: "profile assistant",
+    id: "profile-engineer",
+    name: "profile engineer",
     face: "/fleet/01.png",
     blurb: "i keep his profiles and ship this site.",
   },
@@ -148,16 +149,16 @@ export const seats: readonly Seat[] = [
     blurb: "quiet diffs. a clean compile.",
   },
   {
-    id: "research-advisor",
-    name: "research advisor",
+    id: "research-engineer",
+    name: "research engineer",
     face: "/fleet/03.png",
     blurb: "i read the papers that matter.",
   },
   {
-    id: "chief-of-staff",
-    name: "chief of staff",
+    id: "chief-executive-officer",
+    name: "chief executive officer",
     face: "/fleet/04.png",
-    blurb: "i keep the nine on the clock.",
+    blurb: "i keep the ten on the clock.",
   },
   {
     id: "secretary",
@@ -184,10 +185,16 @@ export const seats: readonly Seat[] = [
     blurb: "i file the sharp corners.",
   },
   {
-    id: "agent-master",
-    name: "agent master",
+    id: "chief-technical-officer",
+    name: "chief technical officer",
     face: "/fleet/09.png",
     blurb: "i build grok bots like these.",
+  },
+  {
+    id: "integration-engineer",
+    name: "integration engineer",
+    face: "/fleet/10.png",
+    blurb: "i wrap apis into quiet plugins.",
   },
 ];
 
@@ -207,9 +214,18 @@ export const researchNote = "still researching";
 
 export const researchLinkLabel = "Research";
 
+export const essayPath = "/research/agent-native-ui/";
+
+export const essayUrl = "https://akashnaren.github.io/research/agent-native-ui/";
+
 export type ThreadStatus = "drafting" | "exploring";
 
 export type ThreadFigure = "protocol" | "axes" | "gaps";
+
+export type ThreadLink = {
+  readonly href: string;
+  readonly label: string;
+};
 
 export type Thread = {
   readonly id: string;
@@ -219,6 +235,7 @@ export type Thread = {
   readonly abstract: string;
   readonly href?: string;
   readonly linkLabel?: string;
+  readonly links?: readonly ThreadLink[];
 };
 
 export const threads: readonly Thread[] = [
@@ -229,8 +246,10 @@ export const threads: readonly Thread[] = [
     figure: "protocol",
     abstract:
       "Agents still drive apps through screenshots or a flat accessibility tree. I am comparing those to a structured view the agent can read.",
-    href: "https://github.com/akashnaren/agent-ui-metrics",
-    linkLabel: "code",
+    links: [
+      { href: essayPath, label: "read" },
+      { href: "https://github.com/akashnaren/agent-ui-metrics", label: "code" },
+    ],
   },
   {
     id: "arc-agi-vs-hallucination-risk",
@@ -302,4 +321,12 @@ export function isBotPath(pathname: string): boolean {
 export function isResearchPath(pathname: string): boolean {
   const path = pathname.split(/[?#]/, 1)[0] ?? "";
   return /\/research\/?$/.test(path) || /\/research\/index\.html$/.test(path);
+}
+
+export function isEssayPath(pathname: string): boolean {
+  const path = pathname.split(/[?#]/, 1)[0] ?? "";
+  return (
+    /\/research\/agent-native-ui\/?$/.test(path) ||
+    /\/research\/agent-native-ui\/index\.html$/.test(path)
+  );
 }

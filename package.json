@@ -7,7 +7,8 @@
     "dev": "node scripts/restore-shell.mjs && vite",
     "build": "node scripts/restore-shell.mjs && tsc && vite build && node scripts/publish-pages.mjs",
     "preview": "vite preview",
-    "test": "node scripts/check-dist.mjs"
+    "test": "node scripts/check-dist.mjs",
+    "ingest:article": "node scripts/ingest-research-article.mjs"
   },
   "devDependencies": {
     "typescript": "~6.0.2",

@@ -31,7 +31,9 @@ import {
   type Phrase,
   type Seat,
   type Thread,
+  type ThreadLink,
 } from "./content.ts";
+import { type ArticleDocument } from "./article.ts";
 
 export type PageMeta = {
   readonly title: string;
@@ -111,7 +113,7 @@ function renderContact(): string {
 function renderFleetFace(seat: Seat): string {
   const name = escapeHtml(seat.name);
   const href = escapeHtml(collectionPath);
-  const host = seat.id === "profile-assistant";
+  const host = seat.id === "profile-engineer";
   const mark = host
     ? renderGrokBotMark("fleet")
     : renderMark(seat.face, fleetMarkSize, "fleet-mark");
@@ -298,17 +300,31 @@ function renderThreadFigure(figure: Thread["figure"]): string {
   return renderGapsFigure();
 }
 
+function threadLinks(thread: Thread): readonly ThreadLink[] {
+  if (thread.links) return thread.links;
+  if (thread.href) {
+    return [{ href: thread.href, label: thread.linkLabel ?? "code" }];
+  }
+  return [];
+}
+
+function renderThreadLinks(thread: Thread): string {
+  const items = threadLinks(thread);
+  if (items.length === 0) return "";
+  const inner = items
+    .map((item) => `<a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a>`)
+    .join(" ");
+  return `<p class="thread-link">${inner}</p>`;
+}
+
 function renderThread(thread: Thread): string {
-  const link = thread.href
-    ? `<p class="thread-link"><a href="${escapeHtml(thread.href)}">${escapeHtml(thread.linkLabel ?? "code")}</a></p>`
-    : "";
   return `<article class="thread" data-thread="${escapeHtml(thread.id)}">
           ${renderThreadFigure(thread.figure)}
           <div class="thread-copy">
             <h2>${escapeHtml(thread.title)}</h2>
             <p class="status">${escapeHtml(thread.status)}</p>
             <p>${escapeHtml(thread.abstract)}</p>
-            ${link}
+            ${renderThreadLinks(thread)}
           </div>
         </article>`;
 }
@@ -325,6 +341,56 @@ export function renderResearch(): string {
         <p class="cue">${escapeHtml(researchNote)}</p>
       </header>
       ${renderThreads()}
+      <footer class="foot">
+        ${renderManagedBy()}
+      </footer>
+      </div>
+    </div>`;
+}
+
+function renderEssayLinks(doc: ArticleDocument): string {
+  const items: ThreadLink[] = [];
+  if (doc.meta.code) items.push({ href: doc.meta.code, label: "code" });
+  if (doc.meta.notes) items.push({ href: doc.meta.notes, label: "source" });
+  if (items.length === 0) return "";
+  const inner = items
+    .map((item) => `<a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a>`)
+    .join(" ");
+  return `<p class="essay-links">${inner}</p>`;
+}
+
+function renderEssayNav(doc: ArticleDocument): string {
+  if (doc.headings.length === 0) return "";
+  const links = doc.headings
+    .map(
+      (heading) =>
+        `<a href="#${escapeHtml(heading.id)}">${escapeHtml(heading.text)}</a>`,
+    )
+    .join("");
+  return `<nav class="essay-nav" aria-label="sections">${links}</nav>`;
+}
+
+export function renderEssay(doc: ArticleDocument): string {
+  const note =
+    doc.meta.source === "stub"
+      ? `<p class="essay-note">Stub. Replace the markdown to publish the draft.</p>`
+      : "";
+  return `<div class="page essay" id="holder">
+      <div class="stage">
+      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a></p>
+      <header class="essay-mast">
+        <p class="essay-status">${escapeHtml(doc.meta.status)}</p>
+        <h1>${escapeHtml(doc.meta.title)}<span class="scope" aria-hidden="true"></span></h1>
+        <p class="essay-dek">${escapeHtml(doc.meta.dek)}</p>
+        <p class="essay-byline">${escapeHtml(doc.meta.author)}</p>
+        <p class="essay-date">${escapeHtml(doc.meta.date)}</p>
+        ${renderEssayLinks(doc)}
+        ${note}
+      </header>
+      ${renderEssayNav(doc)}
+      <article class="essay-body">
+        ${doc.bodyHtml}
+      </article>
       <footer class="foot">
         ${renderManagedBy()}
       </footer>

@@ -507,6 +507,10 @@ h1 {
   line-height: calc(16px * var(--fit));
 }
 
+.thread-link a + a {
+  margin-left: 0.75em;
+}
+
 .thread-fig {
   display: block;
   width: calc(140px * var(--fit));
@@ -516,6 +520,169 @@ h1 {
 }
 
 .page.research .managed {
+  margin-top: 0;
+}
+
+html:has(.page.essay),
+body:has(.page.essay) {
+  height: auto;
+  min-height: 100%;
+  overflow: auto;
+  overflow-x: hidden;
+  overscroll-behavior: auto;
+}
+
+.page.essay {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+  background: #0a0a0a;
+}
+
+.page.essay .stage {
+  display: block;
+  flex: none;
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  overflow: visible;
+  padding: 1.6rem 1.4rem 3.2rem;
+}
+
+.page.essay h1,
+.page.essay p,
+.page.essay li {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.essay-back {
+  color: #6a6e74;
+  font-size: 0.78rem;
+  line-height: 1.2rem;
+  letter-spacing: 0.01em;
+  padding-bottom: 1.8rem;
+}
+
+.essay-status {
+  display: inline-block;
+  color: #8a8e86;
+  font-size: 0.72rem;
+  line-height: 1rem;
+  letter-spacing: 0.08em;
+  padding: 0.16rem 0.48rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  margin-bottom: 1.1rem;
+}
+
+.page.essay h1 {
+  display: block;
+  font-size: 2.05rem;
+  font-weight: 600;
+  line-height: 1.22;
+  letter-spacing: -0.03em;
+}
+
+.essay-dek {
+  padding-top: 0.85rem;
+  color: #c4c4bf;
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.essay-byline,
+.essay-date,
+.essay-links,
+.essay-note {
+  padding-top: 0.45rem;
+  color: #6a6e74;
+  font-size: 0.82rem;
+  line-height: 1.3rem;
+}
+
+.essay-byline {
+  padding-top: 1.15rem;
+  color: #c4c4bf;
+}
+
+.essay-note {
+  padding-top: 0.85rem;
+  color: #8a8e86;
+}
+
+.essay-nav {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  margin: 1.6rem 0 0;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0a0a0a;
+  font-size: 0.75rem;
+  line-height: 1.1rem;
+  letter-spacing: 0.02em;
+  color: #6a6e74;
+}
+
+.essay-body {
+  max-width: 65ch;
+  padding-top: 0.4rem;
+}
+
+.essay-body p {
+  padding-top: 1.15em;
+  font-size: 1.125rem;
+  line-height: 1.72;
+  color: #fafaf7;
+}
+
+.essay-body h2 {
+  padding-top: 2.15em;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  scroll-margin-top: 2.8rem;
+}
+
+.essay-body h3 {
+  padding-top: 1.6em;
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.35;
+  scroll-margin-top: 2.8rem;
+}
+
+.essay-body ul {
+  padding: 1em 0 0 1.15em;
+  font-size: 1.125rem;
+  line-height: 1.72;
+}
+
+.essay-body li + li {
+  margin-top: 0.45em;
+}
+
+.essay-body code {
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.86em;
+  color: #c4c4bf;
+}
+
+.page.essay .foot {
+  margin-top: 3rem;
+}
+
+.page.essay .managed {
   margin-top: 0;
 }
 
@@ -891,6 +1058,11 @@ p.fleet {
   animation-delay: 0.25s;
 }
 
+.fleet-face:nth-child(10) .fleet-mark {
+  animation-duration: 7.6s;
+  animation-delay: 1.95s;
+}
+
 .fleet-face:hover .fleet-mark,
 .fleet-face:focus-visible .fleet-mark,
 .fleet-face:hover .fleet-wrap,
@@ -945,6 +1117,11 @@ p.fleet {
   top: 72%;
 }
 
+.fleet-face:nth-child(10) {
+  left: 88%;
+  top: 22%;
+}
+
 .fleet-tip {
   --align-x: -50%;
   --nudge-y: 4px;
@@ -971,7 +1148,7 @@ p.fleet {
   transition: opacity 280ms ease, transform 280ms ease;
 }
 
-.fleet-face[data-seat="profile-assistant"] .fleet-tip {
+.fleet-face[data-seat="profile-engineer"] .fleet-tip {
   left: 0;
   --align-x: 0%;
 }
@@ -982,7 +1159,7 @@ p.fleet {
   --align-x: 0%;
 }
 
-.fleet-face[data-seat="research-advisor"] .fleet-tip {
+.fleet-face[data-seat="research-engineer"] .fleet-tip {
   left: auto;
   right: 0;
   --align-x: 0%;
@@ -996,7 +1173,7 @@ p.fleet {
   --align-x: 0%;
 }
 
-.fleet-face[data-seat="chief-of-staff"] .fleet-tip,
+.fleet-face[data-seat="chief-executive-officer"] .fleet-tip,
 .fleet-face[data-seat="finance-engineer"] .fleet-tip {
   left: auto;
   right: calc(100% + 0.28rem);
@@ -1021,11 +1198,17 @@ p.fleet {
   --align-x: 0%;
 }
 
-.fleet-face[data-seat="agent-master"] .fleet-tip {
-  left: calc(100% + 1.2rem);
-  right: auto;
+.fleet-face[data-seat="chief-technical-officer"] .fleet-tip {
+  left: auto;
+  right: calc(100% + 0.28rem);
   top: auto;
   bottom: calc(100% + 0.55rem);
+  --align-x: 0%;
+}
+
+.fleet-face[data-seat="integration-engineer"] .fleet-tip {
+  left: auto;
+  right: 0;
   --align-x: 0%;
 }
 
@@ -1160,6 +1343,13 @@ a:focus-visible {
     width: 100%;
     padding: calc(2.4rem * var(--fit)) 2.6rem calc(1.25rem * var(--fit));
   }
+
+  .page.essay .stage {
+    display: block;
+    max-width: 42rem;
+    width: 100%;
+    padding: 2.4rem 2rem 4rem;
+  }
 }
 
 @media (max-width: 879px) {
@@ -1191,9 +1381,10 @@ a:focus-visible {
   }
 
   .fleet-face[data-seat="software-engineer"] .fleet-tip,
-  .fleet-face[data-seat="chief-of-staff"] .fleet-tip,
+  .fleet-face[data-seat="chief-executive-officer"] .fleet-tip,
   .fleet-face[data-seat="finance-engineer"] .fleet-tip,
-  .fleet-face[data-seat="product-engineer"] .fleet-tip {
+  .fleet-face[data-seat="product-engineer"] .fleet-tip,
+  .fleet-face[data-seat="chief-technical-officer"] .fleet-tip {
     left: 0;
     right: auto;
     bottom: calc(100% + 0.5rem);
@@ -1201,7 +1392,7 @@ a:focus-visible {
   }
 
   .fleet-face[data-seat="chief-financial-officer"] .fleet-tip,
-  .fleet-face[data-seat="agent-master"] .fleet-tip {
+  .fleet-face[data-seat="integration-engineer"] .fleet-tip {
     left: auto;
     right: 0;
     bottom: calc(100% + 0.5rem);
@@ -1217,6 +1408,24 @@ a:focus-visible {
   .page.research .stage {
     max-width: 100%;
     padding: calc(1.35rem * var(--fit)) 1.15rem calc(1.2rem * var(--fit));
+  }
+
+  .page.essay .stage {
+    max-width: 100%;
+    padding: 1.2rem 1.15rem 2.6rem;
+  }
+
+  .page.essay h1 {
+    font-size: 1.7rem;
+  }
+
+  .essay-dek {
+    font-size: 1.05rem;
+  }
+
+  .essay-body p,
+  .essay-body ul {
+    font-size: 1.05rem;
   }
 
   .row-id {
@@ -1281,6 +1490,12 @@ a:focus-visible {
     height: 100dvh;
     overflow-x: hidden;
     overflow-y: auto;
+  }
+
+  .page.essay {
+    min-height: 100dvh;
+    height: auto;
+    overflow: visible;
   }
 }
 
