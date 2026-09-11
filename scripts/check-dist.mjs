@@ -129,8 +129,6 @@ const forbidden = [
   "Travel Assistant",
   "Money Engineer",
   "Personal CFO",
-  "chief financial officer",
-  "finance engineer",
   "New Bot",
   "article writer",
   "Systems Engineer",
@@ -334,17 +332,42 @@ if (/job assistant/i.test(html) || /job assistant/i.test(root)) {
   process.exit(1);
 }
 
+if (/startup advisor/i.test(html) || /startup advisor/i.test(root)) {
+  console.error("pages must not mention Startup Advisor");
+  process.exit(1);
+}
+
+if (/travel assistant/i.test(html) || /travel assistant/i.test(root)) {
+  console.error("pages must not mention Travel Assistant");
+  process.exit(1);
+}
+
 const seats = [
   ["profile-engineer", "profile engineer"],
   ["software-engineer", "software engineer"],
   ["research-engineer", "research engineer"],
   ["chief-executive-officer", "chief executive officer"],
-  ["secretary", "desk"],
-  ["chief-financial-officer", "glass"],
-  ["finance-engineer", "models"],
+  ["secretary", "secretary"],
+  ["chief-financial-officer", "chief financial officer"],
+  ["finance-engineer", "finance engineer"],
   ["product-engineer", "product engineer"],
   ["chief-technical-officer", "chief technical officer"],
   ["integration-engineer", "integration engineer"],
+];
+
+const softDisplayNames = [
+  'data-name="desk"',
+  'data-name="glass"',
+  'data-name="models"',
+  'aria-label="desk"',
+  'aria-label="glass"',
+  'aria-label="models"',
+  '<span class="fleet-tip" aria-hidden="true">desk</span>',
+  '<span class="fleet-tip" aria-hidden="true">glass</span>',
+  '<span class="fleet-tip" aria-hidden="true">models</span>',
+  '<span class="row-name">desk</span>',
+  '<span class="row-name">glass</span>',
+  '<span class="row-name">models</span>',
 ];
 
 const seatNames = seats.map(([, name]) => name);
@@ -427,6 +450,18 @@ function assertHomeResearchLink(page, label) {
 
 assertHomeFleetInvite(html, "dist/index.html");
 assertHomeFleetInvite(root, "root index.html");
+
+for (const [page, label] of [
+  [html, "dist/index.html"],
+  [root, "root index.html"],
+]) {
+  const leakedSoft = softDisplayNames.filter((needle) => page.includes(needle));
+  if (leakedSoft.length > 0) {
+    console.error(`${label} must not use desk/glass/models as fleet display names:`);
+    for (const needle of leakedSoft) console.error(`  - ${needle}`);
+    process.exit(1);
+  }
+}
 assertHomeResearchLink(html, "dist/index.html");
 assertHomeResearchLink(root, "root index.html");
 assertManagedByBot(html, "dist/index.html");
@@ -923,9 +958,12 @@ const botRequired = [
   "software engineer",
   "research engineer",
   "chief executive officer",
-  'data-name="desk"',
-  'data-name="glass"',
-  'data-name="models"',
+  'data-name="secretary"',
+  'data-name="chief financial officer"',
+  'data-name="finance engineer"',
+  "secretary",
+  "chief financial officer",
+  "finance engineer",
   "product engineer",
   "chief technical officer",
   "integration engineer",
@@ -1112,12 +1150,19 @@ for (const page of [botHtml, botRoot]) {
     process.exit(1);
   }
 
+  const leakedSoft = softDisplayNames.filter((needle) => page.includes(needle));
+  if (leakedSoft.length > 0) {
+    console.error("bot page must not use desk/glass/models as display names:");
+    for (const needle of leakedSoft) console.error(`  - ${needle}`);
+    process.exit(1);
+  }
+
   if (
-    page.includes('data-name="secretary"') ||
-    page.includes("chief financial officer") ||
-    page.includes("finance engineer")
+    !page.includes('data-name="secretary"') ||
+    !page.includes("chief financial officer") ||
+    !page.includes("finance engineer")
   ) {
-    console.error("bot page must not advertise Secretary or money-seat titles");
+    console.error("bot page must name secretary, chief financial officer, and finance engineer in the roster");
     process.exit(1);
   }
 
