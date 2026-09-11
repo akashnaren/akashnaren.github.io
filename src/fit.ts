@@ -15,7 +15,7 @@ export function fitStage(): void {
   const pageH = Math.min(page.clientHeight, viewportHeight());
   const stageH = stage.scrollHeight;
 
-  if (page.classList.contains("research")) {
+  if (page.classList.contains("research") || page.classList.contains("essay")) {
     return;
   }
 
