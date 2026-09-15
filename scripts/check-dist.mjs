@@ -1873,6 +1873,36 @@ for (const page of [essayHtml, essayRoot]) {
   }
 }
 
+const cloudflareBeacon =
+  "https://static.cloudflareinsights.com/beacon.min.js";
+const cloudflareToken = "0470f893bb1740a88848e29324507551";
+const cloudflarePages = [
+  [html, "dist/index.html"],
+  [root, "root index.html"],
+  [botHtml, "dist/bot/index.html"],
+  [botRoot, "bot/index.html"],
+  [researchHtml, "dist/research/index.html"],
+  [researchRoot, "research/index.html"],
+  [essayHtml, "dist/research/agent-native-ui/index.html"],
+  [essayRoot, "research/agent-native-ui/index.html"],
+  [spa, "dist/404.html"],
+  [spaRoot, "404.html"],
+];
+for (const [page, label] of cloudflarePages) {
+  if (
+    !page.includes(cloudflareBeacon) ||
+    !page.includes(cloudflareToken) ||
+    !page.includes("data-cf-beacon")
+  ) {
+    console.error(`${label} must include the Cloudflare Web Analytics beacon`);
+    process.exit(1);
+  }
+  if ((page.match(/static\.cloudflareinsights\.com\/beacon\.min\.js/g) || []).length !== 1) {
+    console.error(`${label} must include exactly one Cloudflare beacon`);
+    process.exit(1);
+  }
+}
+
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, and quiet SVG teasers. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, and quiet SVG teasers. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. Every public HTML page carries the Cloudflare Web Analytics beacon.",
 );
