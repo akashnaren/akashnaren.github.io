@@ -2047,8 +2047,17 @@ if (!js.includes("/research/rack/status.json") || !js.includes("no-store")) {
   console.error("script must fetch /research/rack/status.json so Pages can update without a rebuild");
   process.exit(1);
 }
-if (!js.includes("45000") && !js.includes("45e3")) {
-  console.error("script must poll rack status every 45s");
+if (!/\b60000\b/.test(js) && !js.includes("6e4")) {
+  console.error("script must poll rack status every 60s");
+  process.exit(1);
+}
+if (
+  !js.includes("bay1") ||
+  !js.includes("Qwen mesh") ||
+  !js.includes("Fishbowl") ||
+  !js.includes("pi2")
+) {
+  console.error("script must accept CTO bay1/bay2/bay3 maps and keep Fishbowl, Qwen mesh, and pi2");
   process.exit(1);
 }
 if (!js.includes("600000") && !js.includes("6e5")) {
