@@ -229,12 +229,18 @@ export const rackCue = "pi rack";
 export const rackStatusPath = "/research/rack/status.json";
 
 /** Client poll so Pages can pick up an overwritten status.json without a rebuild. */
-export const rackPollMs = 60_000;
+export const rackPollMs = 45_000;
 
 /** Hide cpu/mem when the last sample is older than this. */
 export const rackHeartbeatStaleMs = 10 * 60 * 1000;
 
-export type RackBayState = "active" | "exploring" | "dry-run" | "private" | "reserved" | "empty";
+export type RackBayState =
+  | "active"
+  | "exploring"
+  | "dry-run"
+  | "private"
+  | "reserved"
+  | "empty";
 
 export type RackBay = {
   readonly id: string;
@@ -451,6 +457,7 @@ export const threads: readonly Thread[] = [
     links: [
       { href: fishbowlPath, label: "read" },
       { href: "/research/fishbowl/flow.pdf", label: "flow" },
+      { href: "/research/fishbowl/mesh-architecture.pdf", label: "mesh" },
       { href: "https://github.com/akashnaren/raspberry-pi-fun", label: "code" },
     ],
   },

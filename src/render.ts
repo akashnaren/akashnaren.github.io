@@ -46,6 +46,7 @@ import {
   fishbowlPaperHref,
   fishbowlPaperTitle,
   flowHref,
+  meshHref,
   paperHref,
   paperTitle,
 } from "./article.ts";
@@ -403,6 +404,13 @@ function renderRackBayFigure(bay: RackBay): string {
           </svg>`;
 }
 
+function rackBayClass(state: RackBay["state"]): string {
+  if (state === "empty") return "rack-bay is-empty";
+  if (state === "active") return "rack-bay is-active";
+  if (state === "reserved") return "rack-bay is-reserved";
+  return "rack-bay is-held";
+}
+
 function renderRackLoad(bay: RackBay, now: number): string {
   if (!rackBayOccupied(bay) || !rackHeartbeatFresh(bay.heartbeat, now)) return "";
   const cpu = rackPercent(bay.cpu);
@@ -417,9 +425,8 @@ function renderRackLoad(bay: RackBay, now: number): string {
 
 export function renderRackBay(bay: RackBay, now: number = Date.now()): string {
   const empty = bay.state === "empty";
-  const active = bay.state === "active";
   const name = bay.name ?? "empty";
-  const klass = empty ? "rack-bay is-empty" : active ? "rack-bay is-active" : "rack-bay is-held";
+  const klass = rackBayClass(bay.state);
   const title = bay.href
     ? `<p class="rack-name"><a href="${escapeHtml(bay.href)}">${escapeHtml(name)}</a></p>`
     : `<p class="rack-name">${escapeHtml(name)}</p>`;
@@ -475,8 +482,9 @@ export function renderFishbowl(): string {
   const href = escapeHtml(fishbowlPaperHref);
   const title = escapeHtml(fishbowlPaperTitle);
   const flow = escapeHtml(flowHref);
+  const mesh = escapeHtml(meshHref);
   return `<div class="page essay" id="holder">
-      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a> <a href="${href}">pdf</a> <a href="${flow}">flow</a> <span>stream planned later</span></p>
+      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a> <a href="${href}">pdf</a> <a href="${flow}">flow</a> <a href="${mesh}">mesh</a> <span>stream planned later</span></p>
       <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
     </div>`;
 }
