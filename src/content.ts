@@ -229,7 +229,7 @@ export const rackCue = "pi rack";
 export const rackStatusPath = "/research/rack/status.json";
 
 /** Client poll so Pages can pick up an overwritten status.json without a rebuild. */
-export const rackPollMs = 45_000;
+export const rackPollMs = 60_000;
 
 /** Hide cpu/mem when the last sample is older than this. */
 export const rackHeartbeatStaleMs = 10 * 60 * 1000;
@@ -262,6 +262,26 @@ const rackBayStates: readonly RackBayState[] = [
   "empty",
 ];
 
+export const rackBayOrder = ["bay-1", "bay-2", "bay-3"] as const;
+
+export const rackPublicLabels: Readonly<Record<string, { readonly name: string; readonly href: string | null }>> = {
+  "bay-1": { name: "Fishbowl", href: "/research/fishbowl/" },
+  "bay-2": { name: "Qwen mesh", href: null },
+  "bay-3": { name: "pi2", href: null },
+};
+
+const rackBayAliases: Readonly<Record<string, string>> = {
+  "bay-1": "bay-1",
+  bay1: "bay-1",
+  "1": "bay-1",
+  "bay-2": "bay-2",
+  bay2: "bay-2",
+  "2": "bay-2",
+  "bay-3": "bay-3",
+  bay3: "bay-3",
+  "3": "bay-3",
+};
+
 export const rackStatus = rackStatusJson as RackStatus;
 
 export function rackPercent(value: unknown): number | null {
@@ -283,25 +303,101 @@ export function rackBayOccupied(bay: Pick<RackBay, "state">): boolean {
   return bay.state !== "empty";
 }
 
-function readRackBayState(value: unknown): RackBayState | null {
-  return typeof value === "string" && (rackBayStates as readonly string[]).includes(value)
-    ? (value as RackBayState)
-    : null;
+export function rackBayId(value: string): string | null {
+  const key = value.trim().toLowerCase().replace(/[\s_]/g, "");
+  return rackBayAliases[key] ?? null;
 }
 
-function readRackBay(value: unknown): RackBay | null {
-  if (value == null || typeof value !== "object") return null;
-  const raw = value as Record<string, unknown>;
-  if (typeof raw.id !== "string" || raw.id.length === 0) return null;
-  const state = readRackBayState(raw.state);
-  if (!state) return null;
+export function isPrivateHost(value: string): boolean {
+  return (
+    /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/.test(value) ||
+    /\.ts\.net\b/i.test(value) ||
+    /\.local\b/i.test(value) ||
+    /tailscale/i.test(value)
+  );
+}
+
+function cleanRackText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const text = value.trim();
+  if (text.length === 0 || isPrivateHost(text)) return null;
+  return text;
+}
+
+function isHardwareName(name: string, publicName: string): boolean {
+  const n = name.trim().toLowerCase();
+  if (n === publicName.trim().toLowerCase()) return false;
+  return /^(r(?:aspberry)?(?:\s*pi)?\s*\d*)$/i.test(n) || /^pi\s*\d+$/i.test(n);
+}
+
+function readRackBayState(value: unknown, occupiedHint: boolean): RackBayState {
+  if (typeof value === "string" && (rackBayStates as readonly string[]).includes(value)) {
+    return value as RackBayState;
+  }
+  return occupiedHint ? "active" : "empty";
+}
+
+function collectRackBays(bays: unknown): Map<string, Record<string, unknown>> | null {
+  if (bays == null) return null;
+  const found = new Map<string, Record<string, unknown>>();
+  if (Array.isArray(bays)) {
+    for (const item of bays) {
+      if (item == null || typeof item !== "object") continue;
+      const raw = item as Record<string, unknown>;
+      const id = typeof raw.id === "string" ? rackBayId(raw.id) : null;
+      if (id) found.set(id, raw);
+    }
+    return found;
+  }
+  if (typeof bays !== "object") return null;
+  for (const [key, item] of Object.entries(bays as Record<string, unknown>)) {
+    const id = rackBayId(key);
+    if (!id || item == null || typeof item !== "object") continue;
+    found.set(id, item as Record<string, unknown>);
+  }
+  return found;
+}
+
+function mergeRackBay(
+  id: string,
+  raw: Record<string, unknown> | undefined,
+  baked: RackBay | undefined,
+): RackBay {
+  if (!raw) {
+    return baked ?? { id, name: null, role: null, state: "empty", href: null };
+  }
+  const incomingName = cleanRackText(raw.name);
+  const incomingRole = cleanRackText(raw.role);
+  const incomingNote = cleanRackText(raw.note);
+  const incomingHref = cleanRackText(raw.href);
+  const occupiedHint = Boolean(
+    incomingName ||
+      incomingRole ||
+      typeof raw.cpu === "number" ||
+      typeof raw.mem === "number" ||
+      typeof raw.heartbeat === "string",
+  );
+  const state = readRackBayState(raw.state, occupiedHint);
+  const publicLabel = rackPublicLabels[id];
+  let role = incomingRole ?? (state === "empty" ? null : (baked?.role ?? null));
+  let name: string | null = incomingName;
+  if (state === "empty" && !incomingName) {
+    name = null;
+  } else if (publicLabel) {
+    name = publicLabel.name;
+    if (incomingName && isHardwareName(incomingName, publicLabel.name) && !incomingRole) {
+      role = incomingName;
+    }
+  }
+  const href =
+    state === "empty" ? null : (incomingHref ?? publicLabel?.href ?? baked?.href ?? null);
   return {
-    id: raw.id,
-    name: typeof raw.name === "string" ? raw.name : null,
-    role: typeof raw.role === "string" ? raw.role : null,
+    id,
+    name,
+    role,
     state,
-    note: typeof raw.note === "string" ? raw.note : raw.note === null ? null : undefined,
-    href: typeof raw.href === "string" ? raw.href : null,
+    note: incomingNote ?? baked?.note,
+    href,
     cpu: typeof raw.cpu === "number" && Number.isFinite(raw.cpu) ? raw.cpu : undefined,
     mem: typeof raw.mem === "number" && Number.isFinite(raw.mem) ? raw.mem : undefined,
     heartbeat: typeof raw.heartbeat === "string" ? raw.heartbeat : undefined,
@@ -311,13 +407,10 @@ function readRackBay(value: unknown): RackBay | null {
 export function readRackStatus(value: unknown): RackStatus | null {
   if (value == null || typeof value !== "object") return null;
   const raw = value as Record<string, unknown>;
-  if (!Array.isArray(raw.bays) || raw.bays.length === 0) return null;
-  const bays: RackBay[] = [];
-  for (const item of raw.bays) {
-    const bay = readRackBay(item);
-    if (bay) bays.push(bay);
-  }
-  if (bays.length === 0) return null;
+  const incoming = collectRackBays(raw.bays);
+  if (!incoming) return null;
+  const bakedById = new Map(rackStatus.bays.map((bay) => [bay.id, bay]));
+  const bays = rackBayOrder.map((id) => mergeRackBay(id, incoming.get(id), bakedById.get(id)));
   return {
     updated: typeof raw.updated === "string" ? raw.updated : null,
     bays,
