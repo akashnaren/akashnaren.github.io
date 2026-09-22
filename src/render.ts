@@ -42,6 +42,7 @@ import {
   fishbowlPaperHref,
   fishbowlPaperTitle,
   flowHref,
+  meshHref,
   paperHref,
   paperTitle,
 } from "./article.ts";
@@ -461,8 +462,9 @@ export function renderFishbowl(): string {
   const href = escapeHtml(fishbowlPaperHref);
   const title = escapeHtml(fishbowlPaperTitle);
   const flow = escapeHtml(flowHref);
+  const mesh = escapeHtml(meshHref);
   return `<div class="page essay" id="holder">
-      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a> <a href="${href}">pdf</a> <a href="${flow}">flow</a> <span>stream planned later</span></p>
+      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a> <a href="${href}">pdf</a> <a href="${flow}">flow</a> <a href="${mesh}">mesh</a> <span>stream planned later</span></p>
       <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
     </div>`;
 }

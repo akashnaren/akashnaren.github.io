@@ -14,6 +14,10 @@ export const flowHref = "/research/fishbowl/flow.pdf";
 
 export const flowTitle = "Fishbowl on a Raspberry Pi";
 
+export const meshHref = "/research/fishbowl/mesh-architecture.pdf";
+
+export const meshTitle = "Pi mesh architecture";
+
 export function essayMetaFrom(): {
   readonly title: string;
   readonly description: string;
