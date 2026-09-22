@@ -1,0 +1,26 @@
+{
+  "updated": null,
+  "bays": [
+    {
+      "id": "bay-1",
+      "name": "Fishbowl",
+      "role": "pi3",
+      "state": "dry-run",
+      "href": "/research/fishbowl/"
+    },
+    {
+      "id": "bay-2",
+      "name": null,
+      "role": null,
+      "state": "empty",
+      "href": null
+    },
+    {
+      "id": "bay-3",
+      "name": null,
+      "role": null,
+      "state": "empty",
+      "href": null
+    }
+  ]
+}

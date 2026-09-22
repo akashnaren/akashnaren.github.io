@@ -1401,6 +1401,17 @@ const researchRequired = [
   "https://github.com/akashnaren/raspberry-pi-fun",
   'href="/research/fishbowl/"',
   ">flow</a>",
+  'class="rack"',
+  'class="rack-bays"',
+  'class="rack-bay',
+  'class="rack-fig"',
+  "pi rack",
+  'data-bay="bay-1"',
+  'data-bay="bay-2"',
+  'data-bay="bay-3"',
+  ">Fishbowl</a>",
+  "pi3",
+  "dry-run",
 ];
 
 for (const page of [researchHtml, researchRoot]) {
@@ -1664,6 +1675,57 @@ for (const page of [researchHtml, researchRoot]) {
   }
 
   assertManagedByBot(page, "research page");
+
+  const rack = page.match(/<section class="rack"[\s\S]*?<\/section>/)?.[0] ?? "";
+  if (!rack) {
+    console.error("research page must keep a quiet pi rack section");
+    process.exit(1);
+  }
+  if (
+    !rack.includes(">pi rack</p>") ||
+    !rack.includes('data-bay="bay-1"') ||
+    !rack.includes('data-bay="bay-2"') ||
+    !rack.includes('data-bay="bay-3"') ||
+    !rack.includes(">Fishbowl</a>") ||
+    !rack.includes('href="/research/fishbowl/"') ||
+    !rack.includes("pi3") ||
+    !rack.includes("dry-run") ||
+    (rack.match(/empty/g) ?? []).length < 2
+  ) {
+    console.error("pi rack must show Fishbowl occupied in dry-run and two empty bays");
+    process.exit(1);
+  }
+  if ((rack.match(/class="rack-fig"/g) ?? []).length !== 3) {
+    console.error("pi rack must keep one quiet figure per bay");
+    process.exit(1);
+  }
+  if (
+    rack.includes("stream planned later") ||
+    rack.includes("coming soon") ||
+    rack.includes("Meridian") ||
+    rack.includes("MiniShop") ||
+    rack.includes("OpenRouter") ||
+    rack.includes("temp") ||
+    rack.includes("°C") ||
+    rack.includes("spend") ||
+    rack.includes("$") ||
+    /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/.test(rack)
+  ) {
+    console.error("pi rack must stay a static visual, not telemetry or a stream banner");
+    process.exit(1);
+  }
+
+  const threadsEnd = page.indexOf("</main>");
+  const rackStart = page.indexOf('class="rack"');
+  if (threadsEnd < 0 || rackStart < 0 || rackStart < threadsEnd) {
+    console.error("pi rack must sit after the research threads, not replace them");
+    process.exit(1);
+  }
+
+  if (page.includes("stream planned later")) {
+    console.error("stream note stays on the Fishbowl PDF page only");
+    process.exit(1);
+  }
 }
 
 if (
@@ -1675,9 +1737,13 @@ if (
   !css.includes(".page-link") ||
   !css.includes(".page.essay") ||
   !css.includes(".essay-pdf") ||
-  !css.includes(".essay-back")
+  !css.includes(".essay-back") ||
+  !css.includes(".rack") ||
+  !css.includes(".rack-bays") ||
+  !css.includes(".rack-bay") ||
+  !css.includes(".rack-fig")
 ) {
-  console.error("stylesheet must keep the research list, home Research link, and PDF reader");
+  console.error("stylesheet must keep the research list, pi rack, home Research link, and PDF reader");
   process.exit(1);
 }
 
@@ -1773,6 +1839,82 @@ if (
 ) {
   console.error("/research stage must use a 46rem readable max-width, matching /bot");
   process.exit(1);
+}
+
+const rackJsonPaths = [
+  "public/research/rack/status.json",
+  "dist/research/rack/status.json",
+  "research/rack/status.json",
+];
+const missingRackJson = rackJsonPaths.filter((path) => !existsSync(path));
+if (missingRackJson.length > 0) {
+  console.error("pi rack status.json is missing:");
+  for (const path of missingRackJson) console.error(`  - ${path}`);
+  process.exit(1);
+}
+
+const rackJson = JSON.parse(readFileSync("public/research/rack/status.json", "utf8"));
+const distRackJson = JSON.parse(readFileSync("dist/research/rack/status.json", "utf8"));
+const rootRackJson = JSON.parse(readFileSync("research/rack/status.json", "utf8"));
+if (JSON.stringify(rackJson) !== JSON.stringify(distRackJson) || JSON.stringify(rackJson) !== JSON.stringify(rootRackJson)) {
+  console.error("public, dist, and published rack status.json must stay the same source");
+  process.exit(1);
+}
+if (!Array.isArray(rackJson.bays) || rackJson.bays.length !== 3) {
+  console.error("rack status.json must describe three bays");
+  process.exit(1);
+}
+if (
+  rackJson.bays[0]?.id !== "bay-1" ||
+  rackJson.bays[0]?.name !== "Fishbowl" ||
+  rackJson.bays[0]?.role !== "pi3" ||
+  rackJson.bays[0]?.state !== "dry-run" ||
+  rackJson.bays[0]?.href !== "/research/fishbowl/" ||
+  rackJson.bays[1]?.state !== "empty" ||
+  rackJson.bays[2]?.state !== "empty" ||
+  rackJson.bays[1]?.name != null ||
+  rackJson.bays[2]?.name != null
+) {
+  console.error("rack status.json must keep Fishbowl in bay 1 and two reserved empty bays");
+  process.exit(1);
+}
+if (rackJson.updated != null && typeof rackJson.updated !== "string") {
+  console.error("rack status.json updated must be null or an ISO string");
+  process.exit(1);
+}
+if (
+  JSON.stringify(rackJson).includes("Meridian") ||
+  JSON.stringify(rackJson).includes("MiniShop") ||
+  JSON.stringify(rackJson).includes("OpenRouter") ||
+  JSON.stringify(rackJson).includes("coming soon")
+) {
+  console.error("rack status.json must not carry studio brand or coming-soon chrome");
+  process.exit(1);
+}
+
+for (const page of [researchHtml, researchRoot]) {
+  for (const bay of rackJson.bays) {
+    if (!page.includes(`data-bay="${bay.id}"`)) {
+      console.error(`research page must render rack bay ${bay.id} from status.json`);
+      process.exit(1);
+    }
+    if (bay.href && !page.includes(`href="${bay.href}"`)) {
+      console.error(`research page must keep the status.json href for ${bay.id}`);
+      process.exit(1);
+    }
+    if (bay.name && !page.includes(bay.name)) {
+      console.error(`research page must keep the status.json name for ${bay.id}`);
+      process.exit(1);
+    }
+    if (bay.role && !page.includes(bay.role)) {
+      console.error(`research page must keep the status.json role for ${bay.id}`);
+      process.exit(1);
+    }
+    if (bay.state !== "empty" && !page.includes(bay.state)) {
+      console.error(`research page must keep the status.json state for ${bay.id}`);
+      process.exit(1);
+    }
+  }
 }
 
 if (!existsSync("dist/research/agent-native-ui/index.html") || !existsSync("research/agent-native-ui/index.html")) {
@@ -2079,5 +2221,5 @@ for (const [page, label] of cloudflarePages) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, a fourth Fishbowl on a Raspberry Pi thread with a flow link, and quiet SVG teasers. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds flow.pdf. Every public HTML page carries the Cloudflare Web Analytics beacon.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, a fourth Fishbowl on a Raspberry Pi thread with a flow link, quiet SVG teasers, and a data-driven three-bay pi rack from status.json. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds flow.pdf. Every public HTML page carries the Cloudflare Web Analytics beacon.",
 );
