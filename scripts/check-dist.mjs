@@ -83,6 +83,9 @@ const required = [
   'class="page-link"',
   'href="/research"',
   ">Research</a>",
+  'class="fresh"',
+  "new today",
+  'data-posted="2026-09-21"',
   'class="him"',
   'class="panel"',
   'class="fact"',
@@ -429,8 +432,20 @@ function assertManagedByBot(page, label) {
 }
 
 function assertHomeResearchLink(page, label) {
-  if (!page.includes('<p class="page-link"><a href="/research">Research</a></p>')) {
+  if (!/<p class="page-link"><a href="\/research">Research<\/a>/.test(page)) {
     console.error(`${label} must keep a peer Research link to /research`);
+    process.exit(1);
+  }
+  if (
+    !page.includes('class="fresh"') ||
+    !page.includes("new today") ||
+    !page.includes('data-posted="2026-09-21"')
+  ) {
+    console.error(`${label} must keep a quiet new today mark on Research from a posted thread date`);
+    process.exit(1);
+  }
+  if (page.includes("posted today")) {
+    console.error(`${label} must label the home Research mark new today, not posted today`);
     process.exit(1);
   }
   if (page.includes(">Papers</a>") || page.includes(">Lab</a>")) {
@@ -1363,6 +1378,11 @@ if (!js.includes("3000") || (!js.includes("setInterval") && !js.includes("setTim
   process.exit(1);
 }
 
+if (!js.includes("America/Los_Angeles") || !js.includes("data-posted")) {
+  console.error("script must resolve today marks against the Pacific calendar day");
+  process.exit(1);
+}
+
 const researchHtml = readFileSync("dist/research/index.html", "utf8");
 const researchRoot = readFileSync("research/index.html", "utf8");
 
@@ -1412,6 +1432,9 @@ const researchRequired = [
   ">Fishbowl</a>",
   "pi3",
   "dry-run",
+  'class="fresh"',
+  "posted today",
+  'data-posted="2026-09-21"',
 ];
 
 for (const page of [researchHtml, researchRoot]) {
@@ -1549,11 +1572,32 @@ for (const page of [researchHtml, researchRoot]) {
     !fishbowlArticle.includes(">flow</a>") ||
     !fishbowlArticle.includes(">code</a>") ||
     !fishbowlArticle.includes("Fishbowl on a Raspberry Pi") ||
-    !fishbowlArticle.includes("event log as truth")
+    !fishbowlArticle.includes("event log as truth") ||
+    !fishbowlArticle.includes('class="fresh"') ||
+    !fishbowlArticle.includes("posted today") ||
+    !fishbowlArticle.includes('data-posted="2026-09-21"')
   ) {
     console.error(
-      "Fishbowl on a Raspberry Pi must keep a quiet flow link to the diagram and a code link to raspberry-pi-fun",
+      "Fishbowl on a Raspberry Pi must keep a quiet flow link to the diagram, a code link to raspberry-pi-fun, and a posted today mark dated 2026-09-21",
     );
+    process.exit(1);
+  }
+
+  for (const [index, article] of articles.entries()) {
+    if (index === 3) continue;
+    if (
+      article.includes("data-posted") ||
+      article.includes("posted today") ||
+      article.includes("new today") ||
+      article.includes('class="fresh"')
+    ) {
+      console.error(`research thread ${String(index + 1)} must not carry a today mark`);
+      process.exit(1);
+    }
+  }
+
+  if (page.includes("new today")) {
+    console.error("research page must label the Fishbowl mark posted today, not new today");
     process.exit(1);
   }
 
@@ -1699,6 +1743,10 @@ for (const page of [researchHtml, researchRoot]) {
     console.error("pi rack must keep one quiet figure per bay");
     process.exit(1);
   }
+  if (rack.includes("data-posted") || rack.includes("posted today") || rack.includes('class="fresh"')) {
+    console.error("pi rack must stay unmarked; today marks belong on the Fishbowl thread");
+    process.exit(1);
+  }
   if (
     rack.includes("stream planned later") ||
     rack.includes("coming soon") ||
@@ -1741,9 +1789,10 @@ if (
   !css.includes(".rack") ||
   !css.includes(".rack-bays") ||
   !css.includes(".rack-bay") ||
-  !css.includes(".rack-fig")
+  !css.includes(".rack-fig") ||
+  !css.includes(".fresh")
 ) {
-  console.error("stylesheet must keep the research list, pi rack, home Research link, and PDF reader");
+  console.error("stylesheet must keep the research list, pi rack, home Research link, today marks, and PDF reader");
   process.exit(1);
 }
 
@@ -2221,5 +2270,5 @@ for (const [page, label] of cloudflarePages) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, a fourth Fishbowl on a Raspberry Pi thread with a flow link, quiet SVG teasers, and a data-driven three-bay pi rack from status.json. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds flow.pdf. Every public HTML page carries the Cloudflare Web Analytics beacon.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research with a quiet new today mark, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, a fourth Fishbowl on a Raspberry Pi thread with a flow link and a posted today mark, quiet SVG teasers, and a data-driven three-bay pi rack from status.json. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds flow.pdf. Every public HTML page carries the Cloudflare Web Analytics beacon.",
 );

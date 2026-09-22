@@ -1,6 +1,6 @@
 import { essayMetaFrom, fishbowlMetaFrom } from "./article.ts";
 import { bindCrewBoard } from "./board.ts";
-import { isBotPath, isEssayPath, isFishbowlPath, isResearchPath } from "./content.ts";
+import { isBotPath, isEssayPath, isFishbowlPath, isResearchPath, pacificDay } from "./content.ts";
 import { fitStage } from "./fit.ts";
 import {
   applyDocumentMeta,
@@ -13,6 +13,14 @@ import {
   renderSite,
   researchMeta,
 } from "./render.ts";
+
+function revealFresh(root: ParentNode = document): void {
+  const today = pacificDay();
+  for (const mark of root.querySelectorAll<HTMLElement>("[data-posted]")) {
+    const dates = (mark.getAttribute("data-posted") ?? "").split(/\s+/).filter(Boolean);
+    mark.hidden = !dates.includes(today);
+  }
+}
 
 function mount(): void {
   const bot = isBotPath(location.pathname);
@@ -52,6 +60,7 @@ function mount(): void {
 }
 
 mount();
+revealFresh();
 bindCrewBoard();
 fitStage();
 
