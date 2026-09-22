@@ -1,5 +1,6 @@
 import { essayMetaFrom, fishbowlMetaFrom } from "./article.ts";
 import { bindCrewBoard } from "./board.ts";
+import { bindLiveRack } from "./rack.ts";
 import { isBotPath, isEssayPath, isFishbowlPath, isResearchPath, pacificDay } from "./content.ts";
 import { fitStage } from "./fit.ts";
 import {
@@ -62,6 +63,7 @@ function mount(): void {
 mount();
 revealFresh();
 bindCrewBoard();
+bindLiveRack();
 fitStage();
 
 window.addEventListener("resize", fitStage);
