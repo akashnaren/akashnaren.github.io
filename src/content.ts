@@ -226,6 +226,14 @@ export const fishbowlUrl = "https://akashnaren.github.io/research/fishbowl/";
 
 export const rackCue = "pi rack";
 
+export const rackStatusPath = "/research/rack/status.json";
+
+/** Client poll so Pages can pick up an overwritten status.json without a rebuild. */
+export const rackPollMs = 45_000;
+
+/** Hide cpu/mem when the last sample is older than this. */
+export const rackHeartbeatStaleMs = 10 * 60 * 1000;
+
 export type RackBayState =
   | "active"
   | "exploring"
@@ -241,6 +249,9 @@ export type RackBay = {
   readonly state: RackBayState;
   readonly note?: string | null;
   readonly href: string | null;
+  readonly cpu?: number | null;
+  readonly mem?: number | null;
+  readonly heartbeat?: string | null;
 };
 
 export type RackStatus = {
@@ -248,7 +259,76 @@ export type RackStatus = {
   readonly bays: readonly RackBay[];
 };
 
+const rackBayStates: readonly RackBayState[] = [
+  "active",
+  "exploring",
+  "dry-run",
+  "private",
+  "reserved",
+  "empty",
+];
+
 export const rackStatus = rackStatusJson as RackStatus;
+
+export function rackPercent(value: unknown): number | null {
+  if (typeof value !== "number" || !Number.isFinite(value)) return null;
+  return Math.min(100, Math.max(0, value));
+}
+
+export function rackHeartbeatFresh(
+  heartbeat: string | null | undefined,
+  now: number = Date.now(),
+): boolean {
+  if (typeof heartbeat !== "string" || heartbeat.length === 0) return false;
+  const at = Date.parse(heartbeat);
+  if (!Number.isFinite(at)) return false;
+  return now - at <= rackHeartbeatStaleMs;
+}
+
+export function rackBayOccupied(bay: Pick<RackBay, "state">): boolean {
+  return bay.state !== "empty";
+}
+
+function readRackBayState(value: unknown): RackBayState | null {
+  return typeof value === "string" && (rackBayStates as readonly string[]).includes(value)
+    ? (value as RackBayState)
+    : null;
+}
+
+function readRackBay(value: unknown): RackBay | null {
+  if (value == null || typeof value !== "object") return null;
+  const raw = value as Record<string, unknown>;
+  if (typeof raw.id !== "string" || raw.id.length === 0) return null;
+  const state = readRackBayState(raw.state);
+  if (!state) return null;
+  return {
+    id: raw.id,
+    name: typeof raw.name === "string" ? raw.name : null,
+    role: typeof raw.role === "string" ? raw.role : null,
+    state,
+    note: typeof raw.note === "string" ? raw.note : raw.note === null ? null : undefined,
+    href: typeof raw.href === "string" ? raw.href : null,
+    cpu: typeof raw.cpu === "number" && Number.isFinite(raw.cpu) ? raw.cpu : undefined,
+    mem: typeof raw.mem === "number" && Number.isFinite(raw.mem) ? raw.mem : undefined,
+    heartbeat: typeof raw.heartbeat === "string" ? raw.heartbeat : undefined,
+  };
+}
+
+export function readRackStatus(value: unknown): RackStatus | null {
+  if (value == null || typeof value !== "object") return null;
+  const raw = value as Record<string, unknown>;
+  if (!Array.isArray(raw.bays) || raw.bays.length === 0) return null;
+  const bays: RackBay[] = [];
+  for (const item of raw.bays) {
+    const bay = readRackBay(item);
+    if (bay) bays.push(bay);
+  }
+  if (bays.length === 0) return null;
+  return {
+    updated: typeof raw.updated === "string" ? raw.updated : null,
+    bays,
+  };
+}
 
 export type ThreadStatus = "drafting" | "exploring";
 

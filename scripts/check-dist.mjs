@@ -1807,7 +1807,16 @@ for (const page of [researchHtml, researchRoot]) {
     rack.includes("$") ||
     /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/.test(rack)
   ) {
-    console.error("pi rack must stay a static visual, not telemetry or a stream banner");
+    console.error("pi rack must not invent temps, spend, IPs, or a stream banner");
+    process.exit(1);
+  }
+  if (
+    rack.includes("rack-load") ||
+    rack.includes("rack-cpu") ||
+    rack.includes("cpu ") ||
+    rack.includes("mem ")
+  ) {
+    console.error("baked pi rack must hide cpu/mem until a live heartbeat lands");
     process.exit(1);
   }
 
@@ -1841,6 +1850,9 @@ if (
   !css.includes(".rack-bay") ||
   !css.includes(".rack-fig") ||
   !css.includes(".rack-led") ||
+  !css.includes(".rack-load") ||
+  !css.includes(".rack-meter") ||
+  !css.includes(".rack-cpu") ||
   !css.includes(".is-active") ||
   !css.includes(".is-reserved") ||
   !css.includes(".fresh")
@@ -2001,9 +2013,46 @@ if (
   rackBlob.includes("coming soon") ||
   /\b10\.0\.0\.\d+\b/.test(rackBlob) ||
   /\b192\.168\.\d+\.\d+\b/.test(rackBlob) ||
-  /\.local\b/.test(rackBlob)
+  /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/.test(rackBlob) ||
+  /\.ts\.net\b/.test(rackBlob) ||
+  /\.local\b/.test(rackBlob) ||
+  /tailscale/i.test(rackBlob)
 ) {
   console.error("rack status.json must not carry studio brand, wallet copy, or home-LAN leaks");
+  process.exit(1);
+}
+for (const bay of rackJson.bays) {
+  for (const key of ["cpu", "mem"]) {
+    if (!Object.hasOwn(bay, key)) continue;
+    const value = bay[key];
+    if (value != null && (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 100)) {
+      console.error(`rack status.json ${bay.id} ${key} must be absent, null, or 0-100`);
+      process.exit(1);
+    }
+    if (typeof value === "number") {
+      console.error(`rack status.json must not fake live ${key} before the CTO heartbeat`);
+      process.exit(1);
+    }
+  }
+  if (Object.hasOwn(bay, "heartbeat") && bay.heartbeat != null && typeof bay.heartbeat !== "string") {
+    console.error(`rack status.json ${bay.id} heartbeat must be absent, null, or an ISO string`);
+    process.exit(1);
+  }
+  if (typeof bay.heartbeat === "string") {
+    console.error("rack status.json must not invent a heartbeat before the CTO publish path");
+    process.exit(1);
+  }
+}
+if (!js.includes("/research/rack/status.json") || !js.includes("no-store")) {
+  console.error("script must fetch /research/rack/status.json so Pages can update without a rebuild");
+  process.exit(1);
+}
+if (!js.includes("45000") && !js.includes("45e3")) {
+  console.error("script must poll rack status every 45s");
+  process.exit(1);
+}
+if (!js.includes("600000") && !js.includes("6e5")) {
+  console.error("script must treat rack heartbeats older than 10 minutes as stale");
   process.exit(1);
 }
 
