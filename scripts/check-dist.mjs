@@ -1423,6 +1423,8 @@ const researchRequired = [
   ">read</a>",
   'href="/research/fishbowl/flow.pdf"',
   ">flow</a>",
+  'href="/research/fishbowl/mesh-architecture.pdf"',
+  ">mesh</a>",
   'class="rack"',
   'class="rack-bays"',
   'class="rack-bay',
@@ -1592,9 +1594,11 @@ for (const page of [researchHtml, researchRoot]) {
     !fishbowlArticle.includes("https://github.com/akashnaren/raspberry-pi-fun") ||
     !fishbowlArticle.includes('href="/research/fishbowl/"') ||
     !fishbowlArticle.includes('href="/research/fishbowl/flow.pdf"') ||
+    !fishbowlArticle.includes('href="/research/fishbowl/mesh-architecture.pdf"') ||
     !fishbowlArticle.includes('class="thread-link"') ||
     !fishbowlArticle.includes(">read</a>") ||
     !fishbowlArticle.includes(">flow</a>") ||
+    !fishbowlArticle.includes(">mesh</a>") ||
     !fishbowlArticle.includes(">code</a>") ||
     !fishbowlArticle.includes("Fishbowl on a Raspberry Pi") ||
     !fishbowlArticle.includes("event log as truth") ||
@@ -1603,7 +1607,7 @@ for (const page of [researchHtml, researchRoot]) {
     !fishbowlArticle.includes('data-posted="2026-09-21"')
   ) {
     console.error(
-      "Fishbowl on a Raspberry Pi must keep a quiet read link to the paper, a flow link to the diagram, a code link to raspberry-pi-fun, and a posted today mark dated 2026-09-21",
+      "Fishbowl on a Raspberry Pi must keep a quiet read link to the paper, a flow link to the diagram, a mesh link to the architecture PDF, a code link to raspberry-pi-fun, and a posted today mark dated 2026-09-21",
     );
     process.exit(1);
   }
@@ -2056,6 +2060,11 @@ const flowFiles = [
   "dist/research/fishbowl/flow.pdf",
   "research/fishbowl/flow.pdf",
 ];
+const meshFiles = [
+  "public/research/fishbowl/mesh-architecture.pdf",
+  "dist/research/fishbowl/mesh-architecture.pdf",
+  "research/fishbowl/mesh-architecture.pdf",
+];
 const fishbowlPaperFiles = [
   "public/research/fishbowl/paper.pdf",
   "dist/research/fishbowl/paper.pdf",
@@ -2119,10 +2128,45 @@ for (const path of fishbowlPaperFiles) {
   }
 }
 
+const missingMesh = meshFiles.filter((path) => !existsSync(path));
+if (missingMesh.length > 0) {
+  console.error("fishbowl mesh-architecture.pdf is missing:");
+  for (const path of missingMesh) console.error(`  - ${path}`);
+  process.exit(1);
+}
+for (const path of meshFiles) {
+  const bytes = readFileSync(path);
+  if (bytes.subarray(0, 5).toString("latin1") !== "%PDF-") {
+    console.error(`${path} must be the fishbowl mesh architecture PDF`);
+    process.exit(1);
+  }
+  if (bytes.length < 1000) {
+    console.error(`${path} is too small to be the fishbowl mesh architecture PDF`);
+    process.exit(1);
+  }
+  if (!bytes.includes(Buffer.from("Pi mesh architecture"))) {
+    console.error(`${path} must be the Pi mesh architecture diagram`);
+    process.exit(1);
+  }
+  if (
+    bytes.includes(Buffer.from("192.168.")) ||
+    /\b10\.0\.0\.\d+\b/.test(bytes.toString("latin1")) ||
+    bytes.includes(Buffer.from(".local"))
+  ) {
+    console.error(`${path} must not carry LAN addresses`);
+    process.exit(1);
+  }
+}
+
 const flowBytes = readFileSync("public/research/fishbowl/flow.pdf");
 const fishbowlPaperBytes = readFileSync("public/research/fishbowl/paper.pdf");
+const meshBytes = readFileSync("public/research/fishbowl/mesh-architecture.pdf");
 if (flowBytes.equals(fishbowlPaperBytes)) {
   console.error("fishbowl paper.pdf must stay distinct from flow.pdf");
+  process.exit(1);
+}
+if (meshBytes.equals(flowBytes) || meshBytes.equals(fishbowlPaperBytes)) {
+  console.error("fishbowl mesh-architecture.pdf must stay distinct from paper.pdf and flow.pdf");
   process.exit(1);
 }
 
@@ -2239,6 +2283,8 @@ const fishbowlRequired = [
   ">pdf</a>",
   'href="/research/fishbowl/flow.pdf"',
   ">flow</a>",
+  'href="/research/fishbowl/mesh-architecture.pdf"',
+  ">mesh</a>",
   'class="page essay"',
   'class="essay-pdf"',
   'src="/research/fishbowl/paper.pdf"',
@@ -2271,6 +2317,20 @@ for (const page of [fishbowlHtml, fishbowlRoot]) {
 
   if (page.includes('src="/research/fishbowl/flow.pdf"')) {
     console.error("fishbowl page must embed paper.pdf, not flow.pdf");
+    process.exit(1);
+  }
+
+  if (page.includes('src="/research/fishbowl/mesh-architecture.pdf"')) {
+    console.error("fishbowl page must embed paper.pdf, not mesh-architecture.pdf");
+    process.exit(1);
+  }
+
+  if (
+    /\b10\.0\.0\.\d+\b/.test(page) ||
+    /\b192\.168\.\d+\.\d+\b/.test(page) ||
+    /\.local\b/.test(page)
+  ) {
+    console.error("fishbowl page must not leak LAN addresses");
     process.exit(1);
   }
 
@@ -2377,5 +2437,5 @@ for (const [page, label] of cloudflarePages) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research with a quiet new today mark, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a pi rack under the mast before the threads, Fishbowl first with a read link to the paper plus flow and code links and a posted today mark, then the earlier three threads, quiet SVG teasers, and a data-driven three-bay chassis with cooler LEDs on Fishbowl and Qwen mesh plus a dimmer reserved pi2 bay. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds paper.pdf with a quiet flow.pdf link. Every public HTML page carries the Cloudflare Web Analytics beacon.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research with a quiet new today mark, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a pi rack under the mast before the threads, Fishbowl first with a read link to the paper plus flow, mesh, and code links and a posted today mark, then the earlier three threads, quiet SVG teasers, and a data-driven three-bay chassis with cooler LEDs on Fishbowl and Qwen mesh plus a dimmer reserved pi2 bay. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds paper.pdf with quiet flow.pdf and mesh-architecture.pdf links. Every public HTML page carries the Cloudflare Web Analytics beacon.",
 );

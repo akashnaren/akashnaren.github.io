@@ -284,6 +284,7 @@ export const threads: readonly Thread[] = [
     links: [
       { href: fishbowlPath, label: "read" },
       { href: "/research/fishbowl/flow.pdf", label: "flow" },
+      { href: "/research/fishbowl/mesh-architecture.pdf", label: "mesh" },
       { href: "https://github.com/akashnaren/raspberry-pi-fun", label: "code" },
     ],
   },
