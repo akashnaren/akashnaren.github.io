@@ -1433,7 +1433,15 @@ const researchRequired = [
   'data-bay="bay-3"',
   ">Fishbowl</a>",
   "pi3",
-  "dry-run",
+  "Qwen mesh",
+  "pi4",
+  ">pi2</p>",
+  "mesh peer",
+  "local qwen2.5",
+  "Pi-PAIR",
+  "armv7",
+  "heartbeat later",
+  'data-state="reserved"',
   'class="fresh"',
   "posted today",
   'data-posted="2026-09-21"',
@@ -1750,15 +1758,25 @@ for (const page of [researchHtml, researchRoot]) {
     !rack.includes(">Fishbowl</a>") ||
     !rack.includes('href="/research/fishbowl/"') ||
     !rack.includes("pi3") ||
-    !rack.includes("active") ||
-    !rack.includes("dry-run") ||
+    !rack.includes("Qwen mesh") ||
+    !rack.includes("pi4") ||
+    !rack.includes(">pi2</p>") ||
+    !rack.includes("mesh peer") ||
+    !rack.includes("local qwen2.5") ||
+    !rack.includes("Pi-PAIR") ||
+    !rack.includes("armv7") ||
+    !rack.includes("heartbeat later") ||
     !rack.includes("reserved") ||
     !rack.includes('class="rack-chassis"') ||
     !rack.includes('class="rack-led"') ||
-    !rack.includes('data-state="active"') ||
-    (rack.match(/empty/g) ?? []).length < 2
+    !rack.includes('class="rack-bay is-reserved"') ||
+    (rack.match(/data-state="active"/g) ?? []).length !== 2 ||
+    (rack.match(/class="rack-bay is-active"/g) ?? []).length !== 2 ||
+    (rack.match(/data-state="reserved"/g) ?? []).length !== 1 ||
+    rack.includes('data-state="empty"') ||
+    rack.includes('class="rack-bay is-empty"')
   ) {
-    console.error("pi rack must show Fishbowl active with a dry-run note and two reserved empty bays");
+    console.error("pi rack must show Fishbowl and Qwen mesh active, with bay 3 reserved not empty");
     process.exit(1);
   }
   if ((rack.match(/class="rack-fig"/g) ?? []).length !== 3) {
@@ -1820,6 +1838,7 @@ if (
   !css.includes(".rack-fig") ||
   !css.includes(".rack-led") ||
   !css.includes(".is-active") ||
+  !css.includes(".is-reserved") ||
   !css.includes(".fresh")
 ) {
   console.error("stylesheet must keep the research list, pi rack, home Research link, today marks, and PDF reader");
@@ -1948,29 +1967,39 @@ if (
   rackJson.bays[0]?.name !== "Fishbowl" ||
   rackJson.bays[0]?.role !== "pi3" ||
   rackJson.bays[0]?.state !== "active" ||
-  rackJson.bays[0]?.note !== "dry-run" ||
+  rackJson.bays[0]?.note !== "mesh peer" ||
   rackJson.bays[0]?.href !== "/research/fishbowl/" ||
-  rackJson.bays[1]?.state !== "empty" ||
-  rackJson.bays[2]?.state !== "empty" ||
-  rackJson.bays[1]?.note !== "reserved" ||
-  rackJson.bays[2]?.note !== "reserved" ||
-  rackJson.bays[1]?.name != null ||
-  rackJson.bays[2]?.name != null
+  rackJson.bays[1]?.id !== "bay-2" ||
+  rackJson.bays[1]?.name !== "Qwen mesh" ||
+  rackJson.bays[1]?.role !== "pi4" ||
+  rackJson.bays[1]?.state !== "active" ||
+  rackJson.bays[1]?.note !== "local qwen2.5 · Pi-PAIR" ||
+  rackJson.bays[1]?.href != null ||
+  rackJson.bays[2]?.id !== "bay-3" ||
+  rackJson.bays[2]?.name !== "pi2" ||
+  rackJson.bays[2]?.role !== "pi2" ||
+  rackJson.bays[2]?.state !== "reserved" ||
+  rackJson.bays[2]?.note !== "armv7 · heartbeat later" ||
+  rackJson.bays[2]?.href != null
 ) {
-  console.error("rack status.json must keep Fishbowl active in bay 1 and two reserved empty bays");
+  console.error("rack status.json must name Fishbowl, Qwen mesh, and reserved pi2 with public labels only");
   process.exit(1);
 }
-if (rackJson.updated != null && typeof rackJson.updated !== "string") {
-  console.error("rack status.json updated must be null or an ISO string");
+if (rackJson.updated !== "2026-09-22") {
+  console.error("rack status.json updated must be the public 2026-09-22 stamp");
   process.exit(1);
 }
+const rackBlob = JSON.stringify(rackJson);
 if (
-  JSON.stringify(rackJson).includes("Meridian") ||
-  JSON.stringify(rackJson).includes("MiniShop") ||
-  JSON.stringify(rackJson).includes("OpenRouter") ||
-  JSON.stringify(rackJson).includes("coming soon")
+  rackBlob.includes("Meridian") ||
+  rackBlob.includes("MiniShop") ||
+  rackBlob.includes("OpenRouter") ||
+  rackBlob.includes("coming soon") ||
+  /\b10\.0\.0\.\d+\b/.test(rackBlob) ||
+  /\b192\.168\.\d+\.\d+\b/.test(rackBlob) ||
+  /\.local\b/.test(rackBlob)
 ) {
-  console.error("rack status.json must not carry studio brand or coming-soon chrome");
+  console.error("rack status.json must not carry studio brand, wallet copy, or home-LAN leaks");
   process.exit(1);
 }
 
@@ -2348,5 +2377,5 @@ for (const [page, label] of cloudflarePages) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research with a quiet new today mark, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a pi rack under the mast before the threads, Fishbowl first with a read link to the paper plus flow and code links and a posted today mark, then the earlier three threads, quiet SVG teasers, and a data-driven three-bay chassis with an active LED on bay 1. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds paper.pdf with a quiet flow.pdf link. Every public HTML page carries the Cloudflare Web Analytics beacon.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research with a quiet new today mark, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a pi rack under the mast before the threads, Fishbowl first with a read link to the paper plus flow and code links and a posted today mark, then the earlier three threads, quiet SVG teasers, and a data-driven three-bay chassis with cooler LEDs on Fishbowl and Qwen mesh plus a dimmer reserved pi2 bay. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds paper.pdf with a quiet flow.pdf link. Every public HTML page carries the Cloudflare Web Analytics beacon.",
 );

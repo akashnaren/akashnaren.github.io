@@ -399,11 +399,17 @@ function renderRackBayFigure(bay: RackBay): string {
           </svg>`;
 }
 
+function rackBayClass(state: RackBay["state"]): string {
+  if (state === "empty") return "rack-bay is-empty";
+  if (state === "active") return "rack-bay is-active";
+  if (state === "reserved") return "rack-bay is-reserved";
+  return "rack-bay is-held";
+}
+
 function renderRackBay(bay: RackBay): string {
   const empty = bay.state === "empty";
-  const active = bay.state === "active";
   const name = bay.name ?? "empty";
-  const klass = empty ? "rack-bay is-empty" : active ? "rack-bay is-active" : "rack-bay is-held";
+  const klass = rackBayClass(bay.state);
   const title = bay.href
     ? `<p class="rack-name"><a href="${escapeHtml(bay.href)}">${escapeHtml(name)}</a></p>`
     : `<p class="rack-name">${escapeHtml(name)}</p>`;
