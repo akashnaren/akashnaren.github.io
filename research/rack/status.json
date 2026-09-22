@@ -15,7 +15,7 @@
       "role": "pi4",
       "state": "active",
       "note": "local qwen2.5 · Pi-PAIR",
-      "href": null
+      "href": "/research/fishbowl/mesh-architecture.pdf"
     },
     {
       "id": "bay-3",

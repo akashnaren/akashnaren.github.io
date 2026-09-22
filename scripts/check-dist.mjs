@@ -85,7 +85,7 @@ const required = [
   ">Research</a>",
   'class="fresh"',
   "new today",
-  'data-posted="2026-09-21"',
+  'data-posted="2026-09-22"',
   'class="him"',
   'class="panel"',
   'class="fact"',
@@ -439,7 +439,7 @@ function assertHomeResearchLink(page, label) {
   if (
     !page.includes('class="fresh"') ||
     !page.includes("new today") ||
-    !page.includes('data-posted="2026-09-21"')
+    !page.includes('data-posted="2026-09-22"')
   ) {
     console.error(`${label} must keep a quiet new today mark on Research from a posted thread date`);
     process.exit(1);
@@ -1435,7 +1435,8 @@ const researchRequired = [
   'data-bay="bay-3"',
   ">Fishbowl</a>",
   "pi3",
-  "Qwen mesh",
+  ">Qwen mesh</a>",
+  'href="/research/fishbowl/mesh-architecture.pdf"',
   "pi4",
   ">pi2</p>",
   "mesh peer",
@@ -1446,7 +1447,7 @@ const researchRequired = [
   'data-state="reserved"',
   'class="fresh"',
   "posted today",
-  'data-posted="2026-09-21"',
+  'data-posted="2026-09-22"',
 ];
 
 for (const page of [researchHtml, researchRoot]) {
@@ -1604,10 +1605,10 @@ for (const page of [researchHtml, researchRoot]) {
     !fishbowlArticle.includes("event log as truth") ||
     !fishbowlArticle.includes('class="fresh"') ||
     !fishbowlArticle.includes("posted today") ||
-    !fishbowlArticle.includes('data-posted="2026-09-21"')
+    !fishbowlArticle.includes('data-posted="2026-09-22"')
   ) {
     console.error(
-      "Fishbowl on a Raspberry Pi must keep a quiet read link to the paper, a flow link to the diagram, a mesh link to the architecture PDF, a code link to raspberry-pi-fun, and a posted today mark dated 2026-09-21",
+      "Fishbowl on a Raspberry Pi must keep a quiet read link to the paper, a flow link to the diagram, a mesh link to the architecture PDF, a code link to raspberry-pi-fun, and a posted today mark dated 2026-09-22",
     );
     process.exit(1);
   }
@@ -1762,7 +1763,8 @@ for (const page of [researchHtml, researchRoot]) {
     !rack.includes(">Fishbowl</a>") ||
     !rack.includes('href="/research/fishbowl/"') ||
     !rack.includes("pi3") ||
-    !rack.includes("Qwen mesh") ||
+    !rack.includes(">Qwen mesh</a>") ||
+    !rack.includes('href="/research/fishbowl/mesh-architecture.pdf"') ||
     !rack.includes("pi4") ||
     !rack.includes(">pi2</p>") ||
     !rack.includes("mesh peer") ||
@@ -1990,7 +1992,7 @@ if (
   rackJson.bays[1]?.role !== "pi4" ||
   rackJson.bays[1]?.state !== "active" ||
   rackJson.bays[1]?.note !== "local qwen2.5 · Pi-PAIR" ||
-  rackJson.bays[1]?.href != null ||
+  rackJson.bays[1]?.href !== "/research/fishbowl/mesh-architecture.pdf" ||
   rackJson.bays[2]?.id !== "bay-3" ||
   rackJson.bays[2]?.name !== "pi2" ||
   rackJson.bays[2]?.role !== "pi2" ||
