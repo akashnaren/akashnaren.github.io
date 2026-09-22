@@ -38,7 +38,13 @@ import {
   type Thread,
   type ThreadLink,
 } from "./content.ts";
-import { flowHref, flowTitle, paperHref, paperTitle } from "./article.ts";
+import {
+  fishbowlPaperHref,
+  fishbowlPaperTitle,
+  flowHref,
+  paperHref,
+  paperTitle,
+} from "./article.ts";
 
 export type PageMeta = {
   readonly title: string;
@@ -433,10 +439,11 @@ export function renderEssay(): string {
 }
 
 export function renderFishbowl(): string {
-  const href = escapeHtml(flowHref);
-  const title = escapeHtml(flowTitle);
+  const href = escapeHtml(fishbowlPaperHref);
+  const title = escapeHtml(fishbowlPaperTitle);
+  const flow = escapeHtml(flowHref);
   return `<div class="page essay" id="holder">
-      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a> <a href="${href}">pdf</a> <span>stream planned later</span></p>
+      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a> <a href="${href}">pdf</a> <a href="${flow}">flow</a> <span>stream planned later</span></p>
       <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
     </div>`;
 }

@@ -1420,6 +1420,8 @@ const researchRequired = [
   "event log as truth",
   "https://github.com/akashnaren/raspberry-pi-fun",
   'href="/research/fishbowl/"',
+  ">read</a>",
+  'href="/research/fishbowl/flow.pdf"',
   ">flow</a>",
   'class="rack"',
   'class="rack-bays"',
@@ -1568,7 +1570,9 @@ for (const page of [researchHtml, researchRoot]) {
     !fishbowlArticle.includes('data-thread="fishbowl-raspberry-pi"') ||
     !fishbowlArticle.includes("https://github.com/akashnaren/raspberry-pi-fun") ||
     !fishbowlArticle.includes('href="/research/fishbowl/"') ||
+    !fishbowlArticle.includes('href="/research/fishbowl/flow.pdf"') ||
     !fishbowlArticle.includes('class="thread-link"') ||
+    !fishbowlArticle.includes(">read</a>") ||
     !fishbowlArticle.includes(">flow</a>") ||
     !fishbowlArticle.includes(">code</a>") ||
     !fishbowlArticle.includes("Fishbowl on a Raspberry Pi") ||
@@ -1578,7 +1582,7 @@ for (const page of [researchHtml, researchRoot]) {
     !fishbowlArticle.includes('data-posted="2026-09-21"')
   ) {
     console.error(
-      "Fishbowl on a Raspberry Pi must keep a quiet flow link to the diagram, a code link to raspberry-pi-fun, and a posted today mark dated 2026-09-21",
+      "Fishbowl on a Raspberry Pi must keep a quiet read link to the paper, a flow link to the diagram, a code link to raspberry-pi-fun, and a posted today mark dated 2026-09-21",
     );
     process.exit(1);
   }
@@ -1990,6 +1994,11 @@ const flowFiles = [
   "dist/research/fishbowl/flow.pdf",
   "research/fishbowl/flow.pdf",
 ];
+const fishbowlPaperFiles = [
+  "public/research/fishbowl/paper.pdf",
+  "dist/research/fishbowl/paper.pdf",
+  "research/fishbowl/paper.pdf",
+];
 const missingPaper = paperFiles.filter((path) => !existsSync(path));
 if (missingPaper.length > 0) {
   console.error("ingested paper.pdf is missing:");
@@ -2024,6 +2033,35 @@ for (const path of flowFiles) {
     console.error(`${path} is too small to be the fishbowl flow PDF`);
     process.exit(1);
   }
+}
+
+const missingFishbowlPaper = fishbowlPaperFiles.filter((path) => !existsSync(path));
+if (missingFishbowlPaper.length > 0) {
+  console.error("fishbowl paper.pdf is missing:");
+  for (const path of missingFishbowlPaper) console.error(`  - ${path}`);
+  process.exit(1);
+}
+for (const path of fishbowlPaperFiles) {
+  const bytes = readFileSync(path);
+  if (bytes.subarray(0, 5).toString("latin1") !== "%PDF-") {
+    console.error(`${path} must be the fishbowl research PDF`);
+    process.exit(1);
+  }
+  if (bytes.length < 10000) {
+    console.error(`${path} is too small to be the fishbowl research PDF`);
+    process.exit(1);
+  }
+  if (!bytes.includes(Buffer.from("Fishbowl: An Event-Log Truthful Multi-Agent Office on a Raspberry Pi"))) {
+    console.error(`${path} must be the Fishbowl research paper`);
+    process.exit(1);
+  }
+}
+
+const flowBytes = readFileSync("public/research/fishbowl/flow.pdf");
+const fishbowlPaperBytes = readFileSync("public/research/fishbowl/paper.pdf");
+if (flowBytes.equals(fishbowlPaperBytes)) {
+  console.error("fishbowl paper.pdf must stay distinct from flow.pdf");
+  process.exit(1);
 }
 
 const essayRequired = [
@@ -2132,14 +2170,16 @@ for (const page of [essayHtml, essayRoot]) {
 }
 
 const fishbowlRequired = [
-  "<title>Fishbowl on a Raspberry Pi</title>",
+  "<title>Fishbowl: An Event-Log Truthful Multi-Agent Office on a Raspberry Pi</title>",
   'href="/research"',
   ">research</a>",
-  'href="/research/fishbowl/flow.pdf"',
+  'href="/research/fishbowl/paper.pdf"',
   ">pdf</a>",
+  'href="/research/fishbowl/flow.pdf"',
+  ">flow</a>",
   'class="page essay"',
   'class="essay-pdf"',
-  'src="/research/fishbowl/flow.pdf"',
+  'src="/research/fishbowl/paper.pdf"',
   'property="og:url" content="https://akashnaren.github.io/research/fishbowl/"',
   'name="theme-color" content="#ffffff"',
   "stream planned later",
@@ -2164,6 +2204,11 @@ for (const page of [fishbowlHtml, fishbowlRoot]) {
     page.includes('class="essay-body"')
   ) {
     console.error("fishbowl page must stay a quiet PDF reader");
+    process.exit(1);
+  }
+
+  if (page.includes('src="/research/fishbowl/flow.pdf"')) {
+    console.error("fishbowl page must embed paper.pdf, not flow.pdf");
     process.exit(1);
   }
 
@@ -2270,5 +2315,5 @@ for (const [page, label] of cloudflarePages) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research with a quiet new today mark, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, a fourth Fishbowl on a Raspberry Pi thread with a flow link and a posted today mark, quiet SVG teasers, and a data-driven three-bay pi rack from status.json. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds flow.pdf. Every public HTML page carries the Cloudflare Web Analytics beacon.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research with a quiet new today mark, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, a fourth Fishbowl on a Raspberry Pi thread with a read link to the paper plus flow and code links and a posted today mark, quiet SVG teasers, and a data-driven three-bay pi rack from status.json. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds paper.pdf with a quiet flow.pdf link. Every public HTML page carries the Cloudflare Web Analytics beacon.",
 );

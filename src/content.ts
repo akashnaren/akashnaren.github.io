@@ -305,7 +305,8 @@ export const threads: readonly Thread[] = [
     abstract:
       "A self-running multi-agent office on a Raspberry Pi: a tick loop, an event log as truth, and a product pane that only shows the last green build.",
     links: [
-      { href: fishbowlPath, label: "flow" },
+      { href: fishbowlPath, label: "read" },
+      { href: "/research/fishbowl/flow.pdf", label: "flow" },
       { href: "https://github.com/akashnaren/raspberry-pi-fun", label: "code" },
     ],
   },

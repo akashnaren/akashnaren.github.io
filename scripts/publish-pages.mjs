@@ -92,5 +92,5 @@ if (
 }
 
 console.log(
-  "published dist to repo root for Files Pages (hashed assets, /bot roster, /research list, /research/agent-native-ui PDF reader, /research/fishbowl flow PDF, 404 SPA fallback).",
+  "published dist to repo root for Files Pages (hashed assets, /bot roster, /research list, /research/agent-native-ui PDF reader, /research/fishbowl paper PDF, 404 SPA fallback).",
 );
