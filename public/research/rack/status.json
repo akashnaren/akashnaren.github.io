@@ -1,28 +1,28 @@
 {
-  "updated": null,
+  "updated": "2026-09-22",
   "bays": [
     {
       "id": "bay-1",
       "name": "Fishbowl",
       "role": "pi3",
       "state": "active",
-      "note": "dry-run",
+      "note": "mesh peer",
       "href": "/research/fishbowl/"
     },
     {
       "id": "bay-2",
-      "name": null,
-      "role": null,
-      "state": "empty",
-      "note": "reserved",
+      "name": "Qwen mesh",
+      "role": "pi4",
+      "state": "active",
+      "note": "local qwen2.5 · Pi-PAIR",
       "href": null
     },
     {
       "id": "bay-3",
-      "name": null,
-      "role": null,
-      "state": "empty",
-      "note": "reserved",
+      "name": "pi2",
+      "role": "pi2",
+      "state": "reserved",
+      "note": "armv7 · heartbeat later",
       "href": null
     }
   ]

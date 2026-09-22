@@ -226,7 +226,13 @@ export const fishbowlUrl = "https://akashnaren.github.io/research/fishbowl/";
 
 export const rackCue = "pi rack";
 
-export type RackBayState = "active" | "exploring" | "dry-run" | "private" | "empty";
+export type RackBayState =
+  | "active"
+  | "exploring"
+  | "dry-run"
+  | "private"
+  | "reserved"
+  | "empty";
 
 export type RackBay = {
   readonly id: string;
