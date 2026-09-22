@@ -5,7 +5,8 @@
       "id": "bay-1",
       "name": "Fishbowl",
       "role": "pi3",
-      "state": "dry-run",
+      "state": "active",
+      "note": "dry-run",
       "href": "/research/fishbowl/"
     },
     {
@@ -13,6 +14,7 @@
       "name": null,
       "role": null,
       "state": "empty",
+      "note": "reserved",
       "href": null
     },
     {
@@ -20,6 +22,7 @@
       "name": null,
       "role": null,
       "state": "empty",
+      "note": "reserved",
       "href": null
     }
   ]

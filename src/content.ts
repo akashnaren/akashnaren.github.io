@@ -226,13 +226,14 @@ export const fishbowlUrl = "https://akashnaren.github.io/research/fishbowl/";
 
 export const rackCue = "pi rack";
 
-export type RackBayState = "exploring" | "dry-run" | "private" | "empty";
+export type RackBayState = "active" | "exploring" | "dry-run" | "private" | "empty";
 
 export type RackBay = {
   readonly id: string;
   readonly name: string | null;
   readonly role: string | null;
   readonly state: RackBayState;
+  readonly note?: string | null;
   readonly href: string | null;
 };
 
@@ -267,6 +268,20 @@ export type Thread = {
 
 export const threads: readonly Thread[] = [
   {
+    id: "fishbowl-raspberry-pi",
+    title: "Fishbowl on a Raspberry Pi",
+    status: "exploring",
+    figure: "fishbowl",
+    posted: "2026-09-21",
+    abstract:
+      "A self-running multi-agent office on a Raspberry Pi: a tick loop, an event log as truth, and a product pane that only shows the last green build.",
+    links: [
+      { href: fishbowlPath, label: "read" },
+      { href: "/research/fishbowl/flow.pdf", label: "flow" },
+      { href: "https://github.com/akashnaren/raspberry-pi-fun", label: "code" },
+    ],
+  },
+  {
     id: "agent-native-ui-protocols",
     title: "Agent-native UI protocols",
     status: "exploring",
@@ -295,19 +310,6 @@ export const threads: readonly Thread[] = [
       "I am looking at how to reason over fragmented records and link events to the right address over time.",
     href: "https://temporal-buddies5.vercel.app/",
     linkLabel: "demo",
-  },
-  {
-    id: "fishbowl-raspberry-pi",
-    title: "Fishbowl on a Raspberry Pi",
-    status: "exploring",
-    figure: "fishbowl",
-    posted: "2026-09-21",
-    abstract:
-      "A self-running multi-agent office on a Raspberry Pi: a tick loop, an event log as truth, and a product pane that only shows the last green build.",
-    links: [
-      { href: fishbowlPath, label: "flow" },
-      { href: "https://github.com/akashnaren/raspberry-pi-fun", label: "code" },
-    ],
   },
 ];
 
