@@ -1,3 +1,5 @@
+import rackStatusJson from "../public/research/rack/status.json" with { type: "json" };
+
 export type Link = {
   readonly href: string;
   readonly label: string;
@@ -221,6 +223,25 @@ export const essayUrl = "https://akashnaren.github.io/research/agent-native-ui/"
 export const fishbowlPath = "/research/fishbowl/";
 
 export const fishbowlUrl = "https://akashnaren.github.io/research/fishbowl/";
+
+export const rackCue = "pi rack";
+
+export type RackBayState = "exploring" | "dry-run" | "private" | "empty";
+
+export type RackBay = {
+  readonly id: string;
+  readonly name: string | null;
+  readonly role: string | null;
+  readonly state: RackBayState;
+  readonly href: string | null;
+};
+
+export type RackStatus = {
+  readonly updated: string | null;
+  readonly bays: readonly RackBay[];
+};
+
+export const rackStatus = rackStatusJson as RackStatus;
 
 export type ThreadStatus = "drafting" | "exploring";
 
