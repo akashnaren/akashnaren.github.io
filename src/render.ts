@@ -13,6 +13,7 @@ import {
   fleetLine,
   fleetMarkSize,
   isLink,
+  isPostedToday,
   managedBy,
   managedMarkSize,
   name,
@@ -26,6 +27,7 @@ import {
   researchTitle,
   researchUrl,
   seats,
+  threadPostedDates,
   threads,
   url,
   type Contact,
@@ -125,12 +127,20 @@ function renderFleetFace(seat: Seat): string {
   return `<a class="${klass}" href="${href}" data-seat="${escapeHtml(seat.id)}" aria-label="${name}">${mark}<span class="fleet-tip" aria-hidden="true">${name}</span></a>`;
 }
 
+function renderFresh(label: string, dates: readonly string[], now: Date = new Date()): string {
+  if (dates.length === 0) return "";
+  const hidden = dates.some((date) => isPostedToday(date, now)) ? "" : " hidden";
+  return `<span class="fresh" data-posted="${escapeHtml(dates.join(" "))}"${hidden}>${escapeHtml(label)}</span>`;
+}
+
 function renderFleet(): string {
   const marks = seats.map(renderFleetFace).join("");
+  const fresh = renderFresh("new today", threadPostedDates());
+  const mark = fresh ? ` ${fresh}` : "";
   return `<p class="fleet">${marks}</p>
           <p class="fleet-line">${escapeHtml(fleetLine)}</p>
           <p class="fleet-invite"><a href="${escapeHtml(collectionPath)}">${escapeHtml(fleetInvite)}</a></p>
-          <p class="page-link"><a href="${escapeHtml(researchPath)}">${escapeHtml(researchLinkLabel)}</a></p>`;
+          <p class="page-link"><a href="${escapeHtml(researchPath)}">${escapeHtml(researchLinkLabel)}</a>${mark}</p>`;
 }
 
 function renderInbox(label: string = agentInbox.label, tip = ""): string {
@@ -343,10 +353,11 @@ function renderThreadLinks(thread: Thread): string {
 }
 
 function renderThread(thread: Thread): string {
+  const fresh = thread.posted ? ` ${renderFresh("posted today", [thread.posted])}` : "";
   return `<article class="thread" data-thread="${escapeHtml(thread.id)}">
           ${renderThreadFigure(thread.figure)}
           <div class="thread-copy">
-            <h2>${escapeHtml(thread.title)}</h2>
+            <h2>${escapeHtml(thread.title)}${fresh}</h2>
             <p class="status">${escapeHtml(thread.status)}</p>
             <p>${escapeHtml(thread.abstract)}</p>
             ${renderThreadLinks(thread)}

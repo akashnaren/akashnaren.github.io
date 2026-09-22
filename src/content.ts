@@ -261,6 +261,8 @@ export type Thread = {
   readonly href?: string;
   readonly linkLabel?: string;
   readonly links?: readonly ThreadLink[];
+  /** Pacific calendar day the thread was posted or updated, `YYYY-MM-DD`. */
+  readonly posted?: string;
 };
 
 export const threads: readonly Thread[] = [
@@ -299,6 +301,7 @@ export const threads: readonly Thread[] = [
     title: "Fishbowl on a Raspberry Pi",
     status: "exploring",
     figure: "fishbowl",
+    posted: "2026-09-21",
     abstract:
       "A self-running multi-agent office on a Raspberry Pi: a tick loop, an event log as truth, and a product pane that only shows the last green build.",
     links: [
@@ -307,6 +310,25 @@ export const threads: readonly Thread[] = [
     ],
   },
 ];
+
+export const pacificZone = "America/Los_Angeles";
+
+export function pacificDay(now: Date = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: pacificZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(now);
+}
+
+export function isPostedToday(posted: string | undefined, now: Date = new Date()): boolean {
+  return posted != null && posted === pacificDay(now);
+}
+
+export function threadPostedDates(items: readonly Thread[] = threads): readonly string[] {
+  return items.flatMap((thread) => (thread.posted ? [thread.posted] : []));
+}
 
 export const managedBy: Paragraph = [
   "this site is managed by ",
