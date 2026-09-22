@@ -18,7 +18,10 @@ import {
   managedMarkSize,
   name,
   personalMail,
+  rackBayOccupied,
   rackCue,
+  rackHeartbeatFresh,
+  rackPercent,
   rackStatus,
   researchDescription,
   researchLinkLabel,
@@ -34,6 +37,7 @@ import {
   type Paragraph,
   type Phrase,
   type RackBay,
+  type RackStatus,
   type Seat,
   type Thread,
   type ThreadLink,
@@ -399,7 +403,19 @@ function renderRackBayFigure(bay: RackBay): string {
           </svg>`;
 }
 
-function renderRackBay(bay: RackBay): string {
+function renderRackLoad(bay: RackBay, now: number): string {
+  if (!rackBayOccupied(bay) || !rackHeartbeatFresh(bay.heartbeat, now)) return "";
+  const cpu = rackPercent(bay.cpu);
+  if (cpu === null) return "";
+  const shown = Math.round(cpu);
+  const label = `cpu ${String(shown)}%`;
+  const mem = rackPercent(bay.mem);
+  const memHtml =
+    mem === null ? "" : `<span class="rack-mem">mem ${String(Math.round(mem))}%</span>`;
+  return `<p class="rack-load" style="--cpu:${String(shown)}"><span class="rack-meter" aria-hidden="true"><span class="rack-meter-fill"></span></span><span class="rack-cpu">${escapeHtml(label)}</span>${memHtml}</p>`;
+}
+
+export function renderRackBay(bay: RackBay, now: number = Date.now()): string {
   const empty = bay.state === "empty";
   const active = bay.state === "active";
   const name = bay.name ?? "empty";
@@ -410,18 +426,22 @@ function renderRackBay(bay: RackBay): string {
   const role = bay.role ? `<p class="rack-role">${escapeHtml(bay.role)}</p>` : "";
   const status = empty ? "" : `<p class="status">${escapeHtml(bay.state)}</p>`;
   const note = bay.note ? `<p class="rack-note">${escapeHtml(bay.note)}</p>` : "";
+  const load = renderRackLoad(bay, now);
   return `<li class="${klass}" data-bay="${escapeHtml(bay.id)}" data-state="${escapeHtml(bay.state)}">
             ${renderRackBayFigure(bay)}
-            <div class="rack-copy">${title}${role}${status}${note}</div>
+            <div class="rack-copy">${title}${role}${status}${note}${load}</div>
           </li>`;
 }
 
+export function renderRackBays(status: RackStatus, now: number = Date.now()): string {
+  return status.bays.map((bay) => renderRackBay(bay, now)).join("");
+}
+
 function renderRack(): string {
-  const bays = rackStatus.bays.map(renderRackBay).join("");
   return `<section class="rack" aria-label="${escapeHtml(rackCue)}">
           <p class="cue">${escapeHtml(rackCue)}</p>
           <div class="rack-chassis">
-          <ol class="rack-bays">${bays}</ol>
+          <ol class="rack-bays">${renderRackBays(rackStatus)}</ol>
           </div>
         </section>`;
 }
