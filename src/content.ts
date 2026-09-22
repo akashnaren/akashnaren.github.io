@@ -272,7 +272,7 @@ export const rackBayOrder = ["bay-1", "bay-2", "bay-3"] as const;
 
 export const rackPublicLabels: Readonly<Record<string, { readonly name: string; readonly href: string | null }>> = {
   "bay-1": { name: "Fishbowl", href: "/research/fishbowl/" },
-  "bay-2": { name: "Qwen mesh", href: null },
+  "bay-2": { name: "Qwen mesh", href: "/research/fishbowl/mesh-architecture.pdf" },
   "bay-3": { name: "pi2", href: null },
 };
 
@@ -451,7 +451,7 @@ export const threads: readonly Thread[] = [
     title: "Fishbowl on a Raspberry Pi",
     status: "exploring",
     figure: "fishbowl",
-    posted: "2026-09-21",
+    posted: "2026-09-22",
     abstract:
       "A self-running multi-agent office on a Raspberry Pi: a tick loop, an event log as truth, and a product pane that only shows the last green build.",
     links: [
