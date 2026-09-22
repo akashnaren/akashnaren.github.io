@@ -33,7 +33,7 @@ import {
   type Thread,
   type ThreadLink,
 } from "./content.ts";
-import { paperHref, paperTitle } from "./article.ts";
+import { flowHref, flowTitle, paperHref, paperTitle } from "./article.ts";
 
 export type PageMeta = {
   readonly title: string;
@@ -295,10 +295,31 @@ function renderGapsFigure(): string {
           </svg>`;
 }
 
+function renderFishbowlFigure(): string {
+  return `<svg class="thread-fig" viewBox="0 0 140 108" width="140" height="108" focusable="false" aria-hidden="true">
+            <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
+            <circle cx="70" cy="18" r="3" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
+            <path d="M70 21.1v6.2" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.7"/>
+            <rect x="41" y="27.4" width="58" height="14" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.9"/>
+            <path d="M70 41.4v5.2" fill="none" stroke="rgba(250,250,247,0.24)" stroke-width="0.7"/>
+            <rect x="45" y="46.6" width="12" height="7" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.7"/>
+            <rect x="64" y="46.6" width="12" height="7" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.7"/>
+            <rect x="83" y="46.6" width="12" height="7" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.7"/>
+            <path d="M22 61.5h96" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.7"/>
+            <path d="M34 61.5v3M50 61.5v3M66 61.5v3M82 61.5v3M98 61.5v3M114 61.5v3" fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.7"/>
+            <rect x="20" y="70" width="46" height="20" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.8"/>
+            <rect x="74" y="70" width="46" height="20" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
+            <path d="M43 90v3.2M97 90v3.2" fill="none" stroke="rgba(250,250,247,0.22)" stroke-width="0.7"/>
+            <rect x="58" y="93.2" width="24" height="6.2" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.8"/>
+            <path d="M20 80H14V18h53" fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.7" stroke-dasharray="2.4 2.2"/>
+          </svg>`;
+}
+
 function renderThreadFigure(figure: Thread["figure"]): string {
   if (figure === "protocol") return renderProtocolFigure();
   if (figure === "axes") return renderAxesFigure();
-  return renderGapsFigure();
+  if (figure === "gaps") return renderGapsFigure();
+  return renderFishbowlFigure();
 }
 
 function threadLinks(thread: Thread): readonly ThreadLink[] {
@@ -354,6 +375,15 @@ export function renderEssay(): string {
   const title = escapeHtml(paperTitle);
   return `<div class="page essay" id="holder">
       <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a> <a href="${href}">pdf</a></p>
+      <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
+    </div>`;
+}
+
+export function renderFishbowl(): string {
+  const href = escapeHtml(flowHref);
+  const title = escapeHtml(flowTitle);
+  return `<div class="page essay" id="holder">
+      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a> <a href="${href}">pdf</a> <span>stream planned later</span></p>
       <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
     </div>`;
 }

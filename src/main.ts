@@ -1,6 +1,6 @@
-import { essayMetaFrom } from "./article.ts";
+import { essayMetaFrom, fishbowlMetaFrom } from "./article.ts";
 import { bindCrewBoard } from "./board.ts";
-import { isBotPath, isEssayPath, isResearchPath } from "./content.ts";
+import { isBotPath, isEssayPath, isFishbowlPath, isResearchPath } from "./content.ts";
 import { fitStage } from "./fit.ts";
 import {
   applyDocumentMeta,
@@ -8,6 +8,7 @@ import {
   homeMeta,
   renderBot,
   renderEssay,
+  renderFishbowl,
   renderResearch,
   renderSite,
   researchMeta,
@@ -16,6 +17,7 @@ import {
 function mount(): void {
   const bot = isBotPath(location.pathname);
   const essay = isEssayPath(location.pathname);
+  const fishbowl = isFishbowlPath(location.pathname);
   const research = isResearchPath(location.pathname);
   const root = document.getElementById("holder");
   if (!root) return;
@@ -26,16 +28,26 @@ function mount(): void {
   const paintedHome = Boolean(root.querySelector(".sky"));
   if (essay && !paintedEssay) {
     root.outerHTML = renderEssay();
+  } else if (fishbowl && !paintedEssay) {
+    root.outerHTML = renderFishbowl();
   } else if (bot && !paintedBot) {
     root.outerHTML = renderBot();
   } else if (research && !paintedResearch) {
     root.outerHTML = renderResearch();
-  } else if (!bot && !essay && !research && !paintedHome) {
+  } else if (!bot && !essay && !fishbowl && !research && !paintedHome) {
     root.outerHTML = renderSite();
   }
 
   applyDocumentMeta(
-    essay ? essayMetaFrom() : bot ? botMeta : research ? researchMeta : homeMeta,
+    essay
+      ? essayMetaFrom()
+      : fishbowl
+        ? fishbowlMetaFrom()
+        : bot
+          ? botMeta
+          : research
+            ? researchMeta
+            : homeMeta,
   );
 }
 

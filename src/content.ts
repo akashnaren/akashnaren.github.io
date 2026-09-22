@@ -218,9 +218,13 @@ export const essayPath = "/research/agent-native-ui/";
 
 export const essayUrl = "https://akashnaren.github.io/research/agent-native-ui/";
 
+export const fishbowlPath = "/research/fishbowl/";
+
+export const fishbowlUrl = "https://akashnaren.github.io/research/fishbowl/";
+
 export type ThreadStatus = "drafting" | "exploring";
 
-export type ThreadFigure = "protocol" | "axes" | "gaps";
+export type ThreadFigure = "protocol" | "axes" | "gaps" | "fishbowl";
 
 export type ThreadLink = {
   readonly href: string;
@@ -268,6 +272,18 @@ export const threads: readonly Thread[] = [
       "I am looking at how to reason over fragmented records and link events to the right address over time.",
     href: "https://temporal-buddies5.vercel.app/",
     linkLabel: "demo",
+  },
+  {
+    id: "fishbowl-raspberry-pi",
+    title: "Fishbowl on a Raspberry Pi",
+    status: "exploring",
+    figure: "fishbowl",
+    abstract:
+      "A self-running multi-agent office on a Raspberry Pi: a tick loop, an event log as truth, and a product pane that only shows the last green build.",
+    links: [
+      { href: fishbowlPath, label: "flow" },
+      { href: "https://github.com/akashnaren/raspberry-pi-fun", label: "code" },
+    ],
   },
 ];
 
@@ -328,5 +344,13 @@ export function isEssayPath(pathname: string): boolean {
   return (
     /\/research\/agent-native-ui\/?$/.test(path) ||
     /\/research\/agent-native-ui\/index\.html$/.test(path)
+  );
+}
+
+export function isFishbowlPath(pathname: string): boolean {
+  const path = pathname.split(/[?#]/, 1)[0] ?? "";
+  return (
+    /\/research\/fishbowl\/?$/.test(path) ||
+    /\/research\/fishbowl\/index\.html$/.test(path)
   );
 }
