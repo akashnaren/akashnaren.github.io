@@ -1396,6 +1396,11 @@ const researchRequired = [
   "https://github.com/akashnaren/agent-ui-metrics",
   'class="thread-link"',
   ">code</a>",
+  "Fishbowl on a Raspberry Pi",
+  "event log as truth",
+  "https://github.com/akashnaren/raspberry-pi-fun",
+  'href="/research/fishbowl/"',
+  ">flow</a>",
 ];
 
 for (const page of [researchHtml, researchRoot]) {
@@ -1441,20 +1446,20 @@ for (const page of [researchHtml, researchRoot]) {
   }
 
   const threadCount = (page.match(/<article class="thread"/g) ?? []).length;
-  if (threadCount !== 3) {
-    console.error(`research page must paint three thread blocks, found ${String(threadCount)}`);
+  if (threadCount !== 4) {
+    console.error(`research page must paint four thread blocks, found ${String(threadCount)}`);
     process.exit(1);
   }
 
   const figureCount = (page.match(/class="thread-fig"/g) ?? []).length;
-  if (figureCount !== 3) {
+  if (figureCount !== 4) {
     console.error(`research page must keep one SVG figure per thread, found ${String(figureCount)}`);
     process.exit(1);
   }
 
   const articles = page.match(/<article class="thread"[\s\S]*?<\/article>/g) ?? [];
-  if (articles.length !== 3) {
-    console.error("research page must expose three complete thread articles");
+  if (articles.length !== 4) {
+    console.error("research page must expose four complete thread articles");
     process.exit(1);
   }
   for (const [index, article] of articles.entries()) {
@@ -1477,8 +1482,8 @@ for (const page of [researchHtml, researchRoot]) {
     }
   }
 
-  if ((page.match(/drafting/g) ?? []).length > 0 || (page.match(/exploring/g) ?? []).length < 3) {
-    console.error("research page must mark all three threads exploring");
+  if ((page.match(/drafting/g) ?? []).length > 0 || (page.match(/exploring/g) ?? []).length < 4) {
+    console.error("research page must mark all four threads exploring");
     process.exit(1);
   }
 
@@ -1503,8 +1508,13 @@ for (const page of [researchHtml, researchRoot]) {
     process.exit(1);
   }
 
-  if (page.includes("https://github.com/akashnaren/research") || page.includes("MiniShop")) {
-    console.error("research page must not keep the private research repo or MiniShop");
+  if (
+    page.includes("https://github.com/akashnaren/research") ||
+    page.includes("MiniShop") ||
+    page.includes("Meridian") ||
+    page.includes("coming soon")
+  ) {
+    console.error("research page must not keep the private research repo, MiniShop, or coming-soon chrome");
     process.exit(1);
   }
 
@@ -1516,6 +1526,33 @@ for (const page of [researchHtml, researchRoot]) {
     !entityArticle.includes(">demo</a>")
   ) {
     console.error("entity investigation must keep one quiet demo link");
+    process.exit(1);
+  }
+
+  const fishbowlArticle = articles[3] ?? "";
+  if (
+    !fishbowlArticle.includes('data-thread="fishbowl-raspberry-pi"') ||
+    !fishbowlArticle.includes("https://github.com/akashnaren/raspberry-pi-fun") ||
+    !fishbowlArticle.includes('href="/research/fishbowl/"') ||
+    !fishbowlArticle.includes('class="thread-link"') ||
+    !fishbowlArticle.includes(">flow</a>") ||
+    !fishbowlArticle.includes(">code</a>") ||
+    !fishbowlArticle.includes("Fishbowl on a Raspberry Pi") ||
+    !fishbowlArticle.includes("event log as truth")
+  ) {
+    console.error(
+      "Fishbowl on a Raspberry Pi must keep a quiet flow link to the diagram and a code link to raspberry-pi-fun",
+    );
+    process.exit(1);
+  }
+
+  if (
+    fishbowlArticle.includes("Meridian") ||
+    fishbowlArticle.includes("MiniShop") ||
+    fishbowlArticle.includes("OpenRouter") ||
+    fishbowlArticle.includes("coming soon")
+  ) {
+    console.error("fishbowl thread must stay on the system, not studio brand or coming-soon chrome");
     process.exit(1);
   }
 
@@ -1743,12 +1780,24 @@ if (!existsSync("dist/research/agent-native-ui/index.html") || !existsSync("rese
   process.exit(1);
 }
 
+if (!existsSync("dist/research/fishbowl/index.html") || !existsSync("research/fishbowl/index.html")) {
+  console.error("fishbowl page must exist at dist/research/fishbowl/index.html and research/fishbowl/index.html");
+  process.exit(1);
+}
+
 const essayHtml = readFileSync("dist/research/agent-native-ui/index.html", "utf8");
 const essayRoot = readFileSync("research/agent-native-ui/index.html", "utf8");
+const fishbowlHtml = readFileSync("dist/research/fishbowl/index.html", "utf8");
+const fishbowlRoot = readFileSync("research/fishbowl/index.html", "utf8");
 const paperFiles = [
   "public/research/agent-native-ui/paper.pdf",
   "dist/research/agent-native-ui/paper.pdf",
   "research/agent-native-ui/paper.pdf",
+];
+const flowFiles = [
+  "public/research/fishbowl/flow.pdf",
+  "dist/research/fishbowl/flow.pdf",
+  "research/fishbowl/flow.pdf",
 ];
 const missingPaper = paperFiles.filter((path) => !existsSync(path));
 if (missingPaper.length > 0) {
@@ -1764,6 +1813,24 @@ for (const path of paperFiles) {
   }
   if (bytes.length < 1000) {
     console.error(`${path} is too small to be the research PDF`);
+    process.exit(1);
+  }
+}
+
+const missingFlow = flowFiles.filter((path) => !existsSync(path));
+if (missingFlow.length > 0) {
+  console.error("fishbowl flow.pdf is missing:");
+  for (const path of missingFlow) console.error(`  - ${path}`);
+  process.exit(1);
+}
+for (const path of flowFiles) {
+  const bytes = readFileSync(path);
+  if (bytes.subarray(0, 5).toString("latin1") !== "%PDF-") {
+    console.error(`${path} must be the fishbowl flow PDF`);
+    process.exit(1);
+  }
+  if (bytes.length < 1000) {
+    console.error(`${path} is too small to be the fishbowl flow PDF`);
     process.exit(1);
   }
 }
@@ -1873,6 +1940,112 @@ for (const page of [essayHtml, essayRoot]) {
   }
 }
 
+const fishbowlRequired = [
+  "<title>Fishbowl on a Raspberry Pi</title>",
+  'href="/research"',
+  ">research</a>",
+  'href="/research/fishbowl/flow.pdf"',
+  ">pdf</a>",
+  'class="page essay"',
+  'class="essay-pdf"',
+  'src="/research/fishbowl/flow.pdf"',
+  'property="og:url" content="https://akashnaren.github.io/research/fishbowl/"',
+  'name="theme-color" content="#ffffff"',
+  "stream planned later",
+];
+
+for (const page of [fishbowlHtml, fishbowlRoot]) {
+  const missingFishbowl = fishbowlRequired.filter((needle) => !page.includes(needle));
+  if (missingFishbowl.length > 0) {
+    console.error("fishbowl page is missing required copy:");
+    for (const needle of missingFishbowl) console.error(`  - ${needle}`);
+    process.exit(1);
+  }
+
+  if (
+    page.includes("coming soon") ||
+    page.includes("Meridian") ||
+    page.includes("MiniShop") ||
+    page.includes("OpenRouter") ||
+    page.includes('class="essay-note"') ||
+    page.includes('class="essay-status"') ||
+    page.includes('class="essay-nav"') ||
+    page.includes('class="essay-body"')
+  ) {
+    console.error("fishbowl page must stay a quiet PDF reader");
+    process.exit(1);
+  }
+
+  if (page.includes("\u2014") || page.includes("\u2013")) {
+    console.error("fishbowl page must not use dash punctuation");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("delve") ||
+    page.includes("leverage") ||
+    page.includes("robust pipeline") ||
+    page.includes("in this work")
+  ) {
+    console.error("fishbowl page must keep lean copy, not AI essay phrasing");
+    process.exit(1);
+  }
+
+  if (
+    /Tesla/.test(page) ||
+    /tesla\.com/.test(page) ||
+    /Redwood City/.test(page) ||
+    /Raytheon/.test(page) ||
+    /NASA/.test(page)
+  ) {
+    console.error("fishbowl page must not carry Tesla or home bio copy");
+    process.exit(1);
+  }
+
+  if (
+    page.includes("apn@agentmail.to") ||
+    page.includes("agentmail") ||
+    page.includes("akashnaren@gmail.com") ||
+    page.includes("human-mail") ||
+    page.includes('class="inbox"')
+  ) {
+    console.error("fishbowl page must not leak AgentMail, Gmail, or the bots' inbox");
+    process.exit(1);
+  }
+
+  if (
+    page.includes('class="sky"') ||
+    page.includes('class="system"') ||
+    page.includes('class="board"') ||
+    page.includes('class="roster"') ||
+    page.includes("profile assistant") ||
+    page.includes("click on any bot")
+  ) {
+    console.error("fishbowl page must not duplicate home sky or /bot roster cards");
+    process.exit(1);
+  }
+
+  if (
+    /job assistant/i.test(page) ||
+    /startup advisor/i.test(page) ||
+    /looking for a job/i.test(page) ||
+    /job search/i.test(page)
+  ) {
+    console.error("fishbowl page must not name Job Assistant, Startup Advisor, or job-hunt");
+    process.exit(1);
+  }
+
+  if (!/\/assets\/index-[^"]+\.js/.test(page)) {
+    console.error("fishbowl page must reference hashed /assets/index-*.js");
+    process.exit(1);
+  }
+
+  if (page.includes("this site is managed by") || page.includes('class="managed-copy"')) {
+    console.error("fishbowl PDF reader must not carry site-themed managed-by chrome");
+    process.exit(1);
+  }
+}
+
 const cloudflareBeacon =
   "https://static.cloudflareinsights.com/beacon.min.js";
 const cloudflareToken = "0470f893bb1740a88848e29324507551";
@@ -1885,6 +2058,8 @@ const cloudflarePages = [
   [researchRoot, "research/index.html"],
   [essayHtml, "dist/research/agent-native-ui/index.html"],
   [essayRoot, "research/agent-native-ui/index.html"],
+  [fishbowlHtml, "dist/research/fishbowl/index.html"],
+  [fishbowlRoot, "research/fishbowl/index.html"],
   [spa, "dist/404.html"],
   [spaRoot, "404.html"],
 ];
@@ -1904,5 +2079,5 @@ for (const [page, label] of cloudflarePages) {
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, and quiet SVG teasers. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. Every public HTML page carries the Cloudflare Web Analytics beacon.",
+  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a quiet read link to the article plus an agent-ui-metrics code link on the first thread, a fourth Fishbowl on a Raspberry Pi thread with a flow link, and quiet SVG teasers. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds flow.pdf. Every public HTML page carries the Cloudflare Web Analytics beacon.",
 );

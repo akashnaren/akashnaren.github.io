@@ -82,14 +82,15 @@ if (
   !existsSync("bot/index.html") ||
   !existsSync("research/index.html") ||
   !existsSync("research/agent-native-ui/index.html") ||
+  !existsSync("research/fishbowl/index.html") ||
   !existsSync("404.html")
 ) {
   console.error(
-    "publish-pages: bot/index.html, research/index.html, research/agent-native-ui/index.html, or 404.html missing at repo root",
+    "publish-pages: bot/index.html, research/index.html, research/agent-native-ui/index.html, research/fishbowl/index.html, or 404.html missing at repo root",
   );
   process.exit(1);
 }
 
 console.log(
-  "published dist to repo root for Files Pages (hashed assets, /bot roster, /research list, /research/agent-native-ui PDF reader, 404 SPA fallback).",
+  "published dist to repo root for Files Pages (hashed assets, /bot roster, /research list, /research/agent-native-ui PDF reader, /research/fishbowl flow PDF, 404 SPA fallback).",
 );
