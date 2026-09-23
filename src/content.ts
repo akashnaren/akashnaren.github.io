@@ -15,7 +15,7 @@ export type Contact = Link & {
 
 export const name = "Akash Premkumar";
 export const description =
-  "Worked at Tesla in Redwood City on vehicle service systems. Diagnostics, telemetry, and data analysis. CS and Math, UC San Diego.";
+  "Worked at Tesla in Redwood City on vehicle service systems: diagnostics, telemetry, and data analysis. Previously vehicle engineering: Robotaxi, Optimus, and Grok. CS and Math, UC San Diego.";
 export const url = "https://akashnaren.github.io/";
 export const themeColor = "#0a0a0a";
 
