@@ -258,10 +258,10 @@ mustInclude(
   research,
   [
     "<title>Research</title>",
-    "Local language-model chat on a three-node Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.",
-    "Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh",
+    "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.",
+    "Raspberry Pi Inference Mesh",
     'href="/research/pi-0.2-high/paper.pdf"',
-    "three-node Raspberry Pi mesh",
+    "I am running local language-model chat on a Raspberry Pi mesh, behind one OpenAI-style route.",
     "OpenAI-style route",
     "Structured Views for Agent-Native UIs",
     'href="/research/agent-native-ui/paper.pdf"',
@@ -283,8 +283,8 @@ mustInclude(
 const articles = research.match(/<article class="thread"[\s\S]*?<\/article>/g) ?? [];
 if (articles.length !== 4) fail(`research must list four threads, found ${String(articles.length)}`);
 const piThread = articles[0] ?? "";
-if (!piThread.includes("Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh")) {
-  fail("Pi 0.2 High must be the first research thread");
+if (!piThread.includes("Raspberry Pi Inference Mesh")) {
+  fail("Raspberry Pi Inference Mesh must be the first research thread");
 }
 if (!piThread.includes('href="/research/pi-0.2-high/paper.pdf"')) {
   fail("Pi 0.2 High title must open the PDF directly");
@@ -298,7 +298,7 @@ mustIconInside(research, "/bot", "grok bot", "research");
 mustIconInside(
   research,
   "/research/pi-0.2-high/paper.pdf",
-  "Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh",
+  "Raspberry Pi Inference Mesh",
   "research",
 );
 mustIconInside(
@@ -327,6 +327,8 @@ mustExclude(
     "still researching",
     "exploring",
     "drafting",
+    "three-node",
+    "Three-Node",
     "pi rack",
     "Pi PAIR",
     'class="rack"',
@@ -370,7 +372,7 @@ mustInclude(
     'http-equiv="refresh"',
     "/research/pi-0.2-high/paper.pdf",
     "location.replace",
-    "Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh",
+    "Raspberry Pi Inference Mesh",
     "data-cf-beacon",
   ],
   "pi paper redirect",
@@ -471,7 +473,12 @@ if (piPages.length < 6 || piPages.length > 10) {
 const piSource = read("papers/pi-0.2-high/paper.html");
 mustInclude(
   piPdf.toString("latin1"),
-  ["Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh"],
+  ["Raspberry Pi Inference Mesh"],
+  "pi paper title",
+);
+mustExclude(
+  piPdf.toString("latin1"),
+  ["Three-Node Raspberry Pi Mesh"],
   "pi paper title",
 );
 mustInclude(

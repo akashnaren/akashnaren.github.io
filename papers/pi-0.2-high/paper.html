@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh</title>
+    <title>Raspberry Pi Inference Mesh</title>
     <style>
       @page {
         size: A4;
@@ -105,7 +105,7 @@
     </style>
   </head>
   <body>
-    <h1>Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh</h1>
+    <h1>Raspberry Pi Inference Mesh</h1>
     <p class="byline">Akash Premkumar<br />25 September 2026</p>
 
     <p><span class="abstract-label">Abstract.</span> Language-model chat usually ends at a cloud completions API. This paper treats the place that call ends — a hosted model, or a machine the caller can name — as part of the surface, and it describes one local answer. Pi 0.2 High puts a stdlib Python router in front of a three-node Raspberry Pi mesh and exposes OpenAI-style <code>POST /v1/chat/completions</code> on port 18080, with a small chat page on the same port. We hold the request shape fixed, the fleet fixed (pi2 runs llama.cpp on port 8080; pi3 and pi4 run Ollama on port 11434; the default model tag is <code>qwen2.5:0.5b</code>), and the failure rule fixed: a request pinned to one peer does not fall through to another peer. What varies, and only when the mesh is allowed to choose, is which healthy peer answers. The router lives in <code>pi-pair/</code> at <code>https://github.com/akashnaren/raspberry-pi-fun</code>. This write-up contributes the system and the method for reading it. The fleet is being brought up for local models, so the paper does not report a benchmark grid.</p>
