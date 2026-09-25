@@ -181,7 +181,7 @@ export const researchTitle = "Research";
 export const researchUrl = "https://akashnaren.github.io/research";
 
 export const researchDescription =
-  "Local language-model chat on a three-node Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.";
+  "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.";
 
 export const researchLinkLabel = "Research";
 
@@ -189,8 +189,7 @@ export type ThreadFigure = "mesh" | "protocol" | "axes" | "gaps";
 
 export const piPaperHref = "/research/pi-0.2-high/paper.pdf";
 
-export const piPaperTitle =
-  "Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh";
+export const piPaperTitle = "Raspberry Pi Inference Mesh";
 
 export type Thread = {
   readonly id: string;
@@ -207,7 +206,7 @@ export const threads: readonly Thread[] = [
     title: piPaperTitle,
     figure: "mesh",
     abstract:
-      "Cloud chat still runs the model somewhere else. I am running a small language model on a three-node Raspberry Pi mesh, behind one OpenAI-style route. This note describes the router and the fleet, not a benchmark.",
+      "I am running local language-model chat on a Raspberry Pi mesh, behind one OpenAI-style route.",
     href: piPaperHref,
   },
   {
