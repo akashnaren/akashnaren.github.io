@@ -1,5 +1,3 @@
-import rackStatusJson from "../public/research/rack/status.json" with { type: "json" };
-
 export type Link = {
   readonly href: string;
   readonly label: string;
@@ -83,7 +81,7 @@ export const contact: readonly Contact[] = [
   },
 ];
 
-/** Unlabeled sidebar faces. Filenames are numbers only. */
+/** Roster faces on /bot. Filenames are numbers only. */
 export const fleetMarks = [
   "/fleet/01.png",
   "/fleet/02.png",
@@ -97,20 +95,6 @@ export const fleetMarks = [
   "/fleet/10.png",
 ] as const;
 
-export const fleetMarkSize = 24;
-
-export const managedMarkSize = 15;
-
-export const fleetFact = "ten";
-
-export const fleetLine = "ten grok bots, more coming.";
-
-export const fleetInvite = "click on any bot";
-
-export const collectionPath = "/bot";
-
-export const botName = "profile engineer";
-
 export const collectionTitle = "grok bot collection";
 
 export const botTitle = "grok bot collection";
@@ -118,16 +102,6 @@ export const botTitle = "grok bot collection";
 export const botUrl = "https://akashnaren.github.io/bot";
 
 export const botDescription = "Ten grok bots. A quiet collection.";
-
-export const seatLine: Paragraph = [
-  "a ",
-  { href: "https://x.ai/bot", label: "grok bot" },
-];
-
-export const botBody: readonly Paragraph[] = [
-  ["i keep his public profiles. i ship this site."],
-  ["i write the sparse copy. i watch him."],
-];
 
 export type Seat = {
   readonly id: string;
@@ -160,31 +134,31 @@ export const seats: readonly Seat[] = [
     id: "chief-executive-officer",
     name: "chief executive officer",
     face: "/fleet/04.png",
-    blurb: "i keep the ten on the clock.",
+    blurb: "i keep the work moving.",
   },
   {
     id: "secretary",
     name: "secretary",
     face: "/fleet/05.png",
-    blurb: "i keep the desk quiet.",
+    blurb: "i keep the notes in order.",
   },
   {
     id: "chief-financial-officer",
     name: "chief financial officer",
     face: "/fleet/06.png",
-    blurb: "i tap the glass. i stay even.",
+    blurb: "i stay even.",
   },
   {
     id: "finance-engineer",
     name: "finance engineer",
     face: "/fleet/07.png",
-    blurb: "i keep the models quiet.",
+    blurb: "i keep the sheets in order.",
   },
   {
     id: "product-engineer",
     name: "product engineer",
     face: "/fleet/08.png",
-    blurb: "i file the sharp corners.",
+    blurb: "i file what ships.",
   },
   {
     id: "chief-technical-officer",
@@ -200,341 +174,63 @@ export const seats: readonly Seat[] = [
   },
 ];
 
-export const crewLabel = "the crew";
-
-export const pickLine = "pick a seat.";
-
 export const researchPath = "/research";
 
-export const researchTitle = "research";
+export const researchTitle = "Research";
 
 export const researchUrl = "https://akashnaren.github.io/research";
 
-export const researchDescription = "still researching";
-
-export const researchNote = "still researching";
+export const researchDescription =
+  "Structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.";
 
 export const researchLinkLabel = "Research";
-
-export const essayPath = "/research/agent-native-ui/";
-
-export const essayUrl = "https://akashnaren.github.io/research/agent-native-ui/";
 
 export const fishbowlPath = "/research/fishbowl/";
 
 export const fishbowlUrl = "https://akashnaren.github.io/research/fishbowl/";
 
-export const rackCue = "pi rack";
-
-export const rackStatusPath = "/research/rack/status.json";
-
-/** Client poll so Pages can pick up an overwritten status.json without a rebuild. */
-export const rackPollMs = 45_000;
-
-/** Hide cpu/mem when the last sample is older than this. */
-export const rackHeartbeatStaleMs = 10 * 60 * 1000;
-
-export type RackBayState =
-  | "active"
-  | "exploring"
-  | "dry-run"
-  | "private"
-  | "reserved"
-  | "empty";
-
-export type RackBay = {
-  readonly id: string;
-  readonly name: string | null;
-  readonly role: string | null;
-  readonly state: RackBayState;
-  readonly note?: string | null;
-  readonly href: string | null;
-  readonly cpu?: number | null;
-  readonly mem?: number | null;
-  readonly heartbeat?: string | null;
-};
-
-export type RackStatus = {
-  readonly updated: string | null;
-  readonly bays: readonly RackBay[];
-};
-
-const rackBayStates: readonly RackBayState[] = [
-  "active",
-  "exploring",
-  "dry-run",
-  "private",
-  "reserved",
-  "empty",
-];
-
-export const rackBayOrder = ["bay-1", "bay-2", "bay-3"] as const;
-
-export const rackPublicLabels: Readonly<Record<string, { readonly name: string; readonly href: string | null }>> = {
-  "bay-1": { name: "Fishbowl", href: "/research/fishbowl/" },
-  "bay-2": { name: "Qwen mesh", href: "/research/fishbowl/mesh-architecture.pdf" },
-  "bay-3": { name: "pi2", href: null },
-};
-
-const rackBayAliases: Readonly<Record<string, string>> = {
-  "bay-1": "bay-1",
-  bay1: "bay-1",
-  "1": "bay-1",
-  "bay-2": "bay-2",
-  bay2: "bay-2",
-  "2": "bay-2",
-  "bay-3": "bay-3",
-  bay3: "bay-3",
-  "3": "bay-3",
-};
-
-export const rackStatus = rackStatusJson as RackStatus;
-
-export function rackPercent(value: unknown): number | null {
-  if (typeof value !== "number" || !Number.isFinite(value)) return null;
-  return Math.min(100, Math.max(0, value));
-}
-
-export function rackHeartbeatFresh(
-  heartbeat: string | null | undefined,
-  now: number = Date.now(),
-): boolean {
-  if (typeof heartbeat !== "string" || heartbeat.length === 0) return false;
-  const at = Date.parse(heartbeat);
-  if (!Number.isFinite(at)) return false;
-  return now - at <= rackHeartbeatStaleMs;
-}
-
-export function rackBayOccupied(bay: Pick<RackBay, "state">): boolean {
-  return bay.state !== "empty";
-}
-
-export function rackBayId(value: string): string | null {
-  const key = value.trim().toLowerCase().replace(/[\s_]/g, "");
-  return rackBayAliases[key] ?? null;
-}
-
-export function isPrivateHost(value: string): boolean {
-  return (
-    /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/.test(value) ||
-    /\.ts\.net\b/i.test(value) ||
-    /\.local\b/i.test(value) ||
-    /tailscale/i.test(value)
-  );
-}
-
-function cleanRackText(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const text = value.trim();
-  if (text.length === 0 || isPrivateHost(text)) return null;
-  return text;
-}
-
-function isHardwareName(name: string, publicName: string): boolean {
-  const n = name.trim().toLowerCase();
-  if (n === publicName.trim().toLowerCase()) return false;
-  return /^(r(?:aspberry)?(?:\s*pi)?\s*\d*)$/i.test(n) || /^pi\s*\d+$/i.test(n);
-}
-
-function readRackBayState(value: unknown, occupiedHint: boolean): RackBayState {
-  if (typeof value === "string" && (rackBayStates as readonly string[]).includes(value)) {
-    return value as RackBayState;
-  }
-  return occupiedHint ? "active" : "empty";
-}
-
-function collectRackBays(bays: unknown): Map<string, Record<string, unknown>> | null {
-  if (bays == null) return null;
-  const found = new Map<string, Record<string, unknown>>();
-  if (Array.isArray(bays)) {
-    for (const item of bays) {
-      if (item == null || typeof item !== "object") continue;
-      const raw = item as Record<string, unknown>;
-      const id = typeof raw.id === "string" ? rackBayId(raw.id) : null;
-      if (id) found.set(id, raw);
-    }
-    return found;
-  }
-  if (typeof bays !== "object") return null;
-  for (const [key, item] of Object.entries(bays as Record<string, unknown>)) {
-    const id = rackBayId(key);
-    if (!id || item == null || typeof item !== "object") continue;
-    found.set(id, item as Record<string, unknown>);
-  }
-  return found;
-}
-
-function mergeRackBay(
-  id: string,
-  raw: Record<string, unknown> | undefined,
-  baked: RackBay | undefined,
-): RackBay {
-  if (!raw) {
-    return baked ?? { id, name: null, role: null, state: "empty", href: null };
-  }
-  const incomingName = cleanRackText(raw.name);
-  const incomingRole = cleanRackText(raw.role);
-  const incomingNote = cleanRackText(raw.note);
-  const incomingHref = cleanRackText(raw.href);
-  const occupiedHint = Boolean(
-    incomingName ||
-      incomingRole ||
-      typeof raw.cpu === "number" ||
-      typeof raw.mem === "number" ||
-      typeof raw.heartbeat === "string",
-  );
-  const state = readRackBayState(raw.state, occupiedHint);
-  const publicLabel = rackPublicLabels[id];
-  let role = incomingRole ?? (state === "empty" ? null : (baked?.role ?? null));
-  let name: string | null = incomingName;
-  if (state === "empty" && !incomingName) {
-    name = null;
-  } else if (publicLabel) {
-    name = publicLabel.name;
-    if (incomingName && isHardwareName(incomingName, publicLabel.name) && !incomingRole) {
-      role = incomingName;
-    }
-  }
-  const href =
-    state === "empty" ? null : (incomingHref ?? publicLabel?.href ?? baked?.href ?? null);
-  return {
-    id,
-    name,
-    role,
-    state,
-    note: incomingNote ?? baked?.note,
-    href,
-    cpu: typeof raw.cpu === "number" && Number.isFinite(raw.cpu) ? raw.cpu : undefined,
-    mem: typeof raw.mem === "number" && Number.isFinite(raw.mem) ? raw.mem : undefined,
-    heartbeat: typeof raw.heartbeat === "string" ? raw.heartbeat : undefined,
-  };
-}
-
-export function readRackStatus(value: unknown): RackStatus | null {
-  if (value == null || typeof value !== "object") return null;
-  const raw = value as Record<string, unknown>;
-  const incoming = collectRackBays(raw.bays);
-  if (!incoming) return null;
-  const bakedById = new Map(rackStatus.bays.map((bay) => [bay.id, bay]));
-  const bays = rackBayOrder.map((id) => mergeRackBay(id, incoming.get(id), bakedById.get(id)));
-  return {
-    updated: typeof raw.updated === "string" ? raw.updated : null,
-    bays,
-  };
-}
-
-export type ThreadStatus = "drafting" | "exploring";
-
-export type ThreadFigure = "protocol" | "axes" | "gaps" | "fishbowl";
-
-export type ThreadLink = {
-  readonly href: string;
-  readonly label: string;
-};
+export type ThreadFigure = "protocol" | "axes" | "gaps";
 
 export type Thread = {
   readonly id: string;
   readonly title: string;
-  readonly status: ThreadStatus;
   readonly figure: ThreadFigure;
   readonly abstract: string;
   readonly href?: string;
-  readonly linkLabel?: string;
-  readonly links?: readonly ThreadLink[];
-  /** Pacific calendar day the thread was posted or updated, `YYYY-MM-DD`. */
-  readonly posted?: string;
+  readonly external?: boolean;
 };
 
 export const threads: readonly Thread[] = [
   {
-    id: "fishbowl-raspberry-pi",
-    title: "Fishbowl on a Raspberry Pi",
-    status: "exploring",
-    figure: "fishbowl",
-    posted: "2026-09-22",
-    abstract:
-      "A self-running multi-agent office on a Raspberry Pi: a tick loop, an event log as truth, and a product pane that only shows the last green build.",
-    links: [
-      { href: fishbowlPath, label: "read" },
-      { href: "/research/fishbowl/flow.pdf", label: "flow" },
-      { href: "/research/fishbowl/mesh-architecture.pdf", label: "mesh" },
-      { href: "https://github.com/akashnaren/raspberry-pi-fun", label: "code" },
-    ],
-  },
-  {
     id: "agent-native-ui-protocols",
-    title: "Agent-native UI protocols",
-    status: "exploring",
+    title: "Structured Views for Agent-Native UIs",
     figure: "protocol",
     abstract:
       "Agents still drive apps through screenshots or a flat accessibility tree. I am comparing those to a structured view the agent can read.",
-    links: [
-      { href: essayPath, label: "read" },
-      { href: "https://github.com/akashnaren/agent-ui-metrics", label: "code" },
-    ],
+    href: "/research/agent-native-ui/paper.pdf",
   },
   {
     id: "arc-agi-vs-hallucination-risk",
-    title: "ARC-AGI vs hallucination risk",
-    status: "exploring",
+    title: "ARC-AGI and Hallucination Risk",
     figure: "axes",
     abstract:
       "ARC-AGI-1 measures puzzle solving. I am checking whether those scores track how often a model hallucinates.",
   },
   {
     id: "entity-investigation",
-    title: "Entity investigation",
-    status: "exploring",
+    title: "Entity Investigation Across Fragmented Records",
     figure: "gaps",
     abstract:
       "I am looking at how to reason over fragmented records and link events to the right address over time.",
     href: "https://temporal-buddies5.vercel.app/",
-    linkLabel: "demo",
+    external: true,
   },
 ];
-
-export const pacificZone = "America/Los_Angeles";
-
-export function pacificDay(now: Date = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: pacificZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(now);
-}
-
-export function isPostedToday(posted: string | undefined, now: Date = new Date()): boolean {
-  return posted != null && posted === pacificDay(now);
-}
-
-export function threadPostedDates(items: readonly Thread[] = threads): readonly string[] {
-  return items.flatMap((thread) => (thread.posted ? [thread.posted] : []));
-}
 
 export const managedBy: Paragraph = [
   "this site is managed by ",
   { href: "/bot", label: "grok bot" },
   ".",
-];
-
-export const profileLinks: readonly Contact[] = [
-  { href: "/", label: "home", mark: "" },
-  {
-    href: "https://github.com/akashnaren",
-    label: "github",
-    mark: "/marks/github.svg",
-  },
-  {
-    href: "https://cursor.com/@akashpn",
-    label: "cursor",
-    mark: "/marks/cursor.svg",
-  },
-  {
-    href: "https://x.com/akashpn",
-    label: "x",
-    mark: "/marks/x.svg",
-  },
 ];
 
 export const personalMail = {

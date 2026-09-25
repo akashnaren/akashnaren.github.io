@@ -7,23 +7,23 @@ import struct
 import zlib
 from pathlib import Path
 
-ORANGE = (227, 146, 90, 255)
+INK = (250, 250, 247, 255)
 DARK = (10, 10, 10, 255)
 
 # Same geometry as public/favicon.svg, in 32x32 space.
 OUTER = [
-    (16.0, 6.2),
-    (25.4, 26.0),
-    (22.15, 26.0),
-    (20.05, 20.15),
-    (11.95, 20.15),
-    (9.85, 26.0),
-    (6.6, 26.0),
+    (16.0, 5.2),
+    (25.2, 27.2),
+    (21.35, 27.2),
+    (19.55, 21.4),
+    (12.45, 21.4),
+    (10.65, 27.2),
+    (6.8, 27.2),
 ]
 HOLE = [
-    (16.0, 11.4),
-    (18.55, 17.55),
-    (13.45, 17.55),
+    (16.0, 11.8),
+    (18.35, 18.3),
+    (13.65, 18.3),
 ]
 
 
@@ -50,7 +50,7 @@ def raster(size: int, sample: int = 4) -> list[tuple[int, int, int, int]]:
         row = sy // sample
         for sx in range(hi):
             x = (sx + 0.5) * scale
-            color = ORANGE if point_in_poly(x, y, OUTER) and not point_in_poly(x, y, HOLE) else DARK
+            color = INK if point_in_poly(x, y, OUTER) and not point_in_poly(x, y, HOLE) else DARK
             idx = row * size + (sx // sample)
             for k in range(4):
                 acc[idx][k] += color[k]
