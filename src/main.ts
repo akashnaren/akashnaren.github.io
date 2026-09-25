@@ -1,5 +1,6 @@
 import { paperHref } from "./article.ts";
 import { isBotPath, isEssayPath, isResearchPath } from "./content.ts";
+import { bindLiveRack } from "./rack.ts";
 import {
   applyDocumentMeta,
   botMeta,
@@ -36,3 +37,4 @@ function mount(): void {
 }
 
 mount();
+bindLiveRack();

@@ -85,6 +85,8 @@ for (const [dist, root] of [
   ["dist/sitemap.xml", "sitemap.xml"],
   ["public/robots.txt", "dist/robots.txt"],
   ["public/sitemap.xml", "dist/sitemap.xml"],
+  ["public/research/rack/status.json", "dist/research/rack/status.json"],
+  ["dist/research/rack/status.json", "research/rack/status.json"],
 ]) {
   same(dist, root);
 }
@@ -165,6 +167,8 @@ mustExclude(
     "og:image",
     "#e3925a",
     "noindex",
+    'class="rack"',
+    "Pi 0.2 High",
   ],
   "home",
 );
@@ -237,6 +241,8 @@ mustExclude(
     'class="sky"',
     "akashnaren@gmail.com",
     "noindex",
+    'class="rack"',
+    "Pi 0.2 High",
   ],
   "bot",
 );
@@ -259,6 +265,17 @@ mustInclude(
     "this site is managed by",
     'href="/bot"',
     'class="thread"',
+    "Pi 0.2 High",
+    'class="rack"',
+    'aria-label="Pi 0.2 High"',
+    'data-bay="bay-1"',
+    'data-bay="bay-2"',
+    'data-bay="bay-3"',
+    'class="rack-name">mesh</p>',
+    "Qwen mesh",
+    "mesh peer",
+    "local qwen2.5",
+    "pi2",
   ],
   "research",
 );
@@ -284,6 +301,16 @@ mustIconInside(
   "research",
 );
 if (arc.includes('class="ext"')) fail("ARC-AGI thread must not show a link icon");
+const rackAt = research.indexOf('class="rack"');
+const threadAt = research.indexOf('class="thread"');
+if (rackAt < 0 || threadAt < 0 || rackAt > threadAt) {
+  fail("Pi 0.2 High rack must sit above the model threads");
+}
+for (const article of articles) {
+  if (article.includes('class="status"') || article.includes("exploring") || article.includes("drafting")) {
+    fail("model threads must not carry status or exploring tags");
+  }
+}
 
 mustExclude(
   research,
@@ -292,9 +319,7 @@ mustExclude(
     "still researching",
     "exploring",
     "drafting",
-    'class="rack"',
     "pi rack",
-    "data-bay",
     "new today",
     "data-posted",
     'class="status"',
@@ -306,6 +331,7 @@ mustExclude(
     ">demo</a>",
     "ten grok bots",
     "noindex",
+    "/research/fishbowl/",
   ],
   "research",
 );
@@ -362,17 +388,14 @@ const jsName = readdirSync("dist/assets").find((name) => name.endsWith(".js"));
 if (!cssName || !jsName) fail("dist/assets is missing hashed css or js");
 const css = read(`dist/assets/${cssName}`);
 const js = read(`dist/assets/${jsName}`);
-mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist"], "css");
+mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist", ".rack", "live-pulse"], "css");
 mustExclude(
   css,
-  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "live-pulse", "@keyframes", "essay-pdf", "essay-back", ".page.essay"],
+  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay"],
   "css",
 );
-mustExclude(
-  js,
-  ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", /fishbowl/i, /raspberry pi/i],
-  "js",
-);
+mustInclude(js, ["/research/rack/status.json", "setInterval"], "js");
+mustExclude(js, ["requestAnimationFrame", "webgl", "essay-pdf", "essay-back", /raspberry pi/i], "js");
 
 const pdfs = [
   "public/research/agent-native-ui/paper.pdf",
@@ -389,13 +412,18 @@ for (const path of pdfs) {
   }
 }
 
+const rackStatus = read("public/research/rack/status.json");
+mustInclude(
+  rackStatus,
+  ['"id": "bay-1"', '"id": "bay-2"', '"id": "bay-3"', "Qwen mesh", "mesh peer", "local qwen2.5"],
+  "rack status",
+);
+mustExclude(rackStatus, [/fishbowl/i, "MiniShop", "Meridian", "/research/fishbowl/"], "rack status");
+
 for (const path of [
   "dist/research/fishbowl",
-  "dist/research/rack",
   "public/research/fishbowl",
-  "public/research/rack",
   "research/fishbowl",
-  "research/rack",
   "scripts/build-fishbowl-paper.py",
   "scripts/fishbowl-manuscript.pdf",
 ]) {
