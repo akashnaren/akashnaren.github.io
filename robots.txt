@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /bot/
+Allow: /research/
+Allow: /assets/
+Allow: /marks/
+Allow: /fleet/
+
+# /research/fishbowl/ is intentionally crawlable. The essay carries
+# meta name="robots" content="noindex,nofollow", which crawlers can only
+# see if the URL is fetched. A Disallow would hide that tag. The essay
+# and rack status feeds are left out of sitemap.xml.
+
+Sitemap: https://akashnaren.github.io/sitemap.xml
