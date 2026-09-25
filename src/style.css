@@ -305,45 +305,6 @@ a:focus-visible {
   height: auto;
 }
 
-html:has(.page.essay),
-body:has(.page.essay) {
-  background: #fff;
-  color: #111;
-  color-scheme: light;
-}
-
-.page.essay {
-  display: flex;
-  flex-direction: column;
-  min-height: 100dvh;
-  height: 100dvh;
-  background: #fff;
-  color: #111;
-  font-family: Georgia, "Times New Roman", Times, serif;
-}
-
-.essay-back {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 1rem;
-  padding: 0.75rem 1rem;
-  font-size: 0.95rem;
-}
-
-.essay-back a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-}
-
-.essay-pdf {
-  flex: 1 1 auto;
-  width: 100%;
-  min-height: 0;
-  border: 0;
-  background: #fff;
-}
-
 @media (min-width: 800px) {
   .stage {
     padding: 3.5rem 1.5rem 3.5rem;

@@ -185,10 +185,6 @@ export const researchDescription =
 
 export const researchLinkLabel = "Research";
 
-export const fishbowlPath = "/research/fishbowl/";
-
-export const fishbowlUrl = "https://akashnaren.github.io/research/fishbowl/";
-
 export type ThreadFigure = "protocol" | "axes" | "gaps";
 
 export type Thread = {
@@ -265,13 +261,5 @@ export function isEssayPath(pathname: string): boolean {
   return (
     /\/research\/agent-native-ui\/?$/.test(path) ||
     /\/research\/agent-native-ui\/index\.html$/.test(path)
-  );
-}
-
-export function isFishbowlPath(pathname: string): boolean {
-  const path = pathname.split(/[?#]/, 1)[0] ?? "";
-  return (
-    /\/research\/fishbowl\/?$/.test(path) ||
-    /\/research\/fishbowl\/index\.html$/.test(path)
   );
 }

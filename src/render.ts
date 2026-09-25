@@ -25,14 +25,7 @@ import {
   type Seat,
   type Thread,
 } from "./content.ts";
-import {
-  fishbowlPaperHref,
-  fishbowlPaperTitle,
-  flowHref,
-  meshHref,
-  paperHref,
-  paperTitle,
-} from "./article.ts";
+import { paperHref, paperTitle } from "./article.ts";
 
 export type PageMeta = {
   readonly title: string;
@@ -238,17 +231,6 @@ export function renderResearch(): string {
         ${renderManagedBy()}
       </footer>
     </main>
-  </div>`;
-}
-
-export function renderFishbowl(): string {
-  const href = escapeHtml(fishbowlPaperHref);
-  const title = escapeHtml(fishbowlPaperTitle);
-  const flow = escapeHtml(flowHref);
-  const mesh = escapeHtml(meshHref);
-  return `<div class="page essay" id="holder">
-    <p class="essay-back"><a href="${escapeHtml(researchPath)}">Research${renderLinkIcon()}</a> <a href="${href}">pdf</a> <a href="${flow}">flow</a> <a href="${mesh}">mesh</a></p>
-    <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
   </div>`;
 }
 
