@@ -1,6 +1,11 @@
 import { paperHref } from "./article.ts";
-import { isBotPath, isEssayPath, isResearchPath } from "./content.ts";
-import { bindLiveRack } from "./rack.ts";
+import {
+  isBotPath,
+  isEssayPath,
+  isPiPaperPath,
+  isResearchPath,
+  piPaperHref,
+} from "./content.ts";
 import {
   applyDocumentMeta,
   botMeta,
@@ -14,6 +19,10 @@ import {
 function mount(): void {
   if (isEssayPath(location.pathname)) {
     location.replace(paperHref);
+    return;
+  }
+  if (isPiPaperPath(location.pathname)) {
+    location.replace(piPaperHref);
     return;
   }
 
@@ -37,4 +46,3 @@ function mount(): void {
 }
 
 mount();
-bindLiveRack();

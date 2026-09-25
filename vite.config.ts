@@ -1,11 +1,13 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
+import { piPaperHref, piPaperTitle } from "./src/content.ts";
 import {
   applyPageMeta,
   botMeta,
   essayRedirectHtml,
   homeMeta,
+  pdfRedirectHtml,
   renderBot,
   renderResearch,
   renderSite,
@@ -19,6 +21,7 @@ function rewritePageIndex(req: { url?: string }): void {
   if (req.url === "/bot") req.url = "/bot/";
   if (req.url === "/research") req.url = "/research/";
   if (req.url === "/research/agent-native-ui") req.url = "/research/agent-native-ui/";
+  if (req.url === "/research/pi-0.2-high") req.url = "/research/pi-0.2-high/";
 }
 
 export default defineConfig({
@@ -68,6 +71,11 @@ export default defineConfig({
         writeFileSync(
           resolve("dist/research/agent-native-ui/index.html"),
           essayRedirectHtml(),
+        );
+        mkdirSync(resolve("dist/research/pi-0.2-high"), { recursive: true });
+        writeFileSync(
+          resolve("dist/research/pi-0.2-high/index.html"),
+          pdfRedirectHtml(piPaperHref, piPaperTitle),
         );
         writeFileSync(
           resolve("dist/404.html"),

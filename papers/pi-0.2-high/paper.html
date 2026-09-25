@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 17mm 18mm 16mm 18mm;
+        @bottom-right {
+          content: counter(page) " / " counter(pages);
+          font-family: "Noto Serif", Tinos, serif;
+          font-size: 9pt;
+          color: #333;
+        }
+      }
+
+      * { box-sizing: border-box; }
+
+      html {
+        font-family: Tinos, "Times New Roman", serif;
+        font-size: 11.5pt;
+        line-height: 1.38;
+        color: #161616;
+      }
+
+      body { margin: 0; }
+
+      h1 {
+        font-size: 20pt;
+        font-weight: 700;
+        line-height: 1.18;
+        letter-spacing: -0.01em;
+        margin: 0 0 0.55em;
+      }
+
+      .byline {
+        margin: 0 0 1.15em;
+      }
+
+      h2 {
+        font-size: 15pt;
+        font-weight: 700;
+        line-height: 1.25;
+        margin: 1.15em 0 0.4em;
+        break-after: avoid;
+      }
+
+      h3 {
+        font-size: 11.5pt;
+        font-weight: 700;
+        margin: 0.85em 0 0.2em;
+        break-after: avoid;
+      }
+
+      p { margin: 0 0 0.55em; orphans: 3; widows: 3; }
+
+      .abstract-label { font-weight: 700; }
+
+      ul, ol { margin: 0.15em 0 0.65em; padding-left: 1.25em; }
+      li { margin: 0.18em 0; }
+      li p { margin: 0; }
+
+      code {
+        font-family: "DejaVu Sans Mono", ui-monospace, monospace;
+        font-size: 0.86em;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0.35em 0 0.75em;
+        font-size: 10.5pt;
+        line-height: 1.3;
+        break-inside: avoid;
+      }
+
+      th, td {
+        text-align: left;
+        vertical-align: top;
+        padding: 0.28em 0.55em 0.28em 0;
+        border-bottom: 0.6pt solid #222;
+      }
+
+      th { font-weight: 700; }
+
+      figure {
+        margin: 0.7em 0 0.85em;
+        break-inside: avoid;
+      }
+
+      figure img {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        max-height: 78mm;
+        margin: 0 auto;
+      }
+
+      figcaption {
+        margin-top: 0.35em;
+        font-size: 10.5pt;
+        line-height: 1.32;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh</h1>
+    <p class="byline">Akash Premkumar<br />25 September 2026</p>
+
+    <p><span class="abstract-label">Abstract.</span> Language-model chat usually ends at a cloud completions API. This paper treats the place that call ends — a hosted model, or a machine the caller can name — as part of the surface, and it describes one local answer. Pi 0.2 High puts a stdlib Python router in front of a three-node Raspberry Pi mesh and exposes OpenAI-style <code>POST /v1/chat/completions</code> on port 18080, with a small chat page on the same port. We hold the request shape fixed, the fleet fixed (pi2 runs llama.cpp on port 8080; pi3 and pi4 run Ollama on port 11434; the default model tag is <code>qwen2.5:0.5b</code>), and the failure rule fixed: a request pinned to one peer does not fall through to another peer. What varies, and only when the mesh is allowed to choose, is which healthy peer answers. The router lives in <code>pi-pair/</code> at <code>https://github.com/akashnaren/raspberry-pi-fun</code>. This write-up contributes the system and the method for reading it. The fleet is being brought up for local models, so the paper does not report a benchmark grid.</p>
+
+    <h2>1. Introduction</h2>
+    <p>An agent that chats, or a person using a small chat page, sends one request and waits for text. In ordinary practice that request leaves the machine. It crosses a network to a completions API, a model the caller does not hold, and a bill the caller does not see until later. The program on the near side of the call can be careful about what it shows the model. It still cannot say which computer produced the tokens, or what happens when the path to that computer fails.</p>
+    <p>Cloud-only inference binds three ordinary properties of the loop.</p>
+    <ol>
+      <li><strong>Placement.</strong> The model is not on the hardware sitting next to the loop. A board that could run a small checkpoint stays idle, and every turn pays a round trip to someone else's machine.</li>
+      <li><strong>Naming.</strong> The caller names a model id. It does not name a machine. When several machines could answer, the choice is hidden inside the provider.</li>
+      <li><strong>Failure.</strong> If the path the caller had in mind is down, a hosted API may retry, reroute, or return a generic error. The caller cannot say "this board, and no other."</li>
+    </ol>
+    <p>A local mesh puts those three properties back on the call. The request shape stays the one agents and chat clients already speak. The thing that changes is where the request is allowed to end.</p>
+    <p>Pi 0.2 High is that surface for one small fleet. Three Raspberry Pi boards — pi2, pi3, and pi4 — sit in one custom 3D-printed vertical rack. Their Tailscale names are rpi-pi2, rpi-pi3, and rpi-pi4. A router written in the Python standard library exposes <code>POST /v1/chat/completions</code>, <code>GET /health</code>, and <code>GET /peers</code>, and serves a chat page from the same process. Behind the route, pi2 runs llama.cpp and pi3 and pi4 run Ollama. When a request omits a model, the tag is <code>qwen2.5:0.5b</code>.</p>
+    <p>The measurement this setup is for, and which this paper does not yet report, is a placement comparison. Hold the chat contract fixed. Hold the three-node fleet fixed. Hold the rule that a pin does not hop to a different board. A later run can then vary the checkpoint, the peer, and a cloud call, and read cost and reliability against a target that did not move. This note writes down that target. It is a system and a method. It is not a score table.</p>
+
+    <h3>1.1 What is held fixed</h3>
+    <ul>
+      <li>The client contract: chat completions, including a streaming mode that returns server-sent events.</li>
+      <li>The peer roles: pi2 is llama.cpp on port 8080; pi3 and pi4 are Ollama on port 11434.</li>
+      <li>The default model tag, <code>qwen2.5:0.5b</code>, when the request does not name one.</li>
+      <li>The pin rule. <code>X-Pi-Target</code> set to a peer name never selects a different peer.</li>
+      <li>The implementation constraint. The router imports the standard library only.</li>
+    </ul>
+
+    <h3>1.2 What is allowed to vary</h3>
+    <ul>
+      <li>Which healthy peer answers, when the target is <code>auto</code> and the mesh is on. The router round-robins that list.</li>
+      <li>The model string, when the caller sends one.</li>
+      <li>Whether the response is one JSON object or a stream.</li>
+      <li>Later, and not in this note: the checkpoint, a cloud condition, and a task set.</li>
+    </ul>
+
+    <h3>1.3 Contributions</h3>
+    <ol>
+      <li>A local chat surface with one completions route in front of a three-node Raspberry Pi mesh, so an agent or a browser can call the fleet the way it already calls a hosted chat API.</li>
+      <li>An explicit routing contract. Target and mesh are headers. The same two facts may arrive as JSON fields, and those fields are removed before a worker sees the body. A pinned peer that is down fails closed.</li>
+      <li>A bound on what the first write-up claims. The fleet is being brought up for local models. The checks that exist today exercise the router against stand-in workers. They are not a timing study of the boards.</li>
+    </ol>
+    <p>Section 2 describes the fleet, the router, and the HTTP surface. Section 3 records the choices that keep the surface small and the pin honest. Section 4 shows the rack. Section 5 says what has been observed and what has not. Section 6 places the note among nearby work. Section 7 concludes.</p>
+
+    <h2>2. System</h2>
+    <p>The code is the <code>pi-pair/</code> tree. The name on the process banner, in the installer, and in this paper is Pi 0.2 High. <code>python3 mini_chat.py</code> and <code>bash start.sh</code> start the same server. The default bind is all interfaces on port 18080. Nothing in the router is installed from a package index.</p>
+
+    <h3>2.1 Peers</h3>
+    <p>A peer is a name, a host, a port, and a kind. The kind is <code>ollama</code> or <code>llamacpp</code>. The built-in map, which <code>peers.example.json</code> repeats, is the fleet the chat was written against.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Kind</th>
+          <th>Port</th>
+          <th>Routes the router calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>pi2</td>
+          <td>llamacpp</td>
+          <td>8080</td>
+          <td><code>GET /v1/models</code>, <code>POST /v1/chat/completions</code></td>
+        </tr>
+        <tr>
+          <td>pi3</td>
+          <td>ollama</td>
+          <td>11434</td>
+          <td><code>GET /api/tags</code>, <code>POST /api/chat</code></td>
+        </tr>
+        <tr>
+          <td>pi4</td>
+          <td>ollama</td>
+          <td>11434</td>
+          <td><code>GET /api/tags</code>, <code>POST /api/chat</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Hosts are not printed in this paper. They live in <code>peers.json</code>, which is gitignored. The installer copies the example file to <code>peers.json</code> only when that board does not already have one, and <code>PI_PAIR_PEERS</code> can point at a different file. On Tailscale the boards are rpi-pi2, rpi-pi3, and rpi-pi4. Those names are how the fleet is addressed. They are not a claim about who else can open port 18080.</p>
+    <p>pi2 is also probed on port 11434 when port 8080 does not answer. That second try stays on the peer named pi2. It is not a hop to pi3 or pi4. Section 3.5 keeps the two cases apart, because they are easy to conflate.</p>
+
+    <h3>2.2 Router</h3>
+    <p>The process is a threaded HTTP server from the standard library. Files for the chat page are read from <code>static/</code>. A request that leaves that directory, or that names a path with a slash, is not served. <code>GET /</code> and <code>GET /index.html</code> return the chat page with the default model tag substituted into the HTML. <code>GET /health</code> and <code>GET /peers</code> return the same JSON object: a router <code>ok</code> flag, the model tag, how many peers probed successfully, the peer list, the inference-slot cap, and the health-cache lifetime in seconds.</p>
+    <p><code>POST /v1/chat/completions</code> is the only body the router accepts. The handler reads <code>X-Pi-Target</code> and <code>X-Pi-Mesh</code>. If a header is missing it takes <code>pi_target</code> or <code>pi_mesh</code> from the JSON, then deletes those keys. The worker never sees them. The default target is <code>auto</code>. The default mesh is on. The model is the request's <code>model</code>, or else the environment variable <code>MESH_MODEL</code>, whose default is <code>qwen2.5:0.5b</code>. Temperature defaults to 0.7. The token cap defaults to 256, read from <code>max_tokens</code> or, if that is absent, from <code>max_completion_tokens</code>.</p>
+    <p>A semaphore limits concurrent inference. The default is three slots, from <code>PI_PAIR_SLOTS</code>. A request that cannot take a slot within 120 seconds receives HTTP 503 and the error <code>inference slots busy — try again</code>. The slot is released when the handler returns, including when the worker failed.</p>
+    <p>A non-streaming success is a chat completion object. Added fields record the peer name, the elapsed milliseconds, the model string actually sent, and the worker kind. The header <code>X-Pi-Peer</code> repeats the peer name. A streaming success is <code>text/event-stream</code>: a comment line naming the peer, a role chunk, content chunks, a final chunk carrying the same peer fields, and the usual done marker. Worker failures become HTTP 502 with a JSON <code>error</code> string. Any other path is 404. Cross-origin requests are allowed from any origin. The router is not an authentication boundary. Reaching port 18080 is enough to call it.</p>
+
+    <h3>2.3 Choosing a peer</h3>
+    <p>The function that picks a peer is the rule the rest of the paper depends on.</p>
+    <p>If the mesh is off, or the target is any name other than <code>auto</code>, the router looks up that name and stops. An unknown name raises <code>unknown peer</code> plus the name. A known name whose probe failed raises <code>offline</code> for that name, with the peer's note appended when it has one. A known name that is up, but cannot serve the requested model, raises <code>has no usable model</code>. There is no second candidate. In particular, mesh off does not mean "pick whoever is up." A target of <code>auto</code> with the mesh off looks for a peer literally named auto, fails to find one, and errors.</p>
+    <p>If the mesh is on and the target is <code>auto</code>, the router keeps peers whose probe succeeded and whose advertised models can serve the request, then round-robins that list. An empty list raises <code>no peers up</code>.</p>
+    <p>Usable is defined differently for the two kinds, and the difference matters for a later comparison. On an Ollama peer the requested tag is usable when the tag list is empty, when the tag is present, or when the name before the colon occurs inside a listed tag. An empty list is treated as usable because a probe can succeed without returning names. On a llama.cpp peer, any non-empty model list marks the peer usable, regardless of whether the requested tag appears. The string sent onward is the requested tag only when that tag is in the list and contains no colon. Otherwise the router sends the first id the server advertised. The default tag contains a colon, so a llama.cpp peer is normally called with its own first id, not with <code>qwen2.5:0.5b</code>. The completion records the string that was sent, in <code>pi_model</code>, together with <code>pi_kind</code>. A reader can see the substitution. A measurement that ignores those fields cannot.</p>
+
+    <h3>2.4 Health cache</h3>
+    <p>Probes are cached for <code>PI_PAIR_HEALTH_TTL</code> seconds. The default is 2.5. The cache exists so a page polling <code>/health</code> does not stampede <code>/api/tags</code> or <code>/v1/models</code>. It is process-local. The auto path reads the snapshot, which may be the cached one. The pinned path probes that peer again when the request is handled, so a pin is not decided only by a snapshot taken for someone else's page load.</p>
+
+    <h3>2.5 Install</h3>
+    <p><code>install.sh</code> is run by hand on a board. It copies the tree to <code>~/pi-pair</code> unless <code>PI_PAIR_DIR</code> says otherwise, leaves an existing <code>peers.json</code> in place, and writes a user systemd unit named <code>pi-pair.service</code>. The unit's description is Pi 0.2 High. It sets the bind address, the port, the peers file, the node name (the short hostname unless <code>PI_PAIR_NAME</code> is set), and <code>MESH_MODEL</code>. The process starts with <code>python3</code> on <code>mini_chat.py</code>, restarts on failure after three seconds, and is enabled with the user instance of systemd. The script does not move the listen port off 18080 unless <code>PI_PAIR_PORT</code> is already set. It prints, and does not itself run, the commands that would make Ollama listen on port 11434 for other machines. If Ollama is already on the board, the script pulls <code>qwen2.5:0.5b</code> and, if that pull fails, tries <code>tinyllama</code>.</p>
+    <p><code>mesh-hello.sh</code> is the bring-up probe, not a benchmark. It requests <code>/health</code> on the local port, probes each peer at the path that matches its kind, and sends one non-streaming completion with <code>X-Pi-Target: auto</code> and <code>X-Pi-Mesh: on</code>. A router with no model process behind it can still pass the first half of that probe. <code>/health</code> answers, and the peers are down. That state is expected while the fleet is coming up. It is not a model result, and this paper does not treat it as one.</p>
+
+    <h3>2.6 Environment</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Default</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>PI_PAIR_HOST</code></td>
+          <td>all interfaces</td>
+          <td>Bind address</td>
+        </tr>
+        <tr>
+          <td><code>PI_PAIR_PORT</code></td>
+          <td><code>18080</code></td>
+          <td>Chat page and proxy</td>
+        </tr>
+        <tr>
+          <td><code>PI_PAIR_PEERS</code></td>
+          <td><code>peers.json</code> if present, else the built-in map</td>
+          <td>Peer list</td>
+        </tr>
+        <tr>
+          <td><code>MESH_MODEL</code></td>
+          <td><code>qwen2.5:0.5b</code></td>
+          <td>Model tag when the request omits one</td>
+        </tr>
+        <tr>
+          <td><code>PI_PAIR_SLOTS</code></td>
+          <td><code>3</code></td>
+          <td>Concurrent inference cap</td>
+        </tr>
+        <tr>
+          <td><code>PI_PAIR_HEALTH_TTL</code></td>
+          <td><code>2.5</code></td>
+          <td>Seconds to cache peer probes</td>
+        </tr>
+        <tr>
+          <td><code>PI_PAIR_NAME</code></td>
+          <td>short hostname</td>
+          <td>Name written into the user unit</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>3. Design choices</h2>
+
+    <h3>3.1 Standard library only</h3>
+    <p>The boards already have Python. A router that needs a package install is a second step, a second failure, and a second thing to keep aligned on three machines. HTTP, JSON, threads, and the URL library are enough to proxy chat. The tests stay inside that boundary. They are the standard library's <code>unittest</code>, with fake Ollama and llama.cpp handlers in the same process. A reader can run them without the rack and without a model file.</p>
+
+    <h3>3.2 One client dialect, two worker dialects</h3>
+    <p>The chat page and any agent that already speaks completions should not have to know which board runs which runtime. The router translates. An Ollama peer receives <code>/api/chat</code> with messages, a stream flag, and options for temperature and the token cap. A llama.cpp peer receives <code>/v1/chat/completions</code> with messages, a stream flag, temperature, and <code>max_tokens</code>. Ollama's stream is newline-delimited JSON. llama.cpp's stream is server-sent events. Both are turned into server-sent events for the client, in the chat-completions chunk shape, with the peer name attached. The client dialect stays one. The worker dialect stays whatever that board already runs.</p>
+
+    <h3>3.3 Routing sits beside the body</h3>
+    <p><code>X-Pi-Target</code> takes <code>auto</code>, <code>pi2</code>, <code>pi3</code>, or <code>pi4</code>. <code>X-Pi-Mesh</code> takes on or off. Putting those facts in headers keeps them next to the request and out of the prompt. The JSON aliases exist for a caller that cannot set headers. They are removed before messages are forwarded, so a worker log of the body is not full of a field the worker does not understand. The response tells the caller what happened, through <code>X-Pi-Peer</code> and the <code>pi_peer</code>, <code>pi_ms</code>, <code>pi_model</code>, and <code>pi_kind</code> fields. Routing is visible on the way in and on the way out.</p>
+
+    <h3>3.4 A pin does not fall through</h3>
+    <p>This is the choice the system is willing to be inconvenient about. If the caller names pi3 and pi3 is down, the error names pi3. The router does not try pi4, and it does not try a cloud model. Auto mode is the only path that may choose among peers. Treating a pin as a preference, with fallthrough as a kindness, would make a later measurement unreadable: a success labeled pi3 might have been pi4. The same reason a controlled comparison refuses to swap the action set under a condition applies here. The name on the request has to be the machine that ran it, or the name has to be <code>auto</code> and the response has to say which machine it was.</p>
+
+    <h3>3.5 A second port is not a second peer</h3>
+    <p>pi2 may answer llama.cpp on port 8080 and, at other times, an Ollama-shaped probe on port 11434. The health check tries the configured port and then the alternate ports recorded for the peer named pi2. The name in the result does not change. That retry is there because one board has been observed on more than one port. It is not permission to leave the board. Section 3.4 is about peers. This section is about ports on one peer.</p>
+
+    <h3>3.6 A small cap, and a short cache</h3>
+    <p>Three boards, and a page that polls health, are enough to crowd a small model or a tags endpoint. Three inference slots, a two-minute wait, then HTTP 503, is a blunt limit. A 2.5 second health cache is a blunt limit of the other kind. Neither is a scheduler, and neither is tuned against a measured knee in latency. Both exist so the first overload behavior is "busy" or "cached" rather than a stampede. Section 5 does not report how those knobs behave under real clients. They are part of the fixed system, not part of a result.</p>
+
+    <h3>3.7 The page is not a second protocol</h3>
+    <p><code>GET /</code> is a small page for a person at the rack or on the tailnet. It calls the same completions route as an agent would. There is no separate chat dialect for the browser. If the page and an agent disagree, the disagreement is in the client, not in a second server.</p>
+
+    <h2>4. Hardware</h2>
+    <p>pi2, pi3, and pi4 share one custom 3D-printed vertical chassis. The boards are stacked so each bay still reaches the front connectors: Ethernet and USB, with a USB Wi-Fi adapter and an antenna where the radio is a dongle rather than a socket on the board. The three figures in this section are renders of that chassis. They are the mechanical record for the note. They are not a wiring diagram, and they do not replace the peer table in Section 2.1. Board names in the prose follow the peer map. The renders are not used to guess a different model number than pi2, pi3, and pi4.</p>
+
+    <figure>
+      <img src="figures/rack-hero.jpg" alt="Three-quarter view of a 3D-printed vertical rack holding three Raspberry Pi boards, with antennas along the front." />
+      <figcaption>Figure 1. The rack. Three Raspberry Pi boards in one 3D-printed vertical chassis. USB Wi-Fi adapters and antennas sit on the front of the stack.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="figures/rack-front.jpg" alt="Front view of the rack showing Ethernet and USB ports and three antennas." />
+      <figcaption>Figure 2. The front of the chassis. Ethernet and USB remain open on the bays. The antennas belong to the USB radios.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="figures/rack-top.jpg" alt="Top view of the rack enclosure, showing the upper board, its cooler, and the antenna leads." />
+      <figcaption>Figure 3. The top of the enclosure. The upper board, its cooler, and the antenna leads are visible. The lower boards are the same stack seen from above.</figcaption>
+    </figure>
+
+    <h2>5. Status and early observations</h2>
+    <p>This section is short because the fleet is being brought up for local models, and a short section is the honest one.</p>
+    <p>The router starts without a model process. <code>/health</code> can report the router up and a peer down in the same document. That split is the observation worth keeping. A green process and a down board are different facts, and the pin rule in Section 3.4 depends on not blurring them. The bring-up script prints both. While models are still being installed on the boards, "peers down" is a normal reading, not a failed experiment.</p>
+    <p>The unit tests stand up fake workers and check the contract: loading a peer list, the pin error when the named peer is down, assembly of a stream, and the shape of a completion. They do not boot a Raspberry Pi, they do not load <code>qwen2.5:0.5b</code>, and they do not time a token. A passing test supports Section 2. It does not support a sentence about how fast the rack talks.</p>
+    <p>The following are absent because they have not been measured on this fleet. Putting a number next to any of them would be an invention.</p>
+    <ul>
+      <li>Tokens per second, time to first token, or end-to-end latency, on any peer.</li>
+      <li>A quality score, a task list, or a grader.</li>
+      <li>A cloud model run as a paired condition against the same prompts.</li>
+      <li>Behavior of the three-slot cap with real concurrent clients.</li>
+      <li>Temperature, power, or throttling of the chassis under load.</li>
+    </ul>
+    <p>One code fact should be recorded before those measurements start, because it will otherwise be misread as a result. The default tag is an Ollama-style name. On the llama.cpp peer the router usually substitutes the first id that peer advertises. A comparison of pi2 with pi3 under the default tag is not, by itself, a comparison of the same weights. The next measurement has to log <code>pi_model</code> and <code>pi_kind</code> on every completion. Otherwise changing boards quietly changes models.</p>
+    <p>The method those runs should follow is the one this paper fixes, and it is the same shape as holding an interface constant while varying one factor. Same request shape. Recorded peer. Recorded model id. No silent substitution of a different board. A cloud call only when the protocol says the target is the cloud, not as a hidden backup for a pin.</p>
+
+    <h2>6. Related work</h2>
+    <p>Local runtimes already exist, and this note uses two of them rather than replacing them. llama.cpp serves a model behind an OpenAI-compatible HTTP server. Ollama serves a model behind <code>/api/chat</code> and lists tags at <code>/api/tags</code>. Pi 0.2 High assigns llama.cpp to pi2 and Ollama to pi3 and pi4. It does not merge the two inside the worker. The single dialect is the caller's route.</p>
+    <p>That route is the chat completions shape already sent by agents, editor tools, and small chat pages. Keeping it means the mesh is a place a call can end, not a new client library. The hosted shape has no field for "which of my boards." <code>X-Pi-Target</code> and <code>X-Pi-Mesh</code> are that field. They are local to this router. They are not proposed here as a standard.</p>
+    <p><code>qwen2.5:0.5b</code> is a small Qwen2.5 tag, chosen as the default because a Pi-class board can hold a model of that size. This paper does not review the Qwen2.5 technical report, and it does not claim a quality number for the tag on these boards. The tag is fixed so that a request with no model field is the same request tomorrow.</p>
+    <p>Other on-device paths — phone runtimes, vendor stacks, a single board with a larger GPU — each answer "run a model here." The neighboring fact for this paper is narrower. A chat client already expects one HTTP completions endpoint. The work is to make that endpoint local, to name the board, and to fail closed when the named board is down. Systems that shard one large model across many machines are a different design. This fleet does not shard. Each peer that is up runs a whole small model, and the router picks a peer.</p>
+    <p>A companion note on this site, Structured Views for Agent-Native UIs, treats the way an application shows itself to an agent as the variable and holds the model fixed. The present note is the other half of that sentence. It holds the request shape fixed and treats the place the model runs as the variable. The two questions are easy to tangle. A structured view does not put tokens on a Pi, and a Pi mesh does not decide what an agent is allowed to click. They share the habit of writing down what is held still before claiming a comparison.</p>
+    <p>What this note does not claim is worth a paragraph of its own. That a small model can run on a small board is not news. That llama.cpp can speak chat completions is not news. That a pin ought to mean the named machine is a choice made in this router, not a result discovered about the industry. No citation is attached to that choice. The claim is the specific system: three named boards, two worker kinds, one completions route, a pin that does not fall through, and a written target for measurements that have not been taken yet.</p>
+
+    <h2>7. Conclusion</h2>
+    <p>Pi 0.2 High is a local chat surface for a three-node Raspberry Pi mesh. The caller sends <code>/v1/chat/completions</code> to port 18080. The router, standard-library Python in <code>pi-pair/</code>, proxies to llama.cpp on pi2 or to Ollama on pi3 and pi4, and defaults to <code>qwen2.5:0.5b</code> when the caller is silent about the model. <code>X-Pi-Target</code> and <code>X-Pi-Mesh</code> say whether a named peer must answer. A named peer that is down stays down in the error. The call does not wander to another board, and it does not wander to a cloud model.</p>
+    <p>The rack in Section 4 is the hardware that map refers to. Sections 2 and 3 can be checked without it. The fleet is still being brought up, so this note stops before a table.</p>
+  </body>
+</html>

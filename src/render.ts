@@ -11,11 +11,6 @@ import {
   managedBy,
   name,
   personalMail,
-  rackBayOccupied,
-  rackCue,
-  rackHeartbeatFresh,
-  rackPercent,
-  rackStatus,
   researchDescription,
   researchLinkLabel,
   researchPath,
@@ -27,8 +22,6 @@ import {
   type Contact,
   type Paragraph,
   type Phrase,
-  type RackBay,
-  type RackStatus,
   type Seat,
   type Thread,
 } from "./content.ts";
@@ -162,6 +155,16 @@ export function renderBot(): string {
   </div>`;
 }
 
+function renderMeshFigure(): string {
+  return `<svg class="thread-fig" viewBox="0 0 140 108" width="140" height="108" focusable="false" aria-hidden="true">
+          <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
+          <path d="M70 20v68" fill="none" stroke="rgba(250,250,247,0.22)" stroke-width="0.7"/>
+          <rect x="38" y="16" width="64" height="16" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.9"/>
+          <rect x="38" y="46" width="64" height="16" fill="none" stroke="rgba(250,250,247,0.36)" stroke-width="0.8"/>
+          <rect x="38" y="76" width="64" height="16" fill="none" stroke="rgba(250,250,247,0.26)" stroke-width="0.75"/>
+        </svg>`;
+}
+
 function renderProtocolFigure(): string {
   return `<svg class="thread-fig" viewBox="0 0 140 108" width="140" height="108" focusable="false" aria-hidden="true">
           <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
@@ -199,6 +202,7 @@ function renderGapsFigure(): string {
 }
 
 function renderThreadFigure(figure: Thread["figure"]): string {
+  if (figure === "mesh") return renderMeshFigure();
   if (figure === "protocol") return renderProtocolFigure();
   if (figure === "axes") return renderAxesFigure();
   return renderGapsFigure();
@@ -227,84 +231,12 @@ function renderThread(thread: Thread): string {
       </article>`;
 }
 
-function renderRackBayFigure(bay: RackBay): string {
-  const empty = bay.state === "empty";
-  const slot = empty
-    ? `<rect class="rack-slot" x="16" y="20" width="40" height="70" fill="none" stroke="rgba(250,250,247,0.16)" stroke-width="0.7" stroke-dasharray="2.4 2.2"/>`
-    : `<rect class="rack-slot" x="16" y="20" width="40" height="70" fill="none" stroke="rgba(250,250,247,0.46)" stroke-width="0.85"/>
-            <path d="M20 26h32M20 31h22" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.7"/>
-            <circle cx="22" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>
-            <circle cx="28" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>
-            <circle cx="34" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>
-            <circle cx="40" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>`;
-  return `<svg class="rack-fig" viewBox="0 0 72 108" width="72" height="108" focusable="false" aria-hidden="true">
-            <rect x="3.5" y="3.5" width="65" height="101" fill="none" stroke="rgba(250,250,247,0.16)" stroke-width="0.75"/>
-            <path d="M9 8v92M63 8v92" fill="none" stroke="rgba(250,250,247,0.22)" stroke-width="1.15"/>
-            <circle cx="9" cy="16" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            <circle cx="9" cy="54" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            <circle cx="9" cy="92" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            <circle cx="63" cy="16" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            <circle cx="63" cy="54" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            <circle cx="63" cy="92" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            ${slot}
-            <circle class="rack-led" cx="36" cy="13" r="2.15"/>
-          </svg>`;
-}
-
-function rackBayClass(state: RackBay["state"]): string {
-  if (state === "empty") return "rack-bay is-empty";
-  if (state === "active") return "rack-bay is-active";
-  if (state === "reserved") return "rack-bay is-reserved";
-  return "rack-bay is-held";
-}
-
-function renderRackLoad(bay: RackBay, now: number): string {
-  if (!rackBayOccupied(bay) || !rackHeartbeatFresh(bay.heartbeat, now)) return "";
-  const cpu = rackPercent(bay.cpu);
-  if (cpu === null) return "";
-  const shown = Math.round(cpu);
-  const label = `cpu ${String(shown)}%`;
-  const mem = rackPercent(bay.mem);
-  const memHtml =
-    mem === null ? "" : `<span class="rack-mem">mem ${String(Math.round(mem))}%</span>`;
-  return `<p class="rack-load" style="--cpu:${String(shown)}"><span class="rack-meter" aria-hidden="true"><span class="rack-meter-fill"></span></span><span class="rack-cpu">${escapeHtml(label)}</span>${memHtml}</p>`;
-}
-
-function renderRackBay(bay: RackBay, now: number = Date.now()): string {
-  const name = bay.name ?? "empty";
-  const klass = rackBayClass(bay.state);
-  const title = bay.href
-    ? `<p class="rack-name"><a href="${escapeHtml(bay.href)}">${escapeHtml(name)}</a></p>`
-    : `<p class="rack-name">${escapeHtml(name)}</p>`;
-  const role = bay.role ? `<p class="rack-role">${escapeHtml(bay.role)}</p>` : "";
-  const note = bay.note ? `<p class="rack-note">${escapeHtml(bay.note)}</p>` : "";
-  const load = renderRackLoad(bay, now);
-  return `<li class="${klass}" data-bay="${escapeHtml(bay.id)}" data-state="${escapeHtml(bay.state)}">
-            ${renderRackBayFigure(bay)}
-            <div class="rack-copy">${title}${role}${note}${load}</div>
-          </li>`;
-}
-
-export function renderRackBays(status: RackStatus, now: number = Date.now()): string {
-  return status.bays.map((bay) => renderRackBay(bay, now)).join("");
-}
-
-function renderRack(): string {
-  return `<section class="rack" aria-label="${escapeHtml(rackCue)}">
-          <p class="cue">${escapeHtml(rackCue)}</p>
-          <div class="rack-chassis">
-          <ol class="rack-bays">${renderRackBays(rackStatus)}</ol>
-          </div>
-        </section>`;
-}
-
 export function renderResearch(): string {
   return `<div class="page research" id="holder">
     <main class="stage">
       <header class="mast">
         <h1>${escapeHtml(researchTitle)}</h1>
       </header>
-      ${renderRack()}
       <div class="threads">${threads.map(renderThread).join("")}</div>
       <footer class="foot">
         ${renderManagedBy()}
@@ -313,26 +245,30 @@ export function renderResearch(): string {
   </div>`;
 }
 
-export function essayRedirectHtml(): string {
-  const href = paperHref;
-  const title = escapeHtml(paperTitle);
+export function pdfRedirectHtml(href: string, title: string): string {
+  const safeHref = escapeHtml(href);
+  const safeTitle = escapeHtml(title);
   return `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${title}</title>
-    <meta name="description" content="${title}" />
-    <link rel="canonical" href="https://akashnaren.github.io${href}" />
-    <meta http-equiv="refresh" content="0;url=${href}" />
+    <title>${safeTitle}</title>
+    <meta name="description" content="${safeTitle}" />
+    <link rel="canonical" href="https://akashnaren.github.io${safeHref}" />
+    <meta http-equiv="refresh" content="0;url=${safeHref}" />
     <script>location.replace(${JSON.stringify(href)})</script>
     <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "0470f893bb1740a88848e29324507551"}'></script><!-- End Cloudflare Web Analytics -->
   </head>
   <body>
-    <p><a href="${href}">${title}</a></p>
+    <p><a href="${safeHref}">${safeTitle}</a></p>
   </body>
 </html>
 `;
+}
+
+export function essayRedirectHtml(): string {
+  return pdfRedirectHtml(paperHref, paperTitle);
 }
 
 export function replaceHolder(html: string, next: string): string {

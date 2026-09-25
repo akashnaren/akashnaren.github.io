@@ -1,5 +1,3 @@
-import rackStatusJson from "../public/research/rack/status.json" with { type: "json" };
-
 export type Link = {
   readonly href: string;
   readonly label: string;
@@ -183,11 +181,16 @@ export const researchTitle = "Research";
 export const researchUrl = "https://akashnaren.github.io/research";
 
 export const researchDescription =
-  "Structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.";
+  "Local language-model chat on a three-node Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.";
 
 export const researchLinkLabel = "Research";
 
-export type ThreadFigure = "protocol" | "axes" | "gaps";
+export type ThreadFigure = "mesh" | "protocol" | "axes" | "gaps";
+
+export const piPaperHref = "/research/pi-0.2-high/paper.pdf";
+
+export const piPaperTitle =
+  "Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh";
 
 export type Thread = {
   readonly id: string;
@@ -199,6 +202,14 @@ export type Thread = {
 };
 
 export const threads: readonly Thread[] = [
+  {
+    id: "pi-0-2-high",
+    title: piPaperTitle,
+    figure: "mesh",
+    abstract:
+      "Cloud chat still runs the model somewhere else. I am running a small language model on a three-node Raspberry Pi mesh, behind one OpenAI-style route. This note describes the router and the fleet, not a benchmark.",
+    href: piPaperHref,
+  },
   {
     id: "agent-native-ui-protocols",
     title: "Structured Views for Agent-Native UIs",
@@ -258,6 +269,14 @@ export function isResearchPath(pathname: string): boolean {
   return /\/research\/?$/.test(path) || /\/research\/index\.html$/.test(path);
 }
 
+export function isPiPaperPath(pathname: string): boolean {
+  const path = pathname.split(/[?#]/, 1)[0] ?? "";
+  return (
+    /\/research\/pi-0\.2-high\/?$/.test(path) ||
+    /\/research\/pi-0\.2-high\/index\.html$/.test(path)
+  );
+}
+
 export function isEssayPath(pathname: string): boolean {
   const path = pathname.split(/[?#]/, 1)[0] ?? "";
   return (
@@ -266,209 +285,3 @@ export function isEssayPath(pathname: string): boolean {
   );
 }
 
-export const rackCue = "Pi 0.2 High";
-
-export const rackStatusPath = "/research/rack/status.json";
-
-/** Client poll so Pages can pick up an overwritten status.json without a rebuild. */
-export const rackPollMs = 45_000;
-
-/** Hide cpu/mem when the last sample is older than this. */
-export const rackHeartbeatStaleMs = 10 * 60 * 1000;
-
-export type RackBayState =
-  | "active"
-  | "exploring"
-  | "dry-run"
-  | "private"
-  | "reserved"
-  | "empty";
-
-export type RackBay = {
-  readonly id: string;
-  readonly name: string | null;
-  readonly role: string | null;
-  readonly state: RackBayState;
-  readonly note?: string | null;
-  readonly href: string | null;
-  readonly cpu?: number | null;
-  readonly mem?: number | null;
-  readonly heartbeat?: string | null;
-};
-
-export type RackStatus = {
-  readonly updated: string | null;
-  readonly bays: readonly RackBay[];
-};
-
-const rackBayStates: readonly RackBayState[] = [
-  "active",
-  "exploring",
-  "dry-run",
-  "private",
-  "reserved",
-  "empty",
-];
-
-export const rackBayOrder = ["bay-1", "bay-2", "bay-3"] as const;
-
-export const rackPublicLabels: Readonly<Record<string, { readonly name: string; readonly href: string | null }>> = {
-  "bay-1": { name: "mesh", href: null },
-  "bay-2": { name: "Qwen mesh", href: null },
-  "bay-3": { name: "pi2", href: null },
-};
-
-const rackBayAliases: Readonly<Record<string, string>> = {
-  "bay-1": "bay-1",
-  bay1: "bay-1",
-  "1": "bay-1",
-  "bay-2": "bay-2",
-  bay2: "bay-2",
-  "2": "bay-2",
-  "bay-3": "bay-3",
-  bay3: "bay-3",
-  "3": "bay-3",
-};
-
-export const rackStatus = rackStatusJson as RackStatus;
-
-export function rackPercent(value: unknown): number | null {
-  if (typeof value !== "number" || !Number.isFinite(value)) return null;
-  return Math.min(100, Math.max(0, value));
-}
-
-export function rackHeartbeatFresh(
-  heartbeat: string | null | undefined,
-  now: number = Date.now(),
-): boolean {
-  if (typeof heartbeat !== "string" || heartbeat.length === 0) return false;
-  const at = Date.parse(heartbeat);
-  if (!Number.isFinite(at)) return false;
-  return now - at <= rackHeartbeatStaleMs;
-}
-
-export function rackBayOccupied(bay: Pick<RackBay, "state">): boolean {
-  return bay.state !== "empty";
-}
-
-export function rackBayId(value: string): string | null {
-  const key = value.trim().toLowerCase().replace(/[\s_]/g, "");
-  return rackBayAliases[key] ?? null;
-}
-
-export function isPrivateHost(value: string): boolean {
-  return (
-    /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/.test(value) ||
-    /\.ts\.net\b/i.test(value) ||
-    /\.local\b/i.test(value) ||
-    /tailscale/i.test(value)
-  );
-}
-
-function cleanRackText(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const text = value.trim();
-  if (text.length === 0 || isPrivateHost(text)) return null;
-  return text;
-}
-
-/** Live heartbeats must not put retired project names or essay URLs back on the page. */
-function publicRackCopy(value: string | null): string | null {
-  if (!value) return null;
-  if (/fishbowl|minishop|meridian/i.test(value)) return null;
-  if (/\/research\/fishbowl\//i.test(value)) return null;
-  return value;
-}
-
-function isHardwareName(name: string, publicName: string): boolean {
-  const n = name.trim().toLowerCase();
-  if (n === publicName.trim().toLowerCase()) return false;
-  return /^(r(?:aspberry)?(?:\s*pi)?\s*\d*)$/i.test(n) || /^pi\s*\d+$/i.test(n);
-}
-
-function readRackBayState(value: unknown, occupiedHint: boolean): RackBayState {
-  if (typeof value === "string" && (rackBayStates as readonly string[]).includes(value)) {
-    return value as RackBayState;
-  }
-  return occupiedHint ? "active" : "empty";
-}
-
-function collectRackBays(bays: unknown): Map<string, Record<string, unknown>> | null {
-  if (bays == null) return null;
-  const found = new Map<string, Record<string, unknown>>();
-  if (Array.isArray(bays)) {
-    for (const item of bays) {
-      if (item == null || typeof item !== "object") continue;
-      const raw = item as Record<string, unknown>;
-      const id = typeof raw.id === "string" ? rackBayId(raw.id) : null;
-      if (id) found.set(id, raw);
-    }
-    return found;
-  }
-  if (typeof bays !== "object") return null;
-  for (const [key, item] of Object.entries(bays as Record<string, unknown>)) {
-    const id = rackBayId(key);
-    if (!id || item == null || typeof item !== "object") continue;
-    found.set(id, item as Record<string, unknown>);
-  }
-  return found;
-}
-
-function mergeRackBay(
-  id: string,
-  raw: Record<string, unknown> | undefined,
-  baked: RackBay | undefined,
-): RackBay {
-  if (!raw) {
-    return baked ?? { id, name: null, role: null, state: "empty", href: null };
-  }
-  const incomingName = cleanRackText(raw.name);
-  const incomingRole = cleanRackText(raw.role);
-  const incomingNote = publicRackCopy(cleanRackText(raw.note));
-  const incomingHref = publicRackCopy(cleanRackText(raw.href));
-  const occupiedHint = Boolean(
-    incomingName ||
-      incomingRole ||
-      typeof raw.cpu === "number" ||
-      typeof raw.mem === "number" ||
-      typeof raw.heartbeat === "string",
-  );
-  const state = readRackBayState(raw.state, occupiedHint);
-  const publicLabel = rackPublicLabels[id];
-  let role = incomingRole ?? (state === "empty" ? null : (baked?.role ?? null));
-  let name: string | null = publicRackCopy(incomingName);
-  if (state === "empty" && !incomingName) {
-    name = null;
-  } else if (publicLabel) {
-    name = publicLabel.name;
-    if (incomingName && isHardwareName(incomingName, publicLabel.name) && !incomingRole) {
-      role = incomingName;
-    }
-  }
-  const href = state === "empty" ? null : (incomingHref ?? publicLabel?.href ?? baked?.href ?? null);
-  const bakedNote = publicRackCopy(baked?.note ?? null);
-  return {
-    id,
-    name,
-    role: publicRackCopy(role),
-    state,
-    note: incomingNote ?? bakedNote,
-    href,
-    cpu: typeof raw.cpu === "number" && Number.isFinite(raw.cpu) ? raw.cpu : undefined,
-    mem: typeof raw.mem === "number" && Number.isFinite(raw.mem) ? raw.mem : undefined,
-    heartbeat: typeof raw.heartbeat === "string" ? raw.heartbeat : undefined,
-  };
-}
-
-export function readRackStatus(value: unknown): RackStatus | null {
-  if (value == null || typeof value !== "object") return null;
-  const raw = value as Record<string, unknown>;
-  const incoming = collectRackBays(raw.bays);
-  if (!incoming) return null;
-  const bakedById = new Map(rackStatus.bays.map((bay) => [bay.id, bay]));
-  const bays = rackBayOrder.map((id) => mergeRackBay(id, incoming.get(id), bakedById.get(id)));
-  return {
-    updated: typeof raw.updated === "string" ? raw.updated : null,
-    bays,
-  };
-}

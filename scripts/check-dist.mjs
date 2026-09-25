@@ -69,10 +69,16 @@ const leakNeedles = [
   /raspberry pi/i,
 ];
 
+/** Research titles name the Raspberry Pi mesh. That phrase stays off the other pages. */
+const researchLeakNeedles = leakNeedles.filter(
+  (needle) => !(needle instanceof RegExp && needle.source === "raspberry pi"),
+);
+
 const home = read("dist/index.html");
 const bot = read("dist/bot/index.html");
 const research = read("dist/research/index.html");
 const essay = read("dist/research/agent-native-ui/index.html");
+const piPaperPage = read("dist/research/pi-0.2-high/index.html");
 const spa = read("dist/404.html");
 
 for (const [dist, root] of [
@@ -80,13 +86,14 @@ for (const [dist, root] of [
   ["dist/bot/index.html", "bot/index.html"],
   ["dist/research/index.html", "research/index.html"],
   ["dist/research/agent-native-ui/index.html", "research/agent-native-ui/index.html"],
+  ["dist/research/pi-0.2-high/index.html", "research/pi-0.2-high/index.html"],
+  ["dist/research/pi-0.2-high/paper.pdf", "research/pi-0.2-high/paper.pdf"],
+  ["public/research/pi-0.2-high/paper.pdf", "dist/research/pi-0.2-high/paper.pdf"],
   ["dist/404.html", "404.html"],
   ["dist/robots.txt", "robots.txt"],
   ["dist/sitemap.xml", "sitemap.xml"],
   ["public/robots.txt", "dist/robots.txt"],
   ["public/sitemap.xml", "dist/sitemap.xml"],
-  ["public/research/rack/status.json", "dist/research/rack/status.json"],
-  ["dist/research/rack/status.json", "research/rack/status.json"],
 ]) {
   same(dist, root);
 }
@@ -251,7 +258,11 @@ mustInclude(
   research,
   [
     "<title>Research</title>",
-    "Structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.",
+    "Local language-model chat on a three-node Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.",
+    "Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh",
+    'href="/research/pi-0.2-high/paper.pdf"',
+    "three-node Raspberry Pi mesh",
+    "OpenAI-style route",
     "Structured Views for Agent-Native UIs",
     'href="/research/agent-native-ui/paper.pdf"',
     "ARC-AGI and Hallucination Risk",
@@ -265,29 +276,31 @@ mustInclude(
     "this site is managed by",
     'href="/bot"',
     'class="thread"',
-    "Pi 0.2 High",
-    'class="rack"',
-    'aria-label="Pi 0.2 High"',
-    'data-bay="bay-1"',
-    'data-bay="bay-2"',
-    'data-bay="bay-3"',
-    'class="rack-name">mesh</p>',
-    "Qwen mesh",
-    "mesh peer",
-    "local qwen2.5",
-    "pi2",
   ],
   "research",
 );
 
 const articles = research.match(/<article class="thread"[\s\S]*?<\/article>/g) ?? [];
-if (articles.length !== 3) fail(`research must list three threads, found ${String(articles.length)}`);
+if (articles.length !== 4) fail(`research must list four threads, found ${String(articles.length)}`);
+const piThread = articles[0] ?? "";
+if (!piThread.includes("Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh")) {
+  fail("Pi 0.2 High must be the first research thread");
+}
+if (!piThread.includes('href="/research/pi-0.2-high/paper.pdf"')) {
+  fail("Pi 0.2 High title must open the PDF directly");
+}
 const arc = articles.find((article) => article.includes("ARC-AGI and Hallucination Risk")) ?? "";
 if (arc.includes("<a ")) fail("ARC-AGI thread must not invent a link");
 if (!articles.some((article) => article.includes('href="/research/agent-native-ui/paper.pdf"') && article.includes("Structured Views for Agent-Native UIs"))) {
   fail("agent-native title must open the PDF directly");
 }
 mustIconInside(research, "/bot", "grok bot", "research");
+mustIconInside(
+  research,
+  "/research/pi-0.2-high/paper.pdf",
+  "Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh",
+  "research",
+);
 mustIconInside(
   research,
   "/research/agent-native-ui/paper.pdf",
@@ -301,11 +314,6 @@ mustIconInside(
   "research",
 );
 if (arc.includes('class="ext"')) fail("ARC-AGI thread must not show a link icon");
-const rackAt = research.indexOf('class="rack"');
-const threadAt = research.indexOf('class="thread"');
-if (rackAt < 0 || threadAt < 0 || rackAt > threadAt) {
-  fail("Pi 0.2 High rack must sit above the model threads");
-}
 for (const article of articles) {
   if (article.includes('class="status"') || article.includes("exploring") || article.includes("drafting")) {
     fail("model threads must not carry status or exploring tags");
@@ -315,11 +323,16 @@ for (const article of articles) {
 mustExclude(
   research,
   [
-    ...leakNeedles,
+    ...researchLeakNeedles,
     "still researching",
     "exploring",
     "drafting",
     "pi rack",
+    "Pi PAIR",
+    'class="rack"',
+    "data-bay",
+    "status.json",
+    "/research/rack",
     "new today",
     "data-posted",
     'class="status"',
@@ -351,11 +364,28 @@ if (essay.includes('class="essay-pdf"') || essay.includes("<iframe") || essay.in
 }
 mustExclude(essay, leakNeedles, "essay redirect");
 
+mustInclude(
+  piPaperPage,
+  [
+    'http-equiv="refresh"',
+    "/research/pi-0.2-high/paper.pdf",
+    "location.replace",
+    "Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh",
+    "data-cf-beacon",
+  ],
+  "pi paper redirect",
+);
+if (piPaperPage.includes('class="essay-pdf"') || piPaperPage.includes('class="rack"') || piPaperPage.includes("<iframe")) {
+  fail("pi paper route must redirect to the PDF, not a viewer or a rack");
+}
+mustExclude(piPaperPage, researchLeakNeedles, "pi paper redirect");
+
 for (const [page, label] of [
   [home, "home"],
   [bot, "bot"],
   [research, "research"],
   [essay, "essay redirect"],
+  [piPaperPage, "pi paper redirect"],
   [spa, "404"],
 ]) {
   if (/<iframe/i.test(page)) fail(`${label} must not embed a paper in an iframe`);
@@ -388,14 +418,13 @@ const jsName = readdirSync("dist/assets").find((name) => name.endsWith(".js"));
 if (!cssName || !jsName) fail("dist/assets is missing hashed css or js");
 const css = read(`dist/assets/${cssName}`);
 const js = read(`dist/assets/${jsName}`);
-mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist", ".rack", "live-pulse"], "css");
+mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist"], "css");
 mustExclude(
   css,
-  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay"],
+  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes"],
   "css",
 );
-mustInclude(js, ["/research/rack/status.json", "setInterval"], "js");
-mustExclude(js, ["requestAnimationFrame", "webgl", "essay-pdf", "essay-back", /raspberry pi/i], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back"], "js");
 
 const pdfs = [
   "public/research/agent-native-ui/paper.pdf",
@@ -412,15 +441,11 @@ for (const path of pdfs) {
   }
 }
 
-const rackStatus = read("public/research/rack/status.json");
-mustInclude(
-  rackStatus,
-  ['"id": "bay-1"', '"id": "bay-2"', '"id": "bay-3"', "Qwen mesh", "mesh peer", "local qwen2.5"],
-  "rack status",
-);
-mustExclude(rackStatus, [/fishbowl/i, "MiniShop", "Meridian", "/research/fishbowl/"], "rack status");
-
 for (const path of [
+  "public/research/rack",
+  "research/rack",
+  "dist/research/rack",
+  "src/rack.ts",
   "dist/research/fishbowl",
   "public/research/fishbowl",
   "research/fishbowl",
@@ -429,6 +454,55 @@ for (const path of [
 ]) {
   if (existsSync(path)) fail(`removed path still present: ${path}`);
 }
+
+const piPdfPath = "public/research/pi-0.2-high/paper.pdf";
+if (!existsSync(piPdfPath)) fail(`missing ${piPdfPath}`);
+const piPdf = readFileSync(piPdfPath);
+if (piPdf.subarray(0, 5).toString("latin1") !== "%PDF-") fail(`${piPdfPath} is not a PDF`);
+let piJpegs = 0;
+for (let at = 0; (at = piPdf.indexOf(Buffer.from([0xff, 0xd8, 0xff]), at)) !== -1; at += 3) {
+  piJpegs += 1;
+}
+if (piJpegs < 3) fail(`pi paper should embed three photos, found ${String(piJpegs)}`);
+const piPages = piPdf.toString("latin1").match(/\/Type\s*\/Page(?!s)/g) ?? [];
+if (piPages.length < 6 || piPages.length > 10) {
+  fail(`pi paper should be 6–10 pages, found ${String(piPages.length)}`);
+}
+const piSource = read("papers/pi-0.2-high/paper.html");
+mustInclude(
+  piPdf.toString("latin1"),
+  ["Pi 0.2 High: Local Chat Inference Across a Three-Node Raspberry Pi Mesh"],
+  "pi paper title",
+);
+mustInclude(
+  piSource,
+  [
+    "Akash Premkumar",
+    "qwen2.5:0.5b",
+    "X-Pi-Target",
+    "X-Pi-Mesh",
+    "rpi-pi2",
+    "rpi-pi3",
+    "rpi-pi4",
+    "Tailscale",
+    "llama.cpp",
+    "11434",
+    "18080",
+    "Figure 1",
+    "Figure 2",
+    "Figure 3",
+    "figures/rack-hero.jpg",
+    "figures/rack-front.jpg",
+    "figures/rack-top.jpg",
+    "does not fall through",
+  ],
+  "pi paper source",
+);
+mustExclude(
+  piSource,
+  ["Pi PAIR", "Fishbowl", "MiniShop", "Meridian", "harness", "10.0.0.", "192.168.", "AI Office"],
+  "pi paper source",
+);
 
 const robots = read("dist/robots.txt");
 if (!robots.startsWith("User-agent:")) fail("robots.txt must start with User-agent");
@@ -460,6 +534,7 @@ mustInclude(
     "<loc>https://akashnaren.github.io/</loc>",
     "<loc>https://akashnaren.github.io/bot/</loc>",
     "<loc>https://akashnaren.github.io/research/</loc>",
+    "<loc>https://akashnaren.github.io/research/pi-0.2-high/paper.pdf</loc>",
     "<loc>https://akashnaren.github.io/research/agent-native-ui/paper.pdf</loc>",
   ],
   "sitemap.xml",
