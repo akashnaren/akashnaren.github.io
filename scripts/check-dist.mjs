@@ -261,8 +261,7 @@ mustInclude(
     "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.",
     "Raspberry Pi Inference Mesh",
     'href="/research/pi-0.2-high/paper.pdf"',
-    "I am running local language-model chat on a Raspberry Pi mesh, behind one OpenAI-style route.",
-    "OpenAI-style route",
+    "I am running local language-model chat on a Raspberry Pi mesh.",
     "Structured Views for Agent-Native UIs",
     'href="/research/agent-native-ui/paper.pdf"',
     "ARC-AGI and Hallucination Risk",
@@ -347,6 +346,7 @@ mustExclude(
     "ten grok bots",
     "noindex",
     "/research/fishbowl/",
+    "OpenAI-style route",
   ],
   "research",
 );
