@@ -69,9 +69,19 @@ function escapeHtml(value: string): string {
     .replaceAll('"', "&quot;");
 }
 
+function renderLinkIcon(): string {
+  return `<svg class="ext" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.4 2.4h6.2v6.2M9.3 2.7 2.7 9.3" fill="none" stroke="currentColor" stroke-width="1.15"/></svg>`;
+}
+
+function isSitePageHref(href: string): boolean {
+  const path = href.split(/[?#]/, 1)[0] ?? "";
+  return path === "/bot" || path === "/bot/" || path === researchPath || path === `${researchPath}/`;
+}
+
 function renderPhrase(part: Phrase): string {
   if (isLink(part)) {
-    return `<a href="${escapeHtml(part.href)}">${escapeHtml(part.label)}</a>`;
+    const icon = isSitePageHref(part.href) ? renderLinkIcon() : "";
+    return `<a href="${escapeHtml(part.href)}">${escapeHtml(part.label)}${icon}</a>`;
   }
   return escapeHtml(part);
 }
@@ -125,7 +135,7 @@ export function renderSite(): string {
         ${paragraphs}
       </div>
       ${renderContact()}
-      <p class="page-link"><a href="${escapeHtml(researchPath)}">${escapeHtml(researchLinkLabel)}</a></p>
+      <p class="page-link"><a href="${escapeHtml(researchPath)}">${escapeHtml(researchLinkLabel)}${renderLinkIcon()}</a></p>
       ${renderManagedBy()}
       ${renderInbox()}
     </main>
@@ -194,14 +204,19 @@ function renderThreadFigure(figure: Thread["figure"]): string {
   return renderGapsFigure();
 }
 
-function renderExternalIcon(): string {
-  return `<svg class="ext" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.4 2.4h6.2v6.2M9.3 2.7 2.7 9.3" fill="none" stroke="currentColor" stroke-width="1.15"/></svg>`;
+function threadOpensDocument(thread: Thread): boolean {
+  if (!thread.href) return false;
+  return (
+    thread.external === true ||
+    /\.pdf(?:$|[?#])/i.test(thread.href) ||
+    /^https?:\/\//i.test(thread.href)
+  );
 }
 
 function renderThread(thread: Thread): string {
   const title = escapeHtml(thread.title);
   const heading = thread.href
-    ? `<h2><a href="${escapeHtml(thread.href)}"${thread.external ? ` rel="noopener noreferrer"` : ""}>${title}${thread.external ? renderExternalIcon() : ""}</a></h2>`
+    ? `<h2><a href="${escapeHtml(thread.href)}"${thread.external ? ` rel="noopener noreferrer"` : ""}>${title}${threadOpensDocument(thread) ? renderLinkIcon() : ""}</a></h2>`
     : `<h2>${title}</h2>`;
   return `<article class="thread" data-thread="${escapeHtml(thread.id)}">
         ${renderThreadFigure(thread.figure)}
@@ -232,7 +247,7 @@ export function renderFishbowl(): string {
   const flow = escapeHtml(flowHref);
   const mesh = escapeHtml(meshHref);
   return `<div class="page essay" id="holder">
-    <p class="essay-back"><a href="${escapeHtml(researchPath)}">Research</a> <a href="${href}">pdf</a> <a href="${flow}">flow</a> <a href="${mesh}">mesh</a></p>
+    <p class="essay-back"><a href="${escapeHtml(researchPath)}">Research${renderLinkIcon()}</a> <a href="${href}">pdf</a> <a href="${flow}">flow</a> <a href="${mesh}">mesh</a></p>
     <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
   </div>`;
 }

@@ -28,6 +28,20 @@ function mustExclude(page, needles, label) {
   process.exit(1);
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** The link icon sits inside the same anchor as the label. */
+function mustIconInside(page, href, label, where) {
+  const re = new RegExp(
+    `<a href="${escapeRegExp(href)}"[^>]*>${escapeRegExp(label)}<svg class="ext"[\\s\\S]*?</svg></a>`,
+  );
+  if (!re.test(page)) {
+    fail(`${where}: "${label}" (${href}) must include the link icon inside the same anchor`);
+  }
+}
+
 function same(left, right) {
   if (!existsSync(left) || !existsSync(right)) fail(`missing pair ${left} / ${right}`);
   const a = readFileSync(left);
@@ -117,7 +131,6 @@ mustInclude(
     "grok bot",
     'class="managed-copy"',
     'href="/research"',
-    ">Research</a>",
     'name="theme-color" content="#0a0a0a"',
     "family=Geist",
   ],
@@ -159,6 +172,11 @@ mustExclude(
 if (!home.includes("by grok") && !home.includes("by <a")) {
   fail("home must keep a real space before grok bot");
 }
+mustIconInside(home, "/research", "Research", "home");
+mustIconInside(home, "/bot", "grok bot", "home");
+if (/>(?:Tesla|Robotaxi|Optimus|Grok|Raytheon|fire-whirl research)<svg class="ext"/.test(home)) {
+  fail("biography links must stay unmarked");
+}
 if (!/\/assets\/index-[^"]+\.js/.test(home)) fail("home must reference hashed /assets/index-*.js");
 if (home.includes("/src/main.ts")) fail("built home must not be the Vite shell");
 
@@ -183,7 +201,8 @@ mustInclude(
     'class="page profile"',
     'class="roster"',
     "this site is managed by",
-    'href="/bot">grok bot</a>',
+    'href="/bot"',
+    ">grok bot<svg",
     "mailto:apn@agentmail.to",
     "bots' inbox",
     "the agents' inbox — not his personal Gmail",
@@ -200,6 +219,7 @@ mustInclude(
 
 const rowCount = (bot.match(/<li class="row"/g) ?? []).length;
 if (rowCount !== 10) fail(`bot roster must list ten seats, found ${String(rowCount)}`);
+mustIconInside(bot, "/bot", "grok bot", "bot");
 
 mustExclude(
   bot,
@@ -250,6 +270,20 @@ if (arc.includes("<a ")) fail("ARC-AGI thread must not invent a link");
 if (!articles.some((article) => article.includes('href="/research/agent-native-ui/paper.pdf"') && article.includes("Structured Views for Agent-Native UIs"))) {
   fail("agent-native title must open the PDF directly");
 }
+mustIconInside(research, "/bot", "grok bot", "research");
+mustIconInside(
+  research,
+  "/research/agent-native-ui/paper.pdf",
+  "Structured Views for Agent-Native UIs",
+  "research",
+);
+mustIconInside(
+  research,
+  "https://temporal-buddies5.vercel.app/",
+  "Entity Investigation Across Fragmented Records",
+  "research",
+);
+if (arc.includes('class="ext"')) fail("ARC-AGI thread must not show a link icon");
 
 mustExclude(
   research,
@@ -305,6 +339,7 @@ mustInclude(
   "fishbowl",
 );
 mustExclude(fishbowl, [...leakNeedles, "coming soon", "still researching"], "fishbowl");
+mustIconInside(fishbowl, "/research", "Research", "fishbowl");
 
 mustInclude(spa, ['<div id="holder"></div>'], "404");
 if (!/\/assets\/index-[^"]+\.js/.test(spa)) fail("404 must reference hashed js");
