@@ -1,13 +1,13 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
-import { essayMetaFrom, fishbowlMetaFrom } from "./src/article.ts";
+import { fishbowlMetaFrom } from "./src/article.ts";
 import {
   applyPageMeta,
   botMeta,
+  essayRedirectHtml,
   homeMeta,
   renderBot,
-  renderEssay,
   renderFishbowl,
   renderResearch,
   renderSite,
@@ -70,7 +70,7 @@ export default defineConfig({
         mkdirSync(resolve("dist/research/agent-native-ui"), { recursive: true });
         writeFileSync(
           resolve("dist/research/agent-native-ui/index.html"),
-          applyPageMeta(replaceHolder(home, renderEssay()), essayMetaFrom()),
+          essayRedirectHtml(),
         );
         mkdirSync(resolve("dist/research/fishbowl"), { recursive: true });
         writeFileSync(

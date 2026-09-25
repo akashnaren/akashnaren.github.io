@@ -1,2507 +1,383 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 
-const html = readFileSync("dist/index.html", "utf8");
+function fail(message) {
+  console.error(message);
+  process.exit(1);
+}
 
-const fleetSrcs = [
-  "/fleet/01.png",
-  "/fleet/02.png",
-  "/fleet/03.png",
-  "/fleet/04.png",
-  "/fleet/05.png",
-  "/fleet/06.png",
-  "/fleet/07.png",
-  "/fleet/08.png",
-  "/fleet/09.png",
-  "/fleet/10.png",
-];
+function read(path) {
+  if (!existsSync(path)) fail(`missing ${path}`);
+  return readFileSync(path, "utf8");
+}
 
-const homeFleetSrcs = fleetSrcs.filter((src) => src !== "/fleet/01.png");
+function mustInclude(page, needles, label) {
+  const missing = needles.filter((needle) => !page.includes(needle));
+  if (missing.length === 0) return;
+  console.error(`${label} is missing:`);
+  for (const needle of missing) console.error(`  - ${needle}`);
+  process.exit(1);
+}
 
-const required = [
-  "Akash Premkumar",
-  "I live in Redwood City.",
-  "I worked on vehicle service systems",
-  "diagnostics",
-  "telemetry",
-  "data analysis for service",
-  "Worked at Tesla in Redwood City on vehicle service systems",
-  "Previously I worked on vehicle engineering",
-  "bill of materials",
-  "fullstack applications",
-  "https://www.tesla.com/robotaxi",
-  ">Robotaxi</a>",
-  "https://www.tesla.com/AI",
-  "Optimus",
-  "https://grok.com",
-  ">Grok</a>",
-  "grok",
-  "https://www.rtx.com/raytheon",
-  "avionics networking test suite",
-  "NASA L’SPACE",
-  "fire-whirl research",
-  "CS and Math",
-  "https://github.com/akashnaren",
-  "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
-  "https://x.com/akashpn",
-  "https://cursor.com/@akashpn",
-  "https://huggingface.co/akashnaren",
-  "https://www.kaggle.com/akashpnaren",
-  'src="/marks/github.svg"',
-  'src="/marks/linkedin.svg"',
-  'src="/marks/x.svg"',
-  'src="/marks/cursor.svg"',
-  'src="/marks/huggingface.svg"',
-  'src="/marks/kaggle.svg"',
-  ">huggingface</span>",
-  ">kaggle</span>",
-  'class="contact-marks"',
-  'class="human-mail"',
-  'class="mail-label"',
-  "email",
-  "mailto:akashnaren@gmail.com",
-  "akashnaren@gmail.com",
-  "mailto:apn@agentmail.to",
-  "apn@agentmail.to",
-  "bots' inbox",
-  'class="inbox"',
-  "this site is managed by",
-  'href="/bot"',
-  "grok bot",
-  'class="managed-copy"',
-  'class="scope"',
-  'src="/fleet/05.png"',
-  'class="grok-bot-mark"',
-  'class="grok-bot-eyes"',
-  'class="fleet"',
-  'class="fleet-face"',
-  'class="fleet-face is-host"',
-  "fleet-wrap",
-  'class="fleet-tip"',
-  'class="fleet-invite"',
-  "click on any bot",
-  "ten grok bots, more coming.",
-  'class="page-link"',
-  'href="/research"',
-  ">Research</a>",
-  'class="fresh"',
-  "new today",
-  'data-posted="2026-09-22"',
-  'class="him"',
-  'class="panel"',
-  'class="fact"',
-  ">ten</p>",
-  'name="twitter:card"',
-  'property="og:url" content="https://akashnaren.github.io/"',
-  'name="theme-color" content="#0a0a0a"',
-  ...homeFleetSrcs.map((src) => `src="${src}"`),
-];
+function mustExclude(page, needles, label) {
+  const leaked = needles.filter((needle) =>
+    needle instanceof RegExp ? needle.test(page) : page.includes(needle),
+  );
+  if (leaked.length === 0) return;
+  console.error(`${label} contains forbidden copy:`);
+  for (const needle of leaked) console.error(`  - ${String(needle)}`);
+  process.exit(1);
+}
 
-const forbidden = [
-  "full stack applications",
-  ">optimus</a>",
-  ">grok</a>",
-  "AI engineer",
-  "AI Engineer",
-  "usage stats",
-  "https://grok.com/bot",
-  "https://x.ai/grok-bot",
-  "https://x.ai/icon.png",
-  "https://x.ai/favicon.ico",
-  'src="/icon.png"',
-  'src="/grok-bot-mark.png"',
-  "the grok bots on this are",
-  "a dozen grok bots",
-  "keep this page",
-  "work on this page",
-  "Write my grok bots at",
-  "job assistant",
-  "Job Assistant",
-  "job search",
-  "looking for a job",
-  "hiring",
-  "startup advisor",
-  "Startup Advisor",
-  "research advisor",
-  "chief of staff",
-  "agent master",
-  "profile assistant",
-  "Profile Assistant",
-  "talent engineer",
-  "Talent Engineer",
-  "travel assistant",
-  "Travel Assistant",
-  "Money Engineer",
-  "Personal CFO",
-  "New Bot",
-  "article writer",
-  "Systems Engineer",
+function same(left, right) {
+  if (!existsSync(left) || !existsSync(right)) fail(`missing pair ${left} / ${right}`);
+  const a = readFileSync(left);
+  const b = readFileSync(right);
+  if (!a.equals(b)) fail(`${left} and ${right} differ`);
+}
+
+const leakNeedles = [
+  /job assistant/i,
+  /startup advisor/i,
+  /travel assistant/i,
+  /looking for a job/i,
+  "MiniShop",
+  "harness",
+  "bc-",
   "bygrok",
-  "mailto:gmail",
-  "/marks/gmail",
-  "/marks/email",
-  "inboxapn",
-  "inboxapn@",
-  "to(not",
-  "emailapn",
-  "botsapn",
-  "botsapn@",
-  "write the bots",
-  "279M",
-  "279m",
-  "tokens",
-  "Longest Streak",
-  "Current Streak",
-  "15 agents",
-  "https://grok.com/@akashpn",
-  "I work on diagnostics",
-  "I work on telemetry",
-  "I work on",
-  "At Tesla in Redwood City. Diagnostics",
-  "engineer @ tesla",
-  "engineer @ Tesla",
-  "engineer @ ",
-  "Engineer at Tesla",
-  "Engineer @ tesla",
-  "well-hole",
-  "well-disk",
-  "well-ring",
-  "well-canvas",
-  "well-glance",
-  "well-static",
+  "tailscale",
+  "Tailscale",
+  ".ts.net",
+  "192.168.",
+  "10.0.0.",
+  "100.64.",
+  "P2S",
 ];
 
-const missing = required.filter((needle) => !html.includes(needle));
-const leaked = forbidden.filter((needle) => html.includes(needle));
+const home = read("dist/index.html");
+const bot = read("dist/bot/index.html");
+const research = read("dist/research/index.html");
+const fishbowl = read("dist/research/fishbowl/index.html");
+const essay = read("dist/research/agent-native-ui/index.html");
+const spa = read("dist/404.html");
 
-if (missing.length > 0 || leaked.length > 0) {
-  if (missing.length > 0) {
-    console.error("dist/index.html is missing required copy:");
-    for (const needle of missing) console.error(`  - ${needle}`);
-  }
-  if (leaked.length > 0) {
-    console.error("dist/index.html contains forbidden copy:");
-    for (const needle of leaked) console.error(`  - ${needle}`);
-  }
-  process.exit(1);
-}
-
-const hasManagedSpace = html.includes("by grok") || html.includes("by <a");
-if (!hasManagedSpace) {
-  console.error(
-    "dist/index.html must keep a real space in managed-by (by grok or by <a), never bygrok",
-  );
-  process.exit(1);
+for (const [dist, root] of [
+  ["dist/index.html", "index.html"],
+  ["dist/bot/index.html", "bot/index.html"],
+  ["dist/research/index.html", "research/index.html"],
+  ["dist/research/fishbowl/index.html", "research/fishbowl/index.html"],
+  ["dist/research/agent-native-ui/index.html", "research/agent-native-ui/index.html"],
+  ["dist/404.html", "404.html"],
+]) {
+  same(dist, root);
 }
 
-if (html.includes("bygrok")) {
-  console.error("dist/index.html contains bygrok");
-  process.exit(1);
-}
+mustInclude(
+  home,
+  [
+    "Akash Premkumar",
+    "I live in Redwood City.",
+    "I worked on vehicle service systems",
+    "diagnostics",
+    "telemetry",
+    "data analysis for service",
+    "Worked at Tesla in Redwood City on vehicle service systems",
+    "Previously I worked on vehicle engineering",
+    "bill of materials",
+    "fullstack applications",
+    "https://www.tesla.com/robotaxi",
+    ">Robotaxi</a>",
+    "https://www.tesla.com/AI",
+    ">Optimus</a>",
+    "https://grok.com",
+    ">Grok</a>",
+    "https://www.rtx.com/raytheon",
+    "avionics networking test suite",
+    "NASA L’SPACE",
+    "fire-whirl research",
+    "CS and Math",
+    "https://github.com/akashnaren",
+    "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
+    "https://x.com/akashpn",
+    "https://cursor.com/@akashpn",
+    "https://huggingface.co/akashnaren",
+    "https://www.kaggle.com/akashpnaren",
+    'src="/marks/github.svg"',
+    'src="/marks/cursor.svg"',
+    "mailto:akashnaren@gmail.com",
+    "akashnaren@gmail.com",
+    "mailto:apn@agentmail.to",
+    "apn@agentmail.to",
+    "bots' inbox",
+    "this site is managed by",
+    'href="/bot"',
+    "grok bot",
+    'class="managed-copy"',
+    'href="/research"',
+    ">Research</a>",
+    'name="theme-color" content="#0a0a0a"',
+    "family=Geist",
+  ],
+  "home",
+);
 
-if (/\bprofessor\b/i.test(html)) {
-  console.error("dist/index.html must not name bots");
-  process.exit(1);
-}
+mustExclude(
+  home,
+  [
+    ...leakNeedles,
+    'class="sky"',
+    'class="system"',
+    "orbit-spin",
+    "ten grok bots",
+    "Ten grok bots",
+    'class="fleet"',
+    'class="fleet-face"',
+    "new today",
+    "data-posted",
+    "still researching",
+    "profile engineer",
+    "software engineer",
+    "secretary",
+    "chief financial officer",
+    "finance engineer",
+    "integration engineer",
+    ">optimus</a>",
+    ">grok</a>",
+    ">robotaxi</a>",
+    "full stack applications",
+    "I work on",
+    "og:image",
+    "#e3925a",
+  ],
+  "home",
+);
 
-const fleetHits = homeFleetSrcs.filter((src) => html.includes(`src="${src}"`));
-if (fleetHits.length !== 9) {
-  console.error("dist/index.html must include the nine non-host unlabeled fleet marks");
-  process.exit(1);
+if (!home.includes("by grok") && !home.includes("by <a")) {
+  fail("home must keep a real space before grok bot");
 }
-
-if (html.includes('src="/fleet/01.png"')) {
-  console.error("home host seat must be the glancing grok SVG, not /fleet/01.png");
-  process.exit(1);
-}
-
-if (
-  !/class="fleet-face is-host"[\s\S]{0,900}grok-bot-eyes/.test(html) ||
-  !/class="fleet-face is-host"[\s\S]{0,900}fleet-wrap/.test(html)
-) {
-  console.error("home host fleet face must keep the glancing grok-bot SVG");
-  process.exit(1);
-}
-
-if (!html.includes('href="/favicon.svg"') && !html.includes("favicon.svg")) {
-  console.error("dist/index.html is missing the favicon");
-  process.exit(1);
-}
-
-if (html.includes("og:image") && /og:image[\s\S]{0,80}akash/i.test(html)) {
-  console.error("dist/index.html must not invent a photo og:image of Akash");
-  process.exit(1);
-}
-
-if (!/\/assets\/index-[^"]+\.js/.test(html)) {
-  console.error("dist/index.html must reference hashed /assets/index-*.js");
-  process.exit(1);
-}
-
-if (/class="inbox"[\s\S]{0,500}akashnaren@gmail\.com/.test(html)) {
-  console.error("Gmail must not sit in the bots' inbox line");
-  process.exit(1);
-}
-
-if (/class="human-mail"[\s\S]{0,400}apn@agentmail\.to/.test(html)) {
-  console.error("Agent inbox must not sit in the human mail line");
-  process.exit(1);
-}
-
-if (/class="contact-link"[\s\S]{0,220}mailto:akashnaren@gmail\.com/.test(html)) {
-  console.error("Gmail must not be a fifth contact mark");
-  process.exit(1);
-}
-
-const assets = [
-  ...fleetSrcs.map((src) => `dist${src}`),
-  "dist/marks/github.svg",
-  "dist/marks/linkedin.svg",
-  "dist/marks/x.svg",
-  "dist/marks/cursor.svg",
-  "dist/marks/huggingface.svg",
-  "dist/marks/kaggle.svg",
-  "dist/favicon.svg",
-];
-const absent = assets.filter((path) => !existsSync(path));
-if (absent.length > 0) {
-  console.error("dist is missing required marks:");
-  for (const path of absent) console.error(`  - ${path}`);
-  process.exit(1);
-}
-
-const favicon = readFileSync("dist/favicon.svg", "utf8");
-if (!favicon.includes("<title>A</title>") || !favicon.includes('aria-label="A"')) {
-  console.error("dist/favicon.svg must be the letter A mark");
-  process.exit(1);
-}
-if (favicon.includes("rotate(-26") || (favicon.includes("#ff6b00") && favicon.includes("circle"))) {
-  console.error("dist/favicon.svg must not be the grok bot face");
-  process.exit(1);
-}
-if (!existsSync("dist/favicon-32.png")) {
-  console.error("dist is missing favicon-32.png");
-  process.exit(1);
-}
-
-if (!existsSync("index.html")) {
-  console.error("root index.html is missing; Files Pages would serve nothing");
-  process.exit(1);
-}
-
-const root = readFileSync("index.html", "utf8");
-if (!/\/assets\/index-[^"]+\.js/.test(root)) {
-  console.error(
-    "root index.html must contain hashed /assets/index-*.js so Files Pages is not a Vite shell",
-  );
-  process.exit(1);
-}
-if (root.includes("/src/main.ts")) {
-  console.error("root index.html must not be a blank /src/main.ts Vite shell");
-  process.exit(1);
-}
-if (!root.includes("mailto:akashnaren@gmail.com") || !root.includes("akashnaren@gmail.com")) {
-  console.error("root index.html must include mailto:akashnaren@gmail.com");
-  process.exit(1);
-}
-if (!root.includes("mailto:apn@agentmail.to") || !root.includes("apn@agentmail.to")) {
-  console.error("root index.html must include mailto:apn@agentmail.to");
-  process.exit(1);
-}
-if (!root.includes("by grok") && !root.includes("by <a")) {
-  console.error("root index.html must keep a real space before grok bot");
-  process.exit(1);
-}
-if (!root.includes('href="/bot"')) {
-  console.error("root index.html must link the grok footnote to /bot");
-  process.exit(1);
-}
-if (root.includes("bygrok")) {
-  console.error("root index.html contains bygrok");
-  process.exit(1);
-}
-
-if (!root.includes("mailto:akashnaren@gmail.com") || !html.includes("mailto:akashnaren@gmail.com")) {
-  console.error("both built pages must keep mailto:akashnaren@gmail.com");
-  process.exit(1);
-}
-
-if (!root.includes("mailto:apn@agentmail.to") || !html.includes("mailto:apn@agentmail.to")) {
-  console.error("both built pages must keep mailto:apn@agentmail.to");
-  process.exit(1);
-}
-
-if (/job assistant/i.test(html) || /job assistant/i.test(root)) {
-  console.error("pages must not mention Job Assistant");
-  process.exit(1);
-}
-
-if (/startup advisor/i.test(html) || /startup advisor/i.test(root)) {
-  console.error("pages must not mention Startup Advisor");
-  process.exit(1);
-}
-
-if (/travel assistant/i.test(html) || /travel assistant/i.test(root)) {
-  console.error("pages must not mention Travel Assistant");
-  process.exit(1);
-}
+if (!/\/assets\/index-[^"]+\.js/.test(home)) fail("home must reference hashed /assets/index-*.js");
+if (home.includes("/src/main.ts")) fail("built home must not be the Vite shell");
 
 const seats = [
-  ["profile-engineer", "profile engineer"],
-  ["software-engineer", "software engineer"],
-  ["research-engineer", "research engineer"],
-  ["chief-executive-officer", "chief executive officer"],
-  ["secretary", "secretary"],
-  ["chief-financial-officer", "chief financial officer"],
-  ["finance-engineer", "finance engineer"],
-  ["product-engineer", "product engineer"],
-  ["chief-technical-officer", "chief technical officer"],
-  ["integration-engineer", "integration engineer"],
+  ["profile-engineer", "profile engineer", "i keep his profiles and ship this site."],
+  ["software-engineer", "software engineer", "quiet diffs. a clean compile."],
+  ["research-engineer", "research engineer", "i read the papers that matter."],
+  ["chief-executive-officer", "chief executive officer", "i keep the work moving."],
+  ["secretary", "secretary", "i keep the notes in order."],
+  ["chief-financial-officer", "chief financial officer", "i stay even."],
+  ["finance-engineer", "finance engineer", "i keep the sheets in order."],
+  ["product-engineer", "product engineer", "i file what ships."],
+  ["chief-technical-officer", "chief technical officer", "i build grok bots like these."],
+  ["integration-engineer", "integration engineer", "i wrap apis into quiet plugins."],
 ];
 
-const softDisplayNames = [
-  'data-name="desk"',
-  'data-name="glass"',
-  'data-name="models"',
-  'aria-label="desk"',
-  'aria-label="glass"',
-  'aria-label="models"',
-  '<span class="fleet-tip" aria-hidden="true">desk</span>',
-  '<span class="fleet-tip" aria-hidden="true">glass</span>',
-  '<span class="fleet-tip" aria-hidden="true">models</span>',
-  '<span class="row-name">desk</span>',
-  '<span class="row-name">glass</span>',
-  '<span class="row-name">models</span>',
-];
+mustInclude(
+  bot,
+  [
+    "<title>grok bot collection</title>",
+    "Ten grok bots. A quiet collection.",
+    'class="page profile"',
+    'class="roster"',
+    "this site is managed by",
+    'href="/bot">grok bot</a>',
+    "mailto:apn@agentmail.to",
+    "bots' inbox",
+    "the agents' inbox — not his personal Gmail",
+    ...seats.flatMap(([id, name, blurb]) => [
+      `data-seat="${id}"`,
+      `data-name="${name}"`,
+      `>${name}</span>`,
+      blurb,
+    ]),
+    ...Array.from({ length: 10 }, (_, i) => `src="/fleet/${String(i + 1).padStart(2, "0")}.png"`),
+  ],
+  "bot",
+);
 
-const seatNames = seats.map(([, name]) => name);
+const rowCount = (bot.match(/<li class="row"/g) ?? []).length;
+if (rowCount !== 10) fail(`bot roster must list ten seats, found ${String(rowCount)}`);
 
-function assertHomeFleetInvite(page, label) {
-  if (!page.includes("click on any bot") || !page.includes('class="fleet-invite"')) {
-    console.error(`${label} must keep the quiet click on any bot invite`);
-    process.exit(1);
-  }
-  if (!page.includes('<p class="fleet-invite"><a href="/bot">click on any bot</a></p>')) {
-    console.error(`${label} must hyperlink the fleet invite to /bot`);
-    process.exit(1);
-  }
+mustExclude(
+  bot,
+  [
+    ...leakNeedles,
+    "Tesla",
+    "tesla.com",
+    "Redwood City",
+    "Raytheon",
+    "ten grok bots, more coming",
+    "Job Assistant",
+    "desk",
+    "glass",
+    "models",
+    'class="sky"',
+    "akashnaren@gmail.com",
+  ],
+  "bot",
+);
 
-  const faces = [...page.matchAll(/<a class="fleet-face[^"]*"[^>]*>/g)].map((match) => match[0]);
-  if (faces.length !== 10) {
-    console.error(`${label} must wrap all ten fleet faces as /bot links, found ${String(faces.length)}`);
-    process.exit(1);
-  }
+mustInclude(
+  research,
+  [
+    "<title>Research</title>",
+    "Structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.",
+    "Structured Views for Agent-Native UIs",
+    'href="/research/agent-native-ui/paper.pdf"',
+    "ARC-AGI and Hallucination Risk",
+    "Entity Investigation Across Fragmented Records",
+    'href="https://temporal-buddies5.vercel.app/"',
+    'class="ext"',
+    "rel=\"noopener noreferrer\"",
+    "screenshots or a flat accessibility tree",
+    "ARC-AGI-1",
+    "fragmented records",
+    "this site is managed by",
+    'href="/bot"',
+    'class="thread"',
+  ],
+  "research",
+);
 
-  if (faces.some((markup) => /\stitle=/.test(markup))) {
-    console.error(`${label} must not put a native title on fleet faces; the custom tip is the only hover name`);
-    process.exit(1);
-  }
-
-  for (const [id, name] of seats) {
-    const face = faces.find(
-      (markup) =>
-        markup.includes('href="/bot"') &&
-        markup.includes(`data-seat="${id}"`) &&
-        markup.includes(`aria-label="${name}"`),
-    );
-    if (!face) {
-      console.error(`${label} must data-seat and aria-label a /bot fleet face as ${name}`);
-      process.exit(1);
-    }
-    if (!page.includes(`<span class="fleet-tip" aria-hidden="true">${name}</span>`)) {
-      console.error(`${label} must keep a quiet fleet tip for ${name}`);
-      process.exit(1);
-    }
-  }
-
-  const him = page.match(/<main class="him">[\s\S]*?<\/main>/)?.[0] ?? "";
-  if (seatNames.some((name) => him.includes(name))) {
-    console.error(`${label} must not name seats in the him column`);
-    process.exit(1);
-  }
+const articles = research.match(/<article class="thread"[\s\S]*?<\/article>/g) ?? [];
+if (articles.length !== 3) fail(`research must list three threads, found ${String(articles.length)}`);
+const arc = articles.find((article) => article.includes("ARC-AGI and Hallucination Risk")) ?? "";
+if (arc.includes("<a ")) fail("ARC-AGI thread must not invent a link");
+if (!articles.some((article) => article.includes('href="/research/agent-native-ui/paper.pdf"') && article.includes("Structured Views for Agent-Native UIs"))) {
+  fail("agent-native title must open the PDF directly");
 }
 
-function assertManagedByBot(page, label) {
-  if (!page.includes('<span class="managed-copy">this site is managed by <a href="/bot">grok bot</a>.</span>')) {
-    console.error(`${label} must send the managed-by line to /bot`);
-    process.exit(1);
-  }
-  if (/class="managed-copy"[^>]*>[\s\S]*?href="https:\/\/x\.ai\/bot"/.test(page)) {
-    console.error(`${label} must not send the managed-by line to x.ai/bot`);
-    process.exit(1);
-  }
+mustExclude(
+  research,
+  [
+    ...leakNeedles,
+    "still researching",
+    "exploring",
+    "drafting",
+    "Fishbowl on a Raspberry Pi",
+    'class="rack"',
+    "pi rack",
+    "data-bay",
+    "new today",
+    "data-posted",
+    'class="status"',
+    'class="thread-link"',
+    ">read</a>",
+    ">flow</a>",
+    ">mesh</a>",
+    ">code</a>",
+    ">demo</a>",
+    "ten grok bots",
+  ],
+  "research",
+);
+
+mustInclude(
+  essay,
+  [
+    'http-equiv="refresh"',
+    "/research/agent-native-ui/paper.pdf",
+    "location.replace",
+    "data-cf-beacon",
+  ],
+  "essay redirect",
+);
+if (essay.includes('class="essay-pdf"') || essay.includes("still researching")) {
+  fail("agent-native route must redirect to the PDF, not an HTML reader");
 }
 
-function assertHomeResearchLink(page, label) {
-  if (!/<p class="page-link"><a href="\/research">Research<\/a>/.test(page)) {
-    console.error(`${label} must keep a peer Research link to /research`);
-    process.exit(1);
-  }
-  if (
-    !page.includes('class="fresh"') ||
-    !page.includes("new today") ||
-    !page.includes('data-posted="2026-09-22"')
-  ) {
-    console.error(`${label} must keep a quiet new today mark on Research from a posted thread date`);
-    process.exit(1);
-  }
-  if (page.includes("posted today")) {
-    console.error(`${label} must label the home Research mark new today, not posted today`);
-    process.exit(1);
-  }
-  if (page.includes(">Papers</a>") || page.includes(">Lab</a>")) {
-    console.error(`${label} must label the research surface Research, not Papers or Lab`);
-    process.exit(1);
-  }
-  if (/class="managed-copy"[\s\S]{0,400}href="\/research"/.test(page)) {
-    console.error(`${label} must not bury Research under the managed-by /bot line`);
-    process.exit(1);
-  }
-  const him = page.match(/<main class="him">[\s\S]*?<\/main>/)?.[0] ?? "";
-  if (him.includes('href="/research"')) {
-    console.error(`${label} must not put Research in the left bio`);
-    process.exit(1);
-  }
-}
+mustInclude(
+  fishbowl,
+  [
+    "Fishbowl: An Event-Log Truthful Multi-Agent Office on a Raspberry Pi",
+    'src="/research/fishbowl/paper.pdf"',
+    'href="/research/fishbowl/paper.pdf"',
+    'href="/research/fishbowl/flow.pdf"',
+    'href="/research/fishbowl/mesh-architecture.pdf"',
+    'href="/research"',
+  ],
+  "fishbowl",
+);
+mustExclude(fishbowl, [...leakNeedles, "coming soon", "still researching"], "fishbowl");
 
-assertHomeFleetInvite(html, "dist/index.html");
-assertHomeFleetInvite(root, "root index.html");
+mustInclude(spa, ['<div id="holder"></div>'], "404");
+if (!/\/assets\/index-[^"]+\.js/.test(spa)) fail("404 must reference hashed js");
+if (spa.includes('class="sky"') || spa.includes('class="bio"')) fail("404 must not pre-paint a page");
 
 for (const [page, label] of [
-  [html, "dist/index.html"],
-  [root, "root index.html"],
+  [home, "home"],
+  [bot, "bot"],
+  [research, "research"],
+  [fishbowl, "fishbowl"],
+  [spa, "404"],
 ]) {
-  const leakedSoft = softDisplayNames.filter((needle) => page.includes(needle));
-  if (leakedSoft.length > 0) {
-    console.error(`${label} must not use desk/glass/models as fleet display names:`);
-    for (const needle of leakedSoft) console.error(`  - ${needle}`);
-    process.exit(1);
-  }
-}
-assertHomeResearchLink(html, "dist/index.html");
-assertHomeResearchLink(root, "root index.html");
-assertManagedByBot(html, "dist/index.html");
-assertManagedByBot(root, "root index.html");
-
-if (html.includes("https://x.ai/bot/marketplace") || root.includes("https://x.ai/bot/marketplace")) {
-  console.error("home must not carry the grok bot marketplace link");
-  process.exit(1);
-}
-
-if (/looking for a job/i.test(html) || /looking for a job/i.test(root)) {
-  console.error("pages must not mention looking for a job");
-  process.exit(1);
-}
-
-if (!/class="him"[\s\S]{0,8000}mailto:akashnaren@gmail\.com/.test(html)) {
-  console.error("Gmail must stay in the him column");
-  process.exit(1);
-}
-
-if (!/class="panel"[\s\S]{0,8000}mailto:apn@agentmail\.to/.test(html)) {
-  console.error("Agent inbox must stay in the fleet panel");
-  process.exit(1);
-}
-
-if (/class="panel"[\s\S]{0,8000}akashnaren@gmail\.com/.test(html)) {
-  console.error("Gmail must not sit in the fleet panel");
-  process.exit(1);
-}
-
-const cssName = existsSync("dist/assets")
-  ? readdirSync("dist/assets").find((name) => name.endsWith(".css"))
-  : undefined;
-if (!cssName) {
-  console.error("dist/assets is missing the hashed stylesheet");
-  process.exit(1);
-}
-const css = readFileSync(`dist/assets/${cssName}`, "utf8");
-if (
-  !css.includes("min-width:880px") &&
-  !css.includes("min-width: 880px") &&
-  !css.includes("width>=880px") &&
-  !css.includes("width >= 880px")
-) {
-  console.error("stylesheet must keep the 880px two-column breakpoint");
-  process.exit(1);
-}
-if (!css.includes("position:sticky") && !css.includes("position: sticky")) {
-  console.error("stylesheet must keep the sticky fleet panel");
-  process.exit(1);
-}
-
-const overflowHidden =
-  /html\s*,\s*body\s*\{[^}]*overflow:\s*hidden/.test(css) ||
-  (/html\s*\{[^}]*overflow:\s*hidden/.test(css) &&
-    /body\s*\{[^}]*overflow:\s*hidden/.test(css));
-if (!overflowHidden) {
-  console.error("stylesheet must keep overflow hidden on html and body");
-  process.exit(1);
-}
-
-if (!css.includes("100dvh")) {
-  console.error("stylesheet must size the document to 100dvh");
-  process.exit(1);
-}
-
-if (!css.includes("color-scheme:dark") && !css.includes("color-scheme: dark")) {
-  console.error("stylesheet must declare color-scheme dark");
-  process.exit(1);
-}
-
-if (
-  !css.includes("text-size-adjust:100%") &&
-  !css.includes("text-size-adjust: 100%")
-) {
-  console.error("stylesheet must lock text-size-adjust at 100%");
-  process.exit(1);
-}
-
-if (
-  !css.includes("flex-direction:column") &&
-  !css.includes("flex-direction: column")
-) {
-  console.error("stylesheet must stack the type stage above the sky");
-  process.exit(1);
-}
-
-if (!/min-height:\s*20vh/.test(css)) {
-  console.error("stylesheet must keep a sky band at the bottom");
-  process.exit(1);
-}
-
-if (
-  !/\.inbox\s*\{[^}]*(?:flex-direction:\s*column|flex-flow:\s*column)/.test(css) &&
-  !/\.inbox\{[^}]*(?:flex-direction:column|flex-flow:column)/.test(css)
-) {
-  console.error("inbox must stack label and address in a flex column so they never jam");
-  process.exit(1);
-}
-
-if (!/\.inbox\s*\{[^}]*gap:/.test(css) && !/\.inbox\{[^}]*gap:/.test(css)) {
-  console.error("inbox must keep a real CSS gap between label and address");
-  process.exit(1);
-}
-
-if (
-  !css.includes(".page.profile") &&
-  !css.includes(".page.profile ")
-) {
-  console.error("stylesheet must keep a .page.profile studio layout");
-  process.exit(1);
-}
-
-if (
-  /\.page\.profile[^{]*\{[^}]*width:\s*100vw/.test(css) ||
-  /\.page\.profile\{[^}]*width:100vw/.test(css)
-) {
-  console.error("/bot page must not force 100vw — the roster sits in a centered stage");
-  process.exit(1);
-}
-
-if (
-  !/\.page\.profile\s+\.stage\{[^}]*max-width:\s*46rem/.test(css) &&
-  !/\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*46rem/.test(css) &&
-  !/\.page\.profile\s+\.stage\{[^}]*max-width:46rem/.test(css)
-) {
-  console.error("/bot stage must use a 46rem readable max-width, matching home density");
-  process.exit(1);
-}
-
-if (
-  /\.page\.profile\s+\.stage\{[^}]*max-width:100vw/.test(css) ||
-  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*100vw/.test(css)
-) {
-  console.error("/bot stage must not span 100vw — no full-bleed planetarium room");
-  process.exit(1);
-}
-
-if (!css.includes(".roster") || !css.includes(".row")) {
-  console.error("stylesheet must keep the roster table (roster, row)");
-  process.exit(1);
-}
-
-if (css.includes(".brief") || css.includes(".rail") || css.includes(".market") || css.includes(".seat-line")) {
-  console.error("stylesheet must drop brief, rail, marketplace, and seat-line chrome");
-  process.exit(1);
-}
-
-if (
-  /\.page\.profile[^{]*\{[^}]*overflow-y:\s*auto/.test(css) ||
-  /\.page\.profile\{[^}]*overflow-y:auto/.test(css)
-) {
-  console.error("/bot must not scroll — overflow hidden like home");
-  process.exit(1);
-}
-
-if (
-  !/\.page\.profile[^{]*\{[^}]*overflow:\s*hidden/.test(css) &&
-  !/\.page\.profile\{[^}]*overflow:hidden/.test(css)
-) {
-  console.error("/bot page must overflow hidden so the roster stays in one frame");
-  process.exit(1);
-}
-
-if (
-  !/\.roster\s*\{[^}]*flex:\s*(?:1|auto)/.test(css) &&
-  !/\.roster\{[^}]*flex:(?:1|auto)/.test(css)
-) {
-  console.error("/bot roster must flex to fill the remaining viewport");
-  process.exit(1);
-}
-
-if (
-  css.includes(".crew-sky") ||
-  css.includes(".plinth") ||
-  css.includes(".orbit") ||
-  css.includes(".spoke") ||
-  css.includes(".face-mark") ||
-  css.includes(".lead-mark")
-) {
-  console.error("stylesheet must not keep planetarium chrome (crew-sky, plinth, orbit, spoke, faces)");
-  process.exit(1);
-}
-
-if (css.includes("@property --aim") || css.includes("--aim")) {
-  console.error("stylesheet must not keep the planetarium spoke --aim property");
-  process.exit(1);
-}
-
-if (!css.includes(".inbox-tip")) {
-  console.error("stylesheet must keep the bots' email tooltip");
-  process.exit(1);
-}
-
-if (!css.includes(".fleet-face") || !css.includes(".fleet-tip") || !css.includes(".fleet-invite")) {
-  console.error("stylesheet must keep home fleet face links, name tips, and the invite line");
-  process.exit(1);
-}
-
-if (
-  !css.includes(".fleet-face:hover .fleet-tip") ||
-  !css.includes(".fleet-face:focus-visible .fleet-tip")
-) {
-  console.error("stylesheet must show fleet name tips on hover and focus-visible");
-  process.exit(1);
-}
-
-if (!css.includes("bottom: calc(100%") && !css.includes("bottom:calc(100%")) {
-  console.error("fleet name tips must sit above the face, not over the mark");
-  process.exit(1);
-}
-
-for (const [id] of seats) {
-  if (!css.includes(`[data-seat="${id}"]`) && !css.includes(`[data-seat=${id}]`)) {
-    console.error(`stylesheet must place a name tip for ${id}, not only the host`);
-    process.exit(1);
-  }
-}
-
-if (
-  !css.includes(".fleet-face:after{pointer-events:none") &&
-  !css.includes(".fleet-face::after{pointer-events:none") &&
-  !css.includes(".fleet-face::after {\n    pointer-events: none")
-) {
-  console.error("fine-pointer hover must use the face mark, not the overlapping tap pad");
-  process.exit(1);
-}
-
-if (
-  !css.includes("hover:hover") &&
-  !css.includes("hover: hover") &&
-  !css.includes("pointer:fine") &&
-  !css.includes("pointer: fine")
-) {
-  console.error("fleet name tips must not depend on hover alone on touch");
-  process.exit(1);
-}
-
-if (
-  !css.includes(".fleet-face::after") &&
-  !css.includes(".fleet-face:after") &&
-  !css.includes(".fleet-face:after")
-) {
-  console.error("fleet faces must keep an expanded tap pad");
-  process.exit(1);
-}
-
-if (!css.includes("touch-action:manipulation") && !css.includes("touch-action: manipulation")) {
-  console.error("fleet faces must keep touch-action manipulation");
-  process.exit(1);
-}
-
-if (!css.includes("-14px") && !css.includes("-12px")) {
-  console.error("mobile fleet faces must keep a larger tap pad than the 24px mark");
-  process.exit(1);
-}
-
-if (!css.includes("max(22px") && !css.includes("max(22px,")) {
-  console.error("fleet faces must keep a 22px floor so --fit cannot crush the marks");
-  process.exit(1);
-}
-
-if (!/@keyframes\s+fleet-idle/.test(css) || !css.includes("fleet-idle")) {
-  console.error("stylesheet must keep a quiet staggered fleet idle");
-  process.exit(1);
-}
-
-if (!/@keyframes\s+grok-glance/.test(css) || !css.includes("grok-glance")) {
-  console.error("stylesheet must keep the grok-bot eye glance");
-  process.exit(1);
-}
-
-if (css.includes("8.2vw") || css.includes("min-height:58vh") || css.includes("height:62vh")) {
-  console.error("/bot must not keep the planetarium viewport face sizing");
-  process.exit(1);
-}
-
-if (css.includes(".crew-grid") || css.includes(".board-split") || css.includes(".tile-face")) {
-  console.error("stylesheet must not keep the stretching 3×3 crew grid");
-  process.exit(1);
-}
-
-if (
-  !/\.row[^{]*\{[^}]*transition:/.test(css) &&
-  !/\.row\{[^}]*transition:/.test(css)
-) {
-  console.error("/bot rows must keep a restrained hover/focus transition");
-  process.exit(1);
-}
-
-if (
-  !/\.row-blurb[^{]*\{[^}]*text-overflow:\s*ellipsis/.test(css) &&
-  !/\.row-blurb\{[^}]*text-overflow:ellipsis/.test(css)
-) {
-  console.error("row blurbs must ellipsis so they stay one line");
-  process.exit(1);
-}
-
-if (/\.row-blurb[^{]*\{[^}]*white-space:\s*normal/.test(css)) {
-  console.error("row blurbs must stay one line, never wrap into text soup");
-  process.exit(1);
-}
-
-if (css.includes(".crew-sky")) {
-  console.error("/bot must not keep a crew-sky planetarium field");
-  process.exit(1);
-}
-
-if (
-  /\.page\.profile\s+\.stage\{[^}]*max-width:13\.6rem/.test(css) ||
-  /\.page\.profile\s+\.stage\s*\{[^}]*max-width:\s*13\.6rem/.test(css)
-) {
-  console.error("/bot stage must not reuse the face-cluster max-width");
-  process.exit(1);
-}
-
-if (!/p\.fleet\s*\{[^}]*max-width:/.test(css) && !/p\.fleet\{[^}]*max-width:/.test(css)) {
-  console.error("face-cluster dimensions must be scoped to p.fleet so they cannot crush the page");
-  process.exit(1);
-}
-
-if (!css.includes("24px") || !css.includes("linear-gradient")) {
-  console.error("stylesheet must keep a short soft fade at the type/sky join");
-  process.exit(1);
-}
-
-if (
-  html.includes("well-hole") ||
-  root.includes("well-hole") ||
-  html.includes("well-canvas") ||
-  root.includes("well-canvas") ||
-  html.includes('class="well"') ||
-  root.includes('class="well"')
-) {
-  console.error("built HTML must not keep the black-hole well");
-  process.exit(1);
-}
-
-if (!html.includes('class="sky"') || !root.includes('class="sky"')) {
-  console.error("built HTML must keep a first-paint sky band");
-  process.exit(1);
-}
-
-if (!html.includes('class="system"') || !root.includes('class="system"')) {
-  console.error("built HTML must keep the first-paint solar system");
-  process.exit(1);
-}
-
-if (!/class="stage"[\s\S]+class="sky"/.test(html) || /class="sky"[\s\S]+class="stage"/.test(html)) {
-  console.error("type stage must sit above the sky, never behind it");
-  process.exit(1);
-}
-
-const jsName = existsSync("dist/assets")
-  ? readdirSync("dist/assets").find((name) => name.endsWith(".js"))
-  : undefined;
-if (!jsName) {
-  console.error("dist/assets is missing the hashed script");
-  process.exit(1);
-}
-const js = readFileSync(`dist/assets/${jsName}`, "utf8");
-if (/getContext\(\s*["']webgl/i.test(js) || js.includes("GL_FRAGMENT_PRECISION")) {
-  console.error("sky must stay CSS/SVG; no WebGL shader path");
-  process.exit(1);
-}
-
-if (/requestAnimationFrame/.test(js) || /webkitRequestAnimationFrame/.test(js)) {
-  console.error("sky idle must stay CSS; no requestAnimationFrame");
-  process.exit(1);
-}
-
-if (
-  /class=["']ship["']/.test(js) ||
-  /class=["']chevron["']/.test(js) ||
-  /chevron/i.test(js) ||
-  /lineTo\(0,\s*-0\.7\)/.test(js) ||
-  /moveTo\(-len/.test(js)
-) {
-  console.error("sky must not keep a ship or drifting chevron");
-  process.exit(1);
-}
-
-if (!/@keyframes\s+orbit-spin/.test(css)) {
-  console.error("stylesheet must keep a slow orbit idle on the system");
-  process.exit(1);
-}
-
-if (!/max-height:\s*86%/.test(css) && !css.includes("max-height:86%")) {
-  console.error("solar system must fill more of the sky band (86% cap) without clipping");
-  process.exit(1);
-}
-
-if (css.includes("11rem")) {
-  console.error("solar system must stay larger than the old 11rem cap");
-  process.exit(1);
-}
-
-if (
-  /\.sky\s*\{[^}]*animation:/.test(css) ||
-  /\.system[^{]*\{[^}]*animation:/.test(css) ||
-  /\.system[^{]*\{[^}]*opacity:\s*0/.test(css) ||
-  /\.sky[^{]*\{[^}]*opacity:\s*0/.test(css)
-) {
-  console.error("sky and system must be visible on first paint; no band fade-in");
-  process.exit(1);
-}
-
-if (!css.includes("radial-gradient")) {
-  console.error("stylesheet must keep first-paint stars as CSS radials in the sky");
-  process.exit(1);
-}
-
-for (const page of [html, root]) {
-  if (/engineer\s*@/i.test(page) || /Engineer at Tesla/.test(page)) {
-    console.error("pages must not label him engineer @ tesla");
-    process.exit(1);
-  }
-  if (page.includes("I work on") || /At Tesla I work\b/.test(page)) {
-    console.error("Tesla service copy must stay past tense");
-    process.exit(1);
-  }
-  if (!page.includes("I worked on vehicle service systems")) {
-    console.error("home bio must say Tesla vehicle service work in the past tense");
-    process.exit(1);
-  }
-  if (!page.includes("fullstack applications") || page.includes("full stack applications")) {
-    console.error("vehicle engineering bio must say fullstack, not full stack");
-    process.exit(1);
-  }
-  if (!page.includes(">Robotaxi</a>") || page.includes(">robotaxi</a>")) {
-    console.error("vehicle engineering bio must capitalize the Robotaxi product link");
-    process.exit(1);
-  }
-  if (!page.includes(">Optimus</a>") || page.includes(">optimus</a>")) {
-    console.error("vehicle engineering bio must capitalize the Optimus product link");
-    process.exit(1);
-  }
-  if (!page.includes(">Grok</a>") || page.includes(">grok</a>")) {
-    console.error("vehicle engineering bio must capitalize the Grok product link");
-    process.exit(1);
-  }
-  if (!page.includes("Worked at Tesla in Redwood City on vehicle service systems")) {
-    console.error("meta descriptions must state Tesla service work in the past tense");
-    process.exit(1);
-  }
-}
-
-if (!html.includes("huggingface.co/akashnaren") || !root.includes("huggingface.co/akashnaren")) {
-  console.error("both built pages must keep huggingface.co/akashnaren");
-  process.exit(1);
-}
-
-if (!html.includes("kaggle.com/akashpnaren") || !root.includes("kaggle.com/akashpnaren")) {
-  console.error("both built pages must keep kaggle.com/akashpnaren");
-  process.exit(1);
-}
-
-for (const page of [html, root]) {
-  if (
-    page.includes("inboxapn") ||
-    page.includes("inboxapn@") ||
-    page.includes("to(not") ||
-    page.includes("botsapn") ||
-    page.includes("botsapn@")
-  ) {
-    console.error("built HTML must not concatenate the bots' email line");
-    process.exit(1);
-  }
-}
-
-if (!existsSync("dist/bot/index.html") || !existsSync("bot/index.html")) {
-  console.error("bot page must exist at dist/bot/index.html and bot/index.html");
-  process.exit(1);
-}
-
-if (!existsSync("dist/research/index.html") || !existsSync("research/index.html")) {
-  console.error("research page must exist at dist/research/index.html and research/index.html");
-  process.exit(1);
-}
-
-if (!existsSync("dist/404.html") || !existsSync("404.html")) {
-  console.error("GitHub Pages SPA fallback 404.html is missing");
-  process.exit(1);
-}
-
-const botHtml = readFileSync("dist/bot/index.html", "utf8");
-const botRoot = readFileSync("bot/index.html", "utf8");
-const spa = readFileSync("dist/404.html", "utf8");
-const spaRoot = readFileSync("404.html", "utf8");
-
-const botRequired = [
-  "grok bot collection",
-  "profile engineer",
-  "software engineer",
-  "research engineer",
-  "chief executive officer",
-  'data-name="secretary"',
-  'data-name="chief financial officer"',
-  'data-name="finance engineer"',
-  "secretary",
-  "chief financial officer",
-  "finance engineer",
-  "product engineer",
-  "chief technical officer",
-  "integration engineer",
-  "i keep his profiles and ship this site",
-  "quiet diffs. a clean compile",
-  "i read the papers that matter",
-  "i keep the ten on the clock",
-  "i keep the desk quiet",
-  "i tap the glass. i stay even",
-  "i keep the models quiet",
-  "i file the sharp corners",
-  "i build grok bots like these",
-  "i wrap apis into quiet plugins",
-  "bots' inbox",
-  "the agents' inbox — not his personal Gmail",
-  'class="inbox-tip"',
-  'role="tooltip"',
-  'class="inbox-label"',
-  'class="inbox-address"',
-  'href="/bot"',
-  "grok bot",
-  "this site is managed by",
-  "mailto:apn@agentmail.to",
-  "apn@agentmail.to",
-  'class="page profile"',
-  'class="mast"',
-  'class="board"',
-  'data-cycle="3000"',
-  'class="roster"',
-  'class="row',
-  'class="row-face"',
-  'class="row-name"',
-  'class="row-blurb"',
-  'class="foot"',
-  'class="inbox',
-  'class="managed-copy"',
-  'class="grok-bot-eyes"',
-  "data-seat=",
-  "data-blurb=",
-  'src="/fleet/01.png"',
-  'src="/fleet/09.png"',
-  'src="/fleet/10.png"',
-  'property="og:url" content="https://akashnaren.github.io/bot"',
-  "<title>grok bot collection</title>",
-  "Ten grok bots. A quiet collection.",
-  ...fleetSrcs.map((src) => `src="${src}"`),
-];
-
-for (const page of [botHtml, botRoot]) {
-  const missingBot = botRequired.filter((needle) => !page.includes(needle));
-  if (missingBot.length > 0) {
-    console.error("bot page is missing required copy:");
-    for (const needle of missingBot) console.error(`  - ${needle}`);
-    process.exit(1);
-  }
-
-  const botFleet = fleetSrcs.filter((src) => page.includes(`src="${src}"`));
-  if (botFleet.length !== 10) {
-    console.error("bot page must include all ten unlabeled fleet marks");
-    process.exit(1);
-  }
-
-  if (
-    /Tesla/.test(page) ||
-    /tesla\.com/.test(page) ||
-    /engineer\s*@/i.test(page) ||
-    /Redwood City/.test(page) ||
-    /Raytheon/.test(page) ||
-    /NASA/.test(page)
-  ) {
-    console.error("bot page must not carry Tesla or home bio copy");
-    process.exit(1);
-  }
-
-  if (
-    page.includes('class="sky"') ||
-    page.includes('class="well"') ||
-    page.includes("well-canvas") ||
-    page.includes('class="system"') ||
-    page.includes('class="plinth"') ||
-    page.includes('class="orbit"') ||
-    page.includes('class="spoke"') ||
-    page.includes('class="crew-sky"') ||
-    page.includes('class="face"') ||
-    page.includes('class="lead-mark"') ||
-    page.includes('class="lead"')
-  ) {
-    console.error("bot page must not keep the planetarium, solar plinth, or home sky");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("https://github.com/akashnaren") ||
-    page.includes("https://cursor.com/@akashpn") ||
-    page.includes("https://x.com/akashpn") ||
-    page.includes('class="profile-links"')
-  ) {
-    console.error("bot page must not keep github / cursor / x links in the footer");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("<title>Profile Assistant</title>") ||
-    page.includes("<title>Talent Engineer</title>") ||
-    page.includes("<title>Profile Engineer</title>") ||
-    page.includes(">profile assistant<span") ||
-    page.includes(">talent engineer<span") ||
-    page.includes(">profile engineer<span")
-  ) {
-    console.error("bot page top title must be grok bot collection, not a seat name");
-    process.exit(1);
-  }
-
-  if (!/<header class="mast">\s*<h1>grok bot collection<span class="scope" aria-hidden="true"><\/span><\/h1>\s*<\/header>/.test(page)) {
-    console.error("bot page mast must be only the grok bot collection title");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("https://x.ai/bot/marketplace") ||
-    page.includes("browse and add grok bots") ||
-    page.includes('class="market"') ||
-    page.includes("seat-wrap") ||
-    page.includes("seat-line") ||
-    page.includes('class="rail"') ||
-    page.includes('class="write"') ||
-    page.includes('class="brief') ||
-    page.includes("ten grok bots, more coming.") ||
-    page.includes("eleven grok bots, more coming.") ||
-    page.includes("nine grok bots, more coming.") ||
-    page.includes("ten <a href=\"https://x.ai/bot\">grok bots</a>") ||
-    page.includes("eleven <a href=\"https://x.ai/bot\">grok bots</a>") ||
-    page.includes("nine <a href=\"https://x.ai/bot\">grok bots</a>")
-  ) {
-    console.error("bot page must not keep stacked chrome, brief, ten-grok-bots line, or marketplace");
-    process.exit(1);
-  }
-
-  const blurbs = [...page.matchAll(/data-blurb="([^"]*)"/g)].map((match) => match[1] ?? "");
-  if (blurbs.length !== 10) {
-    console.error(`bot page must keep ten concise blurbs, found ${String(blurbs.length)}`);
-    process.exit(1);
-  }
-  for (const blurb of blurbs) {
-    if (blurb.length > 52) {
-      console.error(`bot blurb is too long for a one-line roster (${String(blurb.length)}): ${blurb}`);
-      process.exit(1);
-    }
-    if (/\b(?:spend|trades|money|inbox|calendar|send)\b/i.test(blurb)) {
-      console.error(`bot blurb must not leak spend, trades, money, inbox, calendar, or send: ${blurb}`);
-      process.exit(1);
-    }
-  }
-
-  if (
-    page.includes("inbox, calendar. send when he says") ||
-    page.includes("i tap the glass when spend runs hot") ||
-    page.includes("small trades. no numbers here")
-  ) {
-    console.error("bot page must not keep the private-lane spend / inbox-ops blurbs");
-    process.exit(1);
-  }
-
-  if (page.includes("akashnaren@gmail.com") || page.includes("human-mail")) {
-    console.error("bot page should omit Gmail; it stays on home");
-    process.exit(1);
-  }
-
-  if (
-    /job assistant/i.test(page) ||
-    /startup advisor/i.test(page) ||
-    /article writer/i.test(page) ||
-    /new bot/i.test(page) ||
-    /research advisor/i.test(page) ||
-    /chief of staff/i.test(page) ||
-    /agent master/i.test(page) ||
-    /profile assistant/i.test(page) ||
-    /talent engineer/i.test(page) ||
-    /travel assistant/i.test(page) ||
-    /looking for a job/i.test(page) ||
-    /job search/i.test(page)
-  ) {
-    console.error("bot page must not name Job Assistant, Startup Advisor, Travel Assistant, Article Writer, New Bot, or stale seats");
-    process.exit(1);
-  }
-
-  const leakedSoft = softDisplayNames.filter((needle) => page.includes(needle));
-  if (leakedSoft.length > 0) {
-    console.error("bot page must not use desk/glass/models as display names:");
-    for (const needle of leakedSoft) console.error(`  - ${needle}`);
-    process.exit(1);
-  }
-
-  if (
-    !page.includes('data-name="secretary"') ||
-    !page.includes("chief financial officer") ||
-    !page.includes("finance engineer")
-  ) {
-    console.error("bot page must name secretary, chief financial officer, and finance engineer in the roster");
-    process.exit(1);
-  }
-
-  if (page.includes('class="page fleet"')) {
-    console.error(
-      "bot page root must be .page.profile, never .page.fleet — that class collides with the face cluster and crushes the room into a skinny strip",
-    );
-    process.exit(1);
-  }
-
-  if (page.includes('class="him"') || page.includes('class="panel"')) {
-    console.error("bot page must not reuse the home him/panel split");
-    process.exit(1);
-  }
-
-  if (page.includes('class="work"')) {
-    console.error("bot page must not keep the vertical work bio stack");
-    process.exit(1);
-  }
-
-  const rowCount = (page.match(/<button[^>]*class="row/g) ?? []).length;
-  if (rowCount !== 10) {
-    console.error(`bot page must paint ten roster rows, found ${String(rowCount)}`);
-    process.exit(1);
-  }
-
-  if (page.includes('class="crew-grid"') || page.includes('class="board-split"') || page.includes('class="tile"')) {
-    console.error("bot page must not keep the stretching 3×3 crew grid");
-    process.exit(1);
-  }
-
-  if (!page.includes("profile engineer")) {
-    console.error("bot page must name profile engineer as the seat that keeps the site");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("we keep his profiles") ||
-    page.includes("we research, draft, and watch") ||
-    page.includes(" fleet for akash.")
-  ) {
-    console.error("bot fleet page must not keep the meek research/draft watch line");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("fleet that manages") ||
-    page.includes("managed by the fleet") ||
-    page.includes("we run the site") ||
-    page.includes("we manage the site") ||
-    page.includes("we're akash") ||
-    page.includes("we ship his") ||
-    page.includes("fleet for akash")
-  ) {
-    console.error("bot page must speak as profile engineer, and must not say the fleet manages the site");
-    process.exit(1);
-  }
-
-  if (!page.includes("by grok") && !page.includes("by <a")) {
-    console.error("bot page must keep a real space in managed-by");
-    process.exit(1);
-  }
-
-  assertManagedByBot(page, "bot page");
-
-  if (!/class="foot"[\s\S]{0,1200}mailto:apn@agentmail\.to/.test(page)) {
-    console.error("bots' inbox must sit in the quiet footer");
-    process.exit(1);
-  }
-
-  if (
-    !page.includes('<span class="inbox-label">bots\' inbox</span>') ||
-    !page.includes('class="inbox-address"') ||
-    !page.includes('href="mailto:apn@agentmail.to"') ||
-    !page.includes(">apn@agentmail.to</a>")
-  ) {
-    console.error(
-      "bot inbox must keep a separate bots' inbox label and mailto address, never one jammed string",
-    );
-    process.exit(1);
-  }
-
-  if (
-    !page.includes('class="inbox-tip"') ||
-    !page.includes("the agents' inbox — not his personal Gmail")
-  ) {
-    console.error("bot inbox must tooltip that apn@agentmail.to is the agents' inbox, not his Gmail");
-    process.exit(1);
-  }
-
-  if (page.includes("write the bots") || page.includes("botsapn")) {
-    console.error("bot inbox must not keep the old write-the-bots label or botsapn jam");
-    process.exit(1);
-  }
-
-  const roster = page.match(/<div class="roster"[^>]*>[\s\S]*?<\/div>/)?.[0] ?? "";
-  if (!roster) {
-    console.error("bot page must keep a roster");
-    process.exit(1);
-  }
-  if (roster.includes("mailto:apn@agentmail.to")) {
-    console.error("bots' inbox belongs in the footer, not the roster");
-    process.exit(1);
-  }
-
-  if (!/\/assets\/index-[^"]+\.js/.test(page)) {
-    console.error("bot page must reference hashed /assets/index-*.js");
-    process.exit(1);
-  }
-
-  if (/279M|Longest Streak|Current Streak|15 agents/i.test(page) || page.includes("tokens")) {
-    console.error("bot page must not invent Cursor token or streak stats");
-    process.exit(1);
-  }
-
-  if (/\bprofessor\b/i.test(page)) {
-    console.error("bot page must not name professor");
-    process.exit(1);
-  }
-}
-
-for (const page of [spa, spaRoot]) {
-  if (!page.includes('<div id="holder"></div>')) {
-    console.error("404.html must keep an empty #holder so the SPA can route");
-    process.exit(1);
-  }
-  if (!/\/assets\/index-[^"]+\.js/.test(page)) {
-    console.error("404.html must reference hashed /assets/index-*.js");
-    process.exit(1);
-  }
-  if (page.includes('class="page"') || page.includes('class="sky"')) {
-    console.error("404.html must not pre-paint home or the bot page");
-    process.exit(1);
-  }
-}
-
-if (!existsSync("dist/.nojekyll") && !existsSync(".nojekyll")) {
-  console.error("Pages fallback needs .nojekyll");
-  process.exit(1);
-}
-
-if (
-  !/\.page\.profile\s+\.stage\{[^}]*display:flex/.test(css) &&
-  !/\.page\.profile\s+\.stage\s*\{[^}]*display:\s*flex/.test(css)
-) {
-  console.error("stylesheet must keep /bot as a flex board, not the home two-column grid");
-  process.exit(1);
-}
-
-if (
-  !/\.page\.profile\s+\.stage\{[^}]*align-items:\s*stretch/.test(css) &&
-  !/\.page\.profile\s+\.stage\s*\{[^}]*align-items:\s*stretch/.test(css)
-) {
-  console.error(
-    "/bot stage must align-items:stretch so the home 880px align-items:start rule cannot shrink-wrap the crew into a left column",
-  );
-  process.exit(1);
-}
-
-if (
-  !/\.board\s*\{[^}]*width:\s*100%/.test(css) &&
-  !/\.board\{[^}]*width:100%/.test(css)
-) {
-  console.error("/bot board must be width:100% so the roster can span the stage");
-  process.exit(1);
-}
-
-if (
-  !/\.roster\s*\{[^}]*width:\s*100%/.test(css) &&
-  !/\.roster\{[^}]*width:100%/.test(css)
-) {
-  console.error("/bot roster must be width:100% so rows are not a left widget");
-  process.exit(1);
-}
-
-if (/\.page\.fleet[\s{,]/.test(css)) {
-  console.error("stylesheet must not put fleet sizing on the page root");
-  process.exit(1);
-}
-
-if (!js.includes("is-on") || !js.includes("aria-pressed")) {
-  console.error("script must bind roster row selection");
-  process.exit(1);
-}
-
-if (js.includes("brief-copy") || js.includes("brief-name") || js.includes("is-swap")) {
-  console.error("script must not keep the reserved brief crossfade");
-  process.exit(1);
-}
-
-if (js.includes("lead-mark") || js.includes("--aim") || js.includes("crew-sky")) {
-  console.error("script must not keep planetarium aim, lead, or sky binding");
-  process.exit(1);
-}
-
-if (!js.includes("3000") || (!js.includes("setInterval") && !js.includes("setTimeout"))) {
-  console.error("script must auto-cycle seats every 3000ms");
-  process.exit(1);
-}
-
-if (!js.includes("America/Los_Angeles") || !js.includes("data-posted")) {
-  console.error("script must resolve today marks against the Pacific calendar day");
-  process.exit(1);
-}
-
-const researchHtml = readFileSync("dist/research/index.html", "utf8");
-const researchRoot = readFileSync("research/index.html", "utf8");
-
-const researchRequired = [
-  "<title>research</title>",
-  "still researching",
-  'property="og:url" content="https://akashnaren.github.io/research"',
-  "Agent-native UI protocols",
-  "ARC-AGI vs hallucination risk",
-  "Entity investigation",
-  "exploring",
-  "screenshots or a flat accessibility tree",
-  "structured view the agent can read",
-  "ARC-AGI-1",
-  "how often a model hallucinates",
-  "reason over fragmented records",
-  "link events to the right address",
-  "https://temporal-buddies5.vercel.app/",
-  'class="page research"',
-  'class="threads"',
-  'class="thread"',
-  'class="cue"',
-  'class="status"',
-  'class="thread-fig"',
-  'class="mast"',
-  'class="foot"',
-  'class="managed-copy"',
-  "this site is managed by",
-  'href="/bot"',
-  "grok bot",
-  "https://github.com/akashnaren/agent-ui-metrics",
-  'class="thread-link"',
-  ">code</a>",
-  "Fishbowl on a Raspberry Pi",
-  "event log as truth",
-  "https://github.com/akashnaren/raspberry-pi-fun",
-  'href="/research/fishbowl/"',
-  ">read</a>",
-  'href="/research/fishbowl/flow.pdf"',
-  ">flow</a>",
-  'href="/research/fishbowl/mesh-architecture.pdf"',
-  ">mesh</a>",
-  'class="rack"',
-  'class="rack-bays"',
-  'class="rack-bay',
-  'class="rack-fig"',
-  "pi rack",
-  'data-bay="bay-1"',
-  'data-bay="bay-2"',
-  'data-bay="bay-3"',
-  ">Fishbowl</a>",
-  "pi3",
-  ">Qwen mesh</a>",
-  'href="/research/fishbowl/mesh-architecture.pdf"',
-  "pi4",
-  ">pi2</p>",
-  "mesh peer",
-  "local qwen2.5",
-  "Pi-PAIR",
-  "armv7",
-  "heartbeat later",
-  'data-state="reserved"',
-  'class="fresh"',
-  "posted today",
-  'data-posted="2026-09-22"',
-];
-
-for (const page of [researchHtml, researchRoot]) {
-  const missingResearch = researchRequired.filter((needle) => !page.includes(needle));
-  if (missingResearch.length > 0) {
-    console.error("research page is missing required copy:");
-    for (const needle of missingResearch) console.error(`  - ${needle}`);
-    process.exit(1);
-  }
-
-  if (
-    !/<header class="mast">\s*<h1>research<span class="scope" aria-hidden="true"><\/span><\/h1>\s*<p class="cue">still researching<\/p>\s*<\/header>/.test(
-      page,
-    )
-  ) {
-    console.error("research mast must be the title plus one quiet still researching line");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("how agents see interfaces") ||
-    page.includes("puzzle scores relate to truthfulness") ||
-    page.includes("fuse records without inventing") ||
-    page.includes("notes update as the work moves") ||
-    page.includes("live-mark") ||
-    page.includes("MiniShop") ||
-    page.includes("structured view document") ||
-    page.includes("illegal actions") ||
-    page.includes("measuring how the task goes") ||
-    page.includes("held out probes") ||
-    page.includes("invents on") ||
-    page.includes("missing links visible") ||
-    page.includes("Records arrive in pieces") ||
-    page.includes("do not invent edges") ||
-    page.includes("I show the gaps") ||
-    page.includes("time indexed graph") ||
-    page.includes("fuse fragmented records") ||
-    page.includes("Gap-aware entity resolution") ||
-    page.includes("Entity Investigation")
-  ) {
-    console.error("research page must drop the old lede, live-dot cue, MiniShop, and their paraphrases");
-    process.exit(1);
-  }
-
-  const threadCount = (page.match(/<article class="thread"/g) ?? []).length;
-  if (threadCount !== 4) {
-    console.error(`research page must paint four thread blocks, found ${String(threadCount)}`);
-    process.exit(1);
-  }
-
-  const figureCount = (page.match(/class="thread-fig"/g) ?? []).length;
-  if (figureCount !== 4) {
-    console.error(`research page must keep one SVG figure per thread, found ${String(figureCount)}`);
-    process.exit(1);
-  }
-
-  const articles = page.match(/<article class="thread"[\s\S]*?<\/article>/g) ?? [];
-  if (articles.length !== 4) {
-    console.error("research page must expose four complete thread articles");
-    process.exit(1);
-  }
-  for (const [index, article] of articles.entries()) {
-    const fig = article.indexOf('class="thread-fig"');
-    const copy = article.indexOf('class="thread-copy"');
-    if (fig < 0 || copy < 0 || fig > copy) {
-      console.error(`research thread ${String(index + 1)} must keep the teaser figure left of the copy`);
-      process.exit(1);
-    }
-    if (!article.includes('class="status"')) {
-      console.error(`research thread ${String(index + 1)} must keep a quiet status line`);
-      process.exit(1);
-    }
-    const abstracts = article.match(/<div class="thread-copy">[\s\S]*?<\/div>/)?.[0] ?? "";
-    const bodyParagraphs = (abstracts.match(/<p(?:\s|>)/g) ?? []).length;
-    const linkParagraphs = (abstracts.match(/<p class="thread-link"/g) ?? []).length;
-    if (bodyParagraphs - linkParagraphs > 2) {
-      console.error(`research thread ${String(index + 1)} must stay to title, status, and one short abstract`);
-      process.exit(1);
-    }
-  }
-
-  if ((page.match(/drafting/g) ?? []).length > 0 || (page.match(/exploring/g) ?? []).length < 4) {
-    console.error("research page must mark all four threads exploring");
-    process.exit(1);
-  }
-
-  if (
-    !articles[0]?.includes('data-thread="fishbowl-raspberry-pi"') ||
-    !articles[1]?.includes('data-thread="agent-native-ui-protocols"') ||
-    !articles[2]?.includes('data-thread="arc-agi-vs-hallucination-risk"') ||
-    !articles[3]?.includes('data-thread="entity-investigation"')
-  ) {
-    console.error("research threads must list Fishbowl first, then the earlier three");
-    process.exit(1);
-  }
-
-  const protocol =
-    articles.find((article) => article.includes('data-thread="agent-native-ui-protocols"')) ?? "";
-  if (
-    !protocol.includes('data-thread="agent-native-ui-protocols"') ||
-    !protocol.includes("https://github.com/akashnaren/agent-ui-metrics") ||
-    !protocol.includes('href="/research/agent-native-ui/"') ||
-    !protocol.includes('class="thread-link"') ||
-    !protocol.includes(">read</a>") ||
-    !protocol.includes(">code</a>")
-  ) {
-    console.error(
-      "Agent-native UI protocols must keep a quiet read link to the article and a code link to agent-ui-metrics",
-    );
-    process.exit(1);
-  }
-
-  const arc =
-    articles.find((article) => article.includes('data-thread="arc-agi-vs-hallucination-risk"')) ?? "";
-  if (arc.includes("thread-link") || arc.includes("github.com") || arc.includes("MiniShop")) {
-    console.error("ARC-AGI thread must not grow extra repo or demo links");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("https://github.com/akashnaren/research") ||
-    page.includes("MiniShop") ||
-    page.includes("Meridian") ||
-    page.includes("coming soon")
-  ) {
-    console.error("research page must not keep the private research repo, MiniShop, or coming-soon chrome");
-    process.exit(1);
-  }
-
-  const entityArticle =
-    articles.find((article) => article.includes("Entity investigation")) ?? "";
-  if (
-    !entityArticle.includes('class="thread-link"') ||
-    !entityArticle.includes('href="https://temporal-buddies5.vercel.app/"') ||
-    !entityArticle.includes(">demo</a>")
-  ) {
-    console.error("entity investigation must keep one quiet demo link");
-    process.exit(1);
-  }
-
-  const fishbowlArticle =
-    articles.find((article) => article.includes('data-thread="fishbowl-raspberry-pi"')) ?? "";
-  if (
-    !fishbowlArticle.includes('data-thread="fishbowl-raspberry-pi"') ||
-    !fishbowlArticle.includes("https://github.com/akashnaren/raspberry-pi-fun") ||
-    !fishbowlArticle.includes('href="/research/fishbowl/"') ||
-    !fishbowlArticle.includes('href="/research/fishbowl/flow.pdf"') ||
-    !fishbowlArticle.includes('href="/research/fishbowl/mesh-architecture.pdf"') ||
-    !fishbowlArticle.includes('class="thread-link"') ||
-    !fishbowlArticle.includes(">read</a>") ||
-    !fishbowlArticle.includes(">flow</a>") ||
-    !fishbowlArticle.includes(">mesh</a>") ||
-    !fishbowlArticle.includes(">code</a>") ||
-    !fishbowlArticle.includes("Fishbowl on a Raspberry Pi") ||
-    !fishbowlArticle.includes("event log as truth") ||
-    !fishbowlArticle.includes('class="fresh"') ||
-    !fishbowlArticle.includes("posted today") ||
-    !fishbowlArticle.includes('data-posted="2026-09-22"')
-  ) {
-    console.error(
-      "Fishbowl on a Raspberry Pi must keep a quiet read link to the paper, a flow link to the diagram, a mesh link to the architecture PDF, a code link to raspberry-pi-fun, and a posted today mark dated 2026-09-22",
-    );
-    process.exit(1);
-  }
-
-  for (const [index, article] of articles.entries()) {
-    if (article.includes('data-thread="fishbowl-raspberry-pi"')) continue;
-    if (
-      article.includes("data-posted") ||
-      article.includes("posted today") ||
-      article.includes("new today") ||
-      article.includes('class="fresh"')
-    ) {
-      console.error(`research thread ${String(index + 1)} must not carry a today mark`);
-      process.exit(1);
-    }
-  }
-
-  if (page.includes("new today")) {
-    console.error("research page must label the Fishbowl mark posted today, not new today");
-    process.exit(1);
-  }
-
-  if (
-    fishbowlArticle.includes("Meridian") ||
-    fishbowlArticle.includes("MiniShop") ||
-    fishbowlArticle.includes("OpenRouter") ||
-    fishbowlArticle.includes("coming soon")
-  ) {
-    console.error("fishbowl thread must stay on the system, not studio brand or coming-soon chrome");
-    process.exit(1);
-  }
-
-  if (page.includes("ARC-AGI-2") || page.includes("ARC-AGI-3")) {
-    console.error("research page must stay on ARC-AGI-1");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("open question") ||
-    page.includes("in this work") ||
-    page.includes("delve") ||
-    page.includes("leverage") ||
-    page.includes("robust pipeline") ||
-    page.includes("held-out") ||
-    page.includes("time-indexed")
-  ) {
-    console.error("research page must keep the human short copy, not AI essay phrasing");
-    process.exit(1);
-  }
-
-  if (page.includes("status-pill") || page.includes("badge") || page.includes("chip")) {
-    console.error("research page must not use product status pills");
-    process.exit(1);
-  }
-
-  if (page.includes("\u2014") || page.includes("\u2013")) {
-    console.error("research page must not use dash punctuation");
-    process.exit(1);
-  }
-
-  if (page.includes("huggingface.co/collections") || page.includes("agent-ui-lab")) {
-    console.error("research page must not invent extra public repos or collections");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("last updated") ||
-    page.includes("last-updated") ||
-    page.includes("updated 20") ||
-    page.includes("KPI") ||
-    page.includes("dashboard")
-  ) {
-    console.error("research page must not invent timestamps, KPIs, or dashboard chrome");
-    process.exit(1);
-  }
-
-  if (
-    /Tesla/.test(page) ||
-    /tesla\.com/.test(page) ||
-    /Redwood City/.test(page) ||
-    /Raytheon/.test(page) ||
-    /NASA/.test(page)
-  ) {
-    console.error("research page must not carry Tesla or home bio copy");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("apn@agentmail.to") ||
-    page.includes("agentmail") ||
-    page.includes("akashnaren@gmail.com") ||
-    page.includes("human-mail") ||
-    page.includes('class="inbox"')
-  ) {
-    console.error("research page must not leak AgentMail, Gmail, or the bots' inbox");
-    process.exit(1);
-  }
-
-  if (
-    page.includes('class="sky"') ||
-    page.includes('class="system"') ||
-    page.includes('class="board"') ||
-    page.includes('class="roster"') ||
-    page.includes('class="row-blurb"') ||
-    page.includes("profile assistant") ||
-    page.includes("talent engineer") ||
-    page.includes("profile engineer") ||
-    page.includes("click on any bot")
-  ) {
-    console.error("research page must not duplicate home sky or /bot roster cards");
-    process.exit(1);
-  }
-
-  if (
-    /job assistant/i.test(page) ||
-    /startup advisor/i.test(page) ||
-    /travel assistant/i.test(page) ||
-    /looking for a job/i.test(page) ||
-    /job search/i.test(page)
-  ) {
-    console.error("research page must not name Job Assistant, Startup Advisor, Travel Assistant, or job-hunt");
-    process.exit(1);
-  }
-
-  if (/279M|Longest Streak|Current Streak|15 agents/i.test(page)) {
-    console.error("research page must not invent Cursor token or streak stats");
-    process.exit(1);
-  }
-
-  if (!/\/assets\/index-[^"]+\.js/.test(page)) {
-    console.error("research page must reference hashed /assets/index-*.js");
-    process.exit(1);
-  }
-
-  if (!page.includes("by grok") && !page.includes("by <a")) {
-    console.error("research page must keep a real space in managed-by");
-    process.exit(1);
-  }
-
-  assertManagedByBot(page, "research page");
-
-  const rack = page.match(/<section class="rack"[\s\S]*?<\/section>/)?.[0] ?? "";
-  if (!rack) {
-    console.error("research page must keep a quiet pi rack section");
-    process.exit(1);
-  }
-  if (
-    !rack.includes(">pi rack</p>") ||
-    !rack.includes('data-bay="bay-1"') ||
-    !rack.includes('data-bay="bay-2"') ||
-    !rack.includes('data-bay="bay-3"') ||
-    !rack.includes(">Fishbowl</a>") ||
-    !rack.includes('href="/research/fishbowl/"') ||
-    !rack.includes("pi3") ||
-    !rack.includes(">Qwen mesh</a>") ||
-    !rack.includes('href="/research/fishbowl/mesh-architecture.pdf"') ||
-    !rack.includes("pi4") ||
-    !rack.includes(">pi2</p>") ||
-    !rack.includes("mesh peer") ||
-    !rack.includes("local qwen2.5") ||
-    !rack.includes("Pi-PAIR") ||
-    !rack.includes("armv7") ||
-    !rack.includes("heartbeat later") ||
-    !rack.includes("reserved") ||
-    !rack.includes('class="rack-chassis"') ||
-    !rack.includes('class="rack-led"') ||
-    !rack.includes('class="rack-bay is-reserved"') ||
-    (rack.match(/data-state="active"/g) ?? []).length !== 2 ||
-    (rack.match(/class="rack-bay is-active"/g) ?? []).length !== 2 ||
-    (rack.match(/data-state="reserved"/g) ?? []).length !== 1 ||
-    rack.includes('data-state="empty"') ||
-    rack.includes('class="rack-bay is-empty"')
-  ) {
-    console.error("pi rack must show Fishbowl and Qwen mesh active, with bay 3 reserved not empty");
-    process.exit(1);
-  }
-  if ((rack.match(/class="rack-fig"/g) ?? []).length !== 3) {
-    console.error("pi rack must keep one quiet figure per bay");
-    process.exit(1);
-  }
-  if ((rack.match(/class="rack-led"/g) ?? []).length !== 3) {
-    console.error("pi rack must keep one status LED per bay");
-    process.exit(1);
-  }
-  if (rack.includes("data-posted") || rack.includes("posted today") || rack.includes('class="fresh"')) {
-    console.error("pi rack must stay unmarked; today marks belong on the Fishbowl thread");
-    process.exit(1);
-  }
-  if (
-    rack.includes("stream planned later") ||
-    rack.includes("coming soon") ||
-    rack.includes("Meridian") ||
-    rack.includes("MiniShop") ||
-    rack.includes("OpenRouter") ||
-    rack.includes("temp") ||
-    rack.includes("°C") ||
-    rack.includes("spend") ||
-    rack.includes("$") ||
-    /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/.test(rack)
-  ) {
-    console.error("pi rack must not invent temps, spend, IPs, or a stream banner");
-    process.exit(1);
-  }
-  if (
-    rack.includes("rack-load") ||
-    rack.includes("rack-cpu") ||
-    rack.includes("cpu ") ||
-    rack.includes("mem ")
-  ) {
-    console.error("baked pi rack must hide cpu/mem until a live heartbeat lands");
-    process.exit(1);
-  }
-
-  const mastEnd = page.indexOf("</header>");
-  const rackStart = page.indexOf('class="rack"');
-  const threadsStart = page.indexOf('class="threads"');
-  if (mastEnd < 0 || rackStart < 0 || threadsStart < 0 || rackStart < mastEnd || rackStart > threadsStart) {
-    console.error("pi rack must sit under the mast cue, before the research threads");
-    process.exit(1);
-  }
-
-  if (page.includes("stream planned later")) {
-    console.error("stream note stays on the Fishbowl PDF page only");
-    process.exit(1);
-  }
-}
-
-if (
-  !css.includes(".page.research") ||
-  !css.includes(".threads") ||
-  !css.includes(".thread") ||
-  !css.includes(".cue") ||
-  !css.includes(".thread-fig") ||
-  !css.includes(".page-link") ||
-  !css.includes(".page.essay") ||
-  !css.includes(".essay-pdf") ||
-  !css.includes(".essay-back") ||
-  !css.includes(".rack") ||
-  !css.includes(".rack-chassis") ||
-  !css.includes(".rack-bays") ||
-  !css.includes(".rack-bay") ||
-  !css.includes(".rack-fig") ||
-  !css.includes(".rack-led") ||
-  !css.includes(".rack-load") ||
-  !css.includes(".rack-meter") ||
-  !css.includes(".rack-cpu") ||
-  !css.includes(".is-active") ||
-  !css.includes(".is-reserved") ||
-  !css.includes(".fresh")
-) {
-  console.error("stylesheet must keep the research list, pi rack, home Research link, today marks, and PDF reader");
-  process.exit(1);
-}
-
-if (
-  !css.includes("html:has(.page.essay)") ||
-  (!css.includes("body:has(.page.essay)") && !css.includes(":has(.page.essay)"))
-) {
-  console.error("stylesheet must isolate the PDF reader without unlocking home or /bot");
-  process.exit(1);
-}
-
-if (
-  !/html:has\(\.page\.essay\)[\s\S]{0,180}background:\s*#fff/.test(css) &&
-  !/html:has\(\.page\.essay\)[\s\S]{0,180}background:#fff/.test(css)
-) {
-  console.error("PDF reader must be a white page, not the dark site theme");
-  process.exit(1);
-}
-
-if (css.includes(".essay-nav") || css.includes(".essay-status") || css.includes(".essay-note")) {
-  console.error("PDF reader must not keep notebook status chips, section nav, or stub notes");
-  process.exit(1);
-}
-
-if (
-  !/\.page\.research[^{]*\{[^}]*overflow-y:\s*auto/.test(css) &&
-  !/\.page\.research\{[^}]*overflow-y:auto/.test(css) &&
-  !/\.page\.research\{[^}]*overflow:hidden\s+auto/.test(css)
-) {
-  console.error("/research must scroll as a readable academic list");
-  process.exit(1);
-}
-
-if (!css.includes("font-weight:600") && !css.includes("font-weight: 600")) {
-  console.error("research titles must be bold like an academic paper list");
-  process.exit(1);
-}
-
-if (!/@keyframes\s+live-pulse/.test(css) || !css.includes("live-pulse")) {
-  console.error("stylesheet must keep a quiet live pulse on open research work");
-  process.exit(1);
-}
-
-if (
-  !css.includes("140px") ||
-  (!css.includes("grid-template-columns:calc(140px") &&
-    !css.includes("grid-template-columns: calc(140px"))
-) {
-  console.error("research rows must keep a 140px left teaser column");
-  process.exit(1);
-}
-
-if (
-  !css.includes("max-width:700px") &&
-  !css.includes("max-width: 700px") &&
-  !css.includes("width<=700px") &&
-  !css.includes("width <= 700px")
-) {
-  console.error("stylesheet must keep a 700px research stack breakpoint");
-  process.exit(1);
-}
-
-if (
-  !css.includes("grid-template-columns:minmax(0,1fr)") &&
-  !css.includes("grid-template-columns: minmax(0, 1fr)")
-) {
-  console.error("research threads must stack figure over copy below 700px");
-  process.exit(1);
-}
-
-if (
-  css.includes("grid-template-columns:calc(120px") ||
-  css.includes("grid-template-columns: calc(120px")
-) {
-  console.error("research threads must not keep a narrow side-by-side figure column on small screens");
-  process.exit(1);
-}
-
-if (!css.includes("54rem")) {
-  console.error("/research desktop stage should widen past the 46rem strip");
-  process.exit(1);
-}
-
-if (!css.includes(".lede")) {
-  console.error("stylesheet must keep the unused research lede rule so mast spacing stays put");
-  process.exit(1);
-}
-
-if (
-  !/\.page\.research\s+\.stage\{[^}]*max-width:\s*46rem/.test(css) &&
-  !/\.page\.research\s+\.stage\s*\{[^}]*max-width:\s*46rem/.test(css) &&
-  !/\.page\.research\s+\.stage\{[^}]*max-width:46rem/.test(css)
-) {
-  console.error("/research stage must use a 46rem readable max-width, matching /bot");
-  process.exit(1);
-}
-
-const rackJsonPaths = [
-  "public/research/rack/status.json",
-  "dist/research/rack/status.json",
-  "research/rack/status.json",
-];
-const missingRackJson = rackJsonPaths.filter((path) => !existsSync(path));
-if (missingRackJson.length > 0) {
-  console.error("pi rack status.json is missing:");
-  for (const path of missingRackJson) console.error(`  - ${path}`);
-  process.exit(1);
-}
-
-const rackJson = JSON.parse(readFileSync("public/research/rack/status.json", "utf8"));
-const distRackJson = JSON.parse(readFileSync("dist/research/rack/status.json", "utf8"));
-const rootRackJson = JSON.parse(readFileSync("research/rack/status.json", "utf8"));
-if (JSON.stringify(rackJson) !== JSON.stringify(distRackJson) || JSON.stringify(rackJson) !== JSON.stringify(rootRackJson)) {
-  console.error("public, dist, and published rack status.json must stay the same source");
-  process.exit(1);
-}
-if (!Array.isArray(rackJson.bays) || rackJson.bays.length !== 3) {
-  console.error("rack status.json must describe three bays");
-  process.exit(1);
-}
-if (
-  rackJson.bays[0]?.id !== "bay-1" ||
-  rackJson.bays[0]?.name !== "Fishbowl" ||
-  rackJson.bays[0]?.role !== "pi3" ||
-  rackJson.bays[0]?.state !== "active" ||
-  rackJson.bays[0]?.note !== "mesh peer" ||
-  rackJson.bays[0]?.href !== "/research/fishbowl/" ||
-  rackJson.bays[1]?.id !== "bay-2" ||
-  rackJson.bays[1]?.name !== "Qwen mesh" ||
-  rackJson.bays[1]?.role !== "pi4" ||
-  rackJson.bays[1]?.state !== "active" ||
-  rackJson.bays[1]?.note !== "local qwen2.5 · Pi-PAIR" ||
-  rackJson.bays[1]?.href !== "/research/fishbowl/mesh-architecture.pdf" ||
-  rackJson.bays[2]?.id !== "bay-3" ||
-  rackJson.bays[2]?.name !== "pi2" ||
-  rackJson.bays[2]?.role !== "pi2" ||
-  rackJson.bays[2]?.state !== "reserved" ||
-  rackJson.bays[2]?.note !== "armv7 · heartbeat later" ||
-  rackJson.bays[2]?.href != null
-) {
-  console.error("rack status.json must name Fishbowl, Qwen mesh, and reserved pi2 with public labels only");
-  process.exit(1);
-}
-if (rackJson.updated !== "2026-09-22") {
-  console.error("rack status.json updated must be the public 2026-09-22 stamp");
-  process.exit(1);
-}
-const rackJsonText = JSON.stringify(rackJson);
-if (
-  rackJsonText.includes("Meridian") ||
-  rackJsonText.includes("MiniShop") ||
-  rackJsonText.includes("OpenRouter") ||
-  rackJsonText.includes("coming soon") ||
-  /\b10\.0\.0\.\d+\b/.test(rackJsonText) ||
-  /\b192\.168\.\d+\.\d+\b/.test(rackJsonText) ||
-  /\.local\b/.test(rackJsonText)
-) {
-  console.error("rack status.json must not carry studio brand, wallet copy, or home-LAN leaks");
-  process.exit(1);
-}
-if (
-  /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/.test(rackJsonText) ||
-  /\.ts\.net\b/.test(rackJsonText) ||
-  /\.local\b/.test(rackJsonText) ||
-  /tailscale/i.test(rackJsonText)
-) {
-  console.error("rack status.json must not carry LAN, Tailscale, or home hostnames");
-  process.exit(1);
-}
-for (const bay of rackJson.bays) {
-  for (const key of ["cpu", "mem"]) {
-    if (!Object.hasOwn(bay, key)) continue;
-    const value = bay[key];
-    if (value != null && (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 100)) {
-      console.error(`rack status.json ${bay.id} ${key} must be absent, null, or 0-100`);
-      process.exit(1);
-    }
-    if (typeof value === "number") {
-      console.error(`rack status.json must not fake live ${key} before the CTO heartbeat`);
-      process.exit(1);
-    }
-  }
-  if (Object.hasOwn(bay, "heartbeat") && bay.heartbeat != null && typeof bay.heartbeat !== "string") {
-    console.error(`rack status.json ${bay.id} heartbeat must be absent, null, or an ISO string`);
-    process.exit(1);
-  }
-  if (typeof bay.heartbeat === "string") {
-    console.error("rack status.json must not invent a heartbeat before the CTO publish path");
-    process.exit(1);
-  }
-}
-if (!js.includes("/research/rack/status.json") || !js.includes("no-store")) {
-  console.error("script must fetch /research/rack/status.json so Pages can update without a rebuild");
-  process.exit(1);
-}
-if (!js.includes("45000") && !js.includes("45e3")) {
-  console.error("script must poll rack status every 45s");
-  process.exit(1);
-}
-if (
-  !js.includes("bay1") ||
-  !js.includes("Qwen mesh") ||
-  !js.includes("Fishbowl") ||
-  !js.includes("pi2")
-) {
-  console.error("script must accept CTO bay1/bay2/bay3 maps and keep Fishbowl, Qwen mesh, and pi2");
-  process.exit(1);
-}
-if (!js.includes("600000") && !js.includes("6e5")) {
-  console.error("script must treat rack heartbeats older than 10 minutes as stale");
-  process.exit(1);
-}
-
-for (const page of [researchHtml, researchRoot]) {
-  for (const bay of rackJson.bays) {
-    if (!page.includes(`data-bay="${bay.id}"`)) {
-      console.error(`research page must render rack bay ${bay.id} from status.json`);
-      process.exit(1);
-    }
-    if (bay.href && !page.includes(`href="${bay.href}"`)) {
-      console.error(`research page must keep the status.json href for ${bay.id}`);
-      process.exit(1);
-    }
-    if (bay.name && !page.includes(bay.name)) {
-      console.error(`research page must keep the status.json name for ${bay.id}`);
-      process.exit(1);
-    }
-    if (bay.role && !page.includes(bay.role)) {
-      console.error(`research page must keep the status.json role for ${bay.id}`);
-      process.exit(1);
-    }
-    if (bay.state !== "empty" && !page.includes(bay.state)) {
-      console.error(`research page must keep the status.json state for ${bay.id}`);
-      process.exit(1);
-    }
-    if (bay.note && !page.includes(bay.note)) {
-      console.error(`research page must keep the status.json note for ${bay.id}`);
-      process.exit(1);
-    }
-  }
-}
-
-if (!existsSync("dist/research/agent-native-ui/index.html") || !existsSync("research/agent-native-ui/index.html")) {
-  console.error("essay page must exist at dist/research/agent-native-ui/index.html and research/agent-native-ui/index.html");
-  process.exit(1);
-}
-
-if (!existsSync("dist/research/fishbowl/index.html") || !existsSync("research/fishbowl/index.html")) {
-  console.error("fishbowl page must exist at dist/research/fishbowl/index.html and research/fishbowl/index.html");
-  process.exit(1);
-}
-
-const essayHtml = readFileSync("dist/research/agent-native-ui/index.html", "utf8");
-const essayRoot = readFileSync("research/agent-native-ui/index.html", "utf8");
-const fishbowlHtml = readFileSync("dist/research/fishbowl/index.html", "utf8");
-const fishbowlRoot = readFileSync("research/fishbowl/index.html", "utf8");
-const paperFiles = [
-  "public/research/agent-native-ui/paper.pdf",
-  "dist/research/agent-native-ui/paper.pdf",
-  "research/agent-native-ui/paper.pdf",
-];
-const flowFiles = [
-  "public/research/fishbowl/flow.pdf",
-  "dist/research/fishbowl/flow.pdf",
-  "research/fishbowl/flow.pdf",
-];
-const meshFiles = [
-  "public/research/fishbowl/mesh-architecture.pdf",
-  "dist/research/fishbowl/mesh-architecture.pdf",
-  "research/fishbowl/mesh-architecture.pdf",
-];
-const fishbowlPaperFiles = [
+  if (!page.includes("static.cloudflareinsights.com/beacon.min.js") || !page.includes("data-cf-beacon")) {
+    fail(`${label} must include the Cloudflare beacon`);
+  }
+}
+
+const favicon = read("dist/favicon.svg");
+mustInclude(favicon, ["<title>A</title>", 'aria-label="A"', "#0a0a0a", "#fafaf7"], "favicon");
+mustExclude(favicon, ["#e3925a", "#ff6b00", "rotate(-26"], "favicon");
+if (!existsSync("dist/favicon-32.png") || !existsSync("dist/favicon.ico")) {
+  fail("dist is missing favicon-32.png or favicon.ico");
+}
+
+const cssName = readdirSync("dist/assets").find((name) => name.endsWith(".css"));
+const jsName = readdirSync("dist/assets").find((name) => name.endsWith(".js"));
+if (!cssName || !jsName) fail("dist/assets is missing hashed css or js");
+const css = read(`dist/assets/${cssName}`);
+const js = read(`dist/assets/${jsName}`);
+mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist"], "css");
+mustExclude(
+  css,
+  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "live-pulse", "@keyframes"],
+  "css",
+);
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl"], "js");
+
+const pdfs = [
   "public/research/fishbowl/paper.pdf",
+  "public/research/fishbowl/flow.pdf",
+  "public/research/fishbowl/mesh-architecture.pdf",
+  "public/research/agent-native-ui/paper.pdf",
   "dist/research/fishbowl/paper.pdf",
-  "research/fishbowl/paper.pdf",
+  "dist/research/fishbowl/flow.pdf",
+  "dist/research/fishbowl/mesh-architecture.pdf",
+  "dist/research/agent-native-ui/paper.pdf",
 ];
-const missingPaper = paperFiles.filter((path) => !existsSync(path));
-if (missingPaper.length > 0) {
-  console.error("ingested paper.pdf is missing:");
-  for (const path of missingPaper) console.error(`  - ${path}`);
-  process.exit(1);
-}
-for (const path of paperFiles) {
+for (const path of pdfs) {
+  if (!existsSync(path)) fail(`missing ${path}`);
   const bytes = readFileSync(path);
-  if (bytes.subarray(0, 5).toString("latin1") !== "%PDF-") {
-    console.error(`${path} must be the ingested research PDF`);
-    process.exit(1);
-  }
-  if (bytes.length < 1000) {
-    console.error(`${path} is too small to be the research PDF`);
-    process.exit(1);
+  if (bytes.subarray(0, 5).toString("latin1") !== "%PDF-") fail(`${path} is not a PDF`);
+  const text = bytes.toString("latin1");
+  if (/tailscale|192\.168\.|10\.0\.0\.|\.local\b|P2S/i.test(text)) {
+    fail(`${path} must not carry LAN, Tailscale, or P2S`);
   }
 }
 
-const missingFlow = flowFiles.filter((path) => !existsSync(path));
-if (missingFlow.length > 0) {
-  console.error("fishbowl flow.pdf is missing:");
-  for (const path of missingFlow) console.error(`  - ${path}`);
-  process.exit(1);
+const renders = ["rack-hero-render", "rack-front-render", "rack-top-render"];
+const photoDir = "public/research/fishbowl";
+const present = renders.filter(
+  (name) => existsSync(`${photoDir}/${name}.png`) || existsSync(`${photoDir}/${name}.jpg`),
+);
+if (present.length !== 0 && present.length !== renders.length) {
+  fail(`fishbowl render set is partial: ${present.join(", ")}`);
 }
-for (const path of flowFiles) {
-  const bytes = readFileSync(path);
-  if (bytes.subarray(0, 5).toString("latin1") !== "%PDF-") {
-    console.error(`${path} must be the fishbowl flow PDF`);
-    process.exit(1);
-  }
-  if (bytes.length < 1000) {
-    console.error(`${path} is too small to be the fishbowl flow PDF`);
-    process.exit(1);
-  }
+const paper = readFileSync("public/research/fishbowl/paper.pdf");
+const paperLatin = paper.toString("latin1");
+for (const banned of ["rack-hero-studio", "rack-front-ports-studio", "rack-top-studio", "paper-crop", "P2S"]) {
+  if (paperLatin.includes(banned)) fail(`fishbowl paper.pdf still names ${banned}`);
 }
-
-const missingFishbowlPaper = fishbowlPaperFiles.filter((path) => !existsSync(path));
-if (missingFishbowlPaper.length > 0) {
-  console.error("fishbowl paper.pdf is missing:");
-  for (const path of missingFishbowlPaper) console.error(`  - ${path}`);
-  process.exit(1);
-}
-for (const path of fishbowlPaperFiles) {
-  const bytes = readFileSync(path);
-  if (bytes.subarray(0, 5).toString("latin1") !== "%PDF-") {
-    console.error(`${path} must be the fishbowl research PDF`);
-    process.exit(1);
-  }
-  if (bytes.length < 10000) {
-    console.error(`${path} is too small to be the fishbowl research PDF`);
-    process.exit(1);
-  }
-  if (!bytes.includes(Buffer.from("Fishbowl: An Event-Log Truthful Multi-Agent Office on a Raspberry Pi"))) {
-    console.error(`${path} must be the Fishbowl research paper`);
-    process.exit(1);
-  }
-}
-
-const missingMesh = meshFiles.filter((path) => !existsSync(path));
-if (missingMesh.length > 0) {
-  console.error("fishbowl mesh-architecture.pdf is missing:");
-  for (const path of missingMesh) console.error(`  - ${path}`);
-  process.exit(1);
-}
-for (const path of meshFiles) {
-  const bytes = readFileSync(path);
-  if (bytes.subarray(0, 5).toString("latin1") !== "%PDF-") {
-    console.error(`${path} must be the fishbowl mesh architecture PDF`);
-    process.exit(1);
-  }
-  if (bytes.length < 1000) {
-    console.error(`${path} is too small to be the fishbowl mesh architecture PDF`);
-    process.exit(1);
-  }
-  if (!bytes.includes(Buffer.from("Pi mesh architecture"))) {
-    console.error(`${path} must be the Pi mesh architecture diagram`);
-    process.exit(1);
-  }
-  if (
-    bytes.includes(Buffer.from("192.168.")) ||
-    /\b10\.0\.0\.\d+\b/.test(bytes.toString("latin1")) ||
-    bytes.includes(Buffer.from(".local"))
-  ) {
-    console.error(`${path} must not carry LAN addresses`);
-    process.exit(1);
-  }
-}
-
-const flowBytes = readFileSync("public/research/fishbowl/flow.pdf");
-const fishbowlPaperBytes = readFileSync("public/research/fishbowl/paper.pdf");
-const meshBytes = readFileSync("public/research/fishbowl/mesh-architecture.pdf");
-if (flowBytes.equals(fishbowlPaperBytes)) {
-  console.error("fishbowl paper.pdf must stay distinct from flow.pdf");
-  process.exit(1);
-}
-if (meshBytes.equals(flowBytes) || meshBytes.equals(fishbowlPaperBytes)) {
-  console.error("fishbowl mesh-architecture.pdf must stay distinct from paper.pdf and flow.pdf");
-  process.exit(1);
-}
-
-const essayRequired = [
-  "<title>The Interface Is a Variable: Measuring the Cost and Reliability of Purpose-Built UI Representations for LLM Agents</title>",
-  'href="/research"',
-  ">research</a>",
-  'href="/research/agent-native-ui/paper.pdf"',
-  ">pdf</a>",
-  'class="page essay"',
-  'class="essay-pdf"',
-  'src="/research/agent-native-ui/paper.pdf"',
-  'property="og:url" content="https://akashnaren.github.io/research/agent-native-ui/"',
-  'name="theme-color" content="#ffffff"',
-];
-
-for (const page of [essayHtml, essayRoot]) {
-  const missingEssay = essayRequired.filter((needle) => !page.includes(needle));
-  if (missingEssay.length > 0) {
-    console.error("essay page is missing required copy:");
-    for (const needle of missingEssay) console.error(`  - ${needle}`);
-    process.exit(1);
-  }
-
-  if (
-    page.includes("Stub. Replace the markdown") ||
-    page.includes("Nothing here is a result.") ||
-    page.includes("No results on this page.") ||
-    page.includes('class="essay-note"') ||
-    page.includes('class="essay-status"') ||
-    page.includes('class="essay-nav"') ||
-    page.includes('class="essay-body"') ||
-    page.includes("Four ways to show one store to a model.")
-  ) {
-    console.error("essay page must not keep the stub markdown reader");
-    process.exit(1);
-  }
-
-  if (page.includes("\u2014") || page.includes("\u2013")) {
-    console.error("essay page must not use dash punctuation");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("delve") ||
-    page.includes("leverage") ||
-    page.includes("robust pipeline") ||
-    page.includes("in this work")
-  ) {
-    console.error("essay page must keep lean copy, not AI essay phrasing");
-    process.exit(1);
-  }
-
-  if (
-    /Tesla/.test(page) ||
-    /tesla\.com/.test(page) ||
-    /Redwood City/.test(page) ||
-    /Raytheon/.test(page) ||
-    /NASA/.test(page)
-  ) {
-    console.error("essay page must not carry Tesla or home bio copy");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("apn@agentmail.to") ||
-    page.includes("agentmail") ||
-    page.includes("akashnaren@gmail.com") ||
-    page.includes("human-mail") ||
-    page.includes('class="inbox"')
-  ) {
-    console.error("essay page must not leak AgentMail, Gmail, or the bots' inbox");
-    process.exit(1);
-  }
-
-  if (
-    page.includes('class="sky"') ||
-    page.includes('class="system"') ||
-    page.includes('class="board"') ||
-    page.includes('class="roster"') ||
-    page.includes("profile assistant") ||
-    page.includes("click on any bot")
-  ) {
-    console.error("essay page must not duplicate home sky or /bot roster cards");
-    process.exit(1);
-  }
-
-  if (
-    /job assistant/i.test(page) ||
-    /startup advisor/i.test(page) ||
-    /looking for a job/i.test(page) ||
-    /job search/i.test(page)
-  ) {
-    console.error("essay page must not name Job Assistant, Startup Advisor, or job-hunt");
-    process.exit(1);
-  }
-
-  if (!/\/assets\/index-[^"]+\.js/.test(page)) {
-    console.error("essay page must reference hashed /assets/index-*.js");
-    process.exit(1);
-  }
-
-  if (page.includes("this site is managed by") || page.includes('class="managed-copy"')) {
-    console.error("PDF reader must not carry site-themed managed-by chrome");
-    process.exit(1);
-  }
-}
-
-const fishbowlRequired = [
-  "<title>Fishbowl: An Event-Log Truthful Multi-Agent Office on a Raspberry Pi</title>",
-  'href="/research"',
-  ">research</a>",
-  'href="/research/fishbowl/paper.pdf"',
-  ">pdf</a>",
-  'href="/research/fishbowl/flow.pdf"',
-  ">flow</a>",
-  'href="/research/fishbowl/mesh-architecture.pdf"',
-  ">mesh</a>",
-  'class="page essay"',
-  'class="essay-pdf"',
-  'src="/research/fishbowl/paper.pdf"',
-  'property="og:url" content="https://akashnaren.github.io/research/fishbowl/"',
-  'name="theme-color" content="#ffffff"',
-  "stream planned later",
-];
-
-for (const page of [fishbowlHtml, fishbowlRoot]) {
-  const missingFishbowl = fishbowlRequired.filter((needle) => !page.includes(needle));
-  if (missingFishbowl.length > 0) {
-    console.error("fishbowl page is missing required copy:");
-    for (const needle of missingFishbowl) console.error(`  - ${needle}`);
-    process.exit(1);
-  }
-
-  if (
-    page.includes("coming soon") ||
-    page.includes("Meridian") ||
-    page.includes("MiniShop") ||
-    page.includes("OpenRouter") ||
-    page.includes('class="essay-note"') ||
-    page.includes('class="essay-status"') ||
-    page.includes('class="essay-nav"') ||
-    page.includes('class="essay-body"')
-  ) {
-    console.error("fishbowl page must stay a quiet PDF reader");
-    process.exit(1);
-  }
-
-  if (page.includes('src="/research/fishbowl/flow.pdf"')) {
-    console.error("fishbowl page must embed paper.pdf, not flow.pdf");
-    process.exit(1);
-  }
-
-  if (page.includes('src="/research/fishbowl/mesh-architecture.pdf"')) {
-    console.error("fishbowl page must embed paper.pdf, not mesh-architecture.pdf");
-    process.exit(1);
-  }
-
-  if (
-    /\b10\.0\.0\.\d+\b/.test(page) ||
-    /\b192\.168\.\d+\.\d+\b/.test(page) ||
-    /\.local\b/.test(page)
-  ) {
-    console.error("fishbowl page must not leak LAN addresses");
-    process.exit(1);
-  }
-
-  if (page.includes("\u2014") || page.includes("\u2013")) {
-    console.error("fishbowl page must not use dash punctuation");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("delve") ||
-    page.includes("leverage") ||
-    page.includes("robust pipeline") ||
-    page.includes("in this work")
-  ) {
-    console.error("fishbowl page must keep lean copy, not AI essay phrasing");
-    process.exit(1);
-  }
-
-  if (
-    /Tesla/.test(page) ||
-    /tesla\.com/.test(page) ||
-    /Redwood City/.test(page) ||
-    /Raytheon/.test(page) ||
-    /NASA/.test(page)
-  ) {
-    console.error("fishbowl page must not carry Tesla or home bio copy");
-    process.exit(1);
-  }
-
-  if (
-    page.includes("apn@agentmail.to") ||
-    page.includes("agentmail") ||
-    page.includes("akashnaren@gmail.com") ||
-    page.includes("human-mail") ||
-    page.includes('class="inbox"')
-  ) {
-    console.error("fishbowl page must not leak AgentMail, Gmail, or the bots' inbox");
-    process.exit(1);
-  }
-
-  if (
-    page.includes('class="sky"') ||
-    page.includes('class="system"') ||
-    page.includes('class="board"') ||
-    page.includes('class="roster"') ||
-    page.includes("profile assistant") ||
-    page.includes("click on any bot")
-  ) {
-    console.error("fishbowl page must not duplicate home sky or /bot roster cards");
-    process.exit(1);
-  }
-
-  if (
-    /job assistant/i.test(page) ||
-    /startup advisor/i.test(page) ||
-    /looking for a job/i.test(page) ||
-    /job search/i.test(page)
-  ) {
-    console.error("fishbowl page must not name Job Assistant, Startup Advisor, or job-hunt");
-    process.exit(1);
-  }
-
-  if (!/\/assets\/index-[^"]+\.js/.test(page)) {
-    console.error("fishbowl page must reference hashed /assets/index-*.js");
-    process.exit(1);
-  }
-
-  if (page.includes("this site is managed by") || page.includes('class="managed-copy"')) {
-    console.error("fishbowl PDF reader must not carry site-themed managed-by chrome");
-    process.exit(1);
-  }
-}
-
-const cloudflareBeacon =
-  "https://static.cloudflareinsights.com/beacon.min.js";
-const cloudflareToken = "0470f893bb1740a88848e29324507551";
-const cloudflarePages = [
-  [html, "dist/index.html"],
-  [root, "root index.html"],
-  [botHtml, "dist/bot/index.html"],
-  [botRoot, "bot/index.html"],
-  [researchHtml, "dist/research/index.html"],
-  [researchRoot, "research/index.html"],
-  [essayHtml, "dist/research/agent-native-ui/index.html"],
-  [essayRoot, "research/agent-native-ui/index.html"],
-  [fishbowlHtml, "dist/research/fishbowl/index.html"],
-  [fishbowlRoot, "research/fishbowl/index.html"],
-  [spa, "dist/404.html"],
-  [spaRoot, "404.html"],
-];
-for (const [page, label] of cloudflarePages) {
-  if (
-    !page.includes(cloudflareBeacon) ||
-    !page.includes(cloudflareToken) ||
-    !page.includes("data-cf-beacon")
-  ) {
-    console.error(`${label} must include the Cloudflare Web Analytics beacon`);
-    process.exit(1);
-  }
-  if ((page.match(/static\.cloudflareinsights\.com\/beacon\.min\.js/g) || []).length !== 1) {
-    console.error(`${label} must include exactly one Cloudflare beacon`);
-    process.exit(1);
-  }
+if (present.length === renders.length) {
+  const hasRaster =
+    paper.includes(Buffer.from("\xff\xd8\xff")) ||
+    paper.includes(Buffer.from("IDAT")) ||
+    paper.includes(Buffer.from("/DCTDecode")) ||
+    paper.includes(Buffer.from("/FlateDecode"));
+  if (!hasRaster) fail("fishbowl paper.pdf must embed the product renders");
 }
 
 console.log(
-  "dist/index.html has the two-column split, type above a first-paint solar system, no job-title line, HF+Kaggle marks, locked copy, both labeled mailtos, spaced managed-by line to /bot, ten /bot fleet faces with seat-name tips, a glancing host SVG, a staggered CSS idle, a click-on-any-bot invite, a peer Research link to /research with a quiet new today mark, overflow-hidden 100dvh, dark color-scheme, text-size-adjust 100%, and hashed Pages assets. /bot is a no-scroll title-only grok bot collection roster with a 46rem stage, concise one-line blurbs, 3s auto-cycle, email tooltip, and no stacked brief chrome. /research is a scrollable academic list with figure-left rows on desktop, stacked figure-over-copy threads below 700px, bold titles, a quiet still researching line, a pi rack under the mast before the threads, Fishbowl first with a read link to the paper plus flow, mesh, and code links and a posted today mark, then the earlier three threads, quiet SVG teasers, and a data-driven three-bay chassis with cooler LEDs on Fishbowl and Qwen mesh plus a dimmer reserved pi2 bay. /research/agent-native-ui is a white PDF reader that embeds the ingested research paper.pdf. /research/fishbowl is a white PDF reader that embeds paper.pdf with quiet flow.pdf and mesh-architecture.pdf links. Every public HTML page carries the Cloudflare Web Analytics beacon.",
+  present.length === renders.length
+    ? "dist matches the public pages, favicon, and fishbowl renders."
+    : "dist matches the public pages and favicon.",
 );

@@ -4,43 +4,26 @@ import {
   botDescription,
   botTitle,
   botUrl,
-  collectionPath,
   collectionTitle,
   contact,
   description,
-  fleetFact,
-  fleetInvite,
-  fleetLine,
-  fleetMarkSize,
   isLink,
-  isPostedToday,
   managedBy,
-  managedMarkSize,
   name,
   personalMail,
-  rackBayOccupied,
-  rackCue,
-  rackHeartbeatFresh,
-  rackPercent,
-  rackStatus,
   researchDescription,
   researchLinkLabel,
-  researchNote,
   researchPath,
   researchTitle,
   researchUrl,
   seats,
-  threadPostedDates,
   threads,
   url,
   type Contact,
   type Paragraph,
   type Phrase,
-  type RackBay,
-  type RackStatus,
   type Seat,
   type Thread,
-  type ThreadLink,
 } from "./content.ts";
 import {
   fishbowlPaperHref,
@@ -95,17 +78,8 @@ function renderParagraph(paragraph: readonly Phrase[]): string {
   return `<p>${paragraph.map(renderPhrase).join("")}</p>`;
 }
 
-function renderMark(src: string, size: number, className: string): string {
-  return `<img class="${className}" src="${escapeHtml(src)}" alt="" width="${String(size)}" height="${String(size)}" decoding="async" />`;
-}
-
-function renderGrokBotMark(kind: "managed" | "seat" | "fleet" = "managed"): string {
-  const seat = kind === "seat";
-  const fleet = kind === "fleet";
-  const size = String(fleet ? fleetMarkSize : seat ? 36 : managedMarkSize);
-  const photon = fleet ? "24" : seat ? "40" : "20";
-  const wrap = fleet ? "grok-bot-wrap fleet-wrap" : seat ? "grok-bot-wrap seat-wrap" : "grok-bot-wrap";
-  return `<span class="${wrap}" aria-hidden="true"><svg class="grok-bot-photon" viewBox="0 0 32 32" width="${photon}" height="${photon}" focusable="false"><circle class="grok-bot-photon-halo" cx="16" cy="16" r="14.6" fill="none" stroke="#ff6b00" stroke-width="0.7" opacity="0.22"/></svg><svg class="grok-bot-mark" viewBox="0 0 32 32" width="${size}" height="${size}" focusable="false"><g class="grok-bot-body"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><g class="grok-bot-eyes"><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></g></g></svg></span>`;
+function renderGrokBotMark(): string {
+  return `<svg class="grok-bot-mark" viewBox="0 0 32 32" width="15" height="15" aria-hidden="true" focusable="false"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></svg>`;
 }
 
 function renderManagedBy(line: Paragraph = managedBy): string {
@@ -122,36 +96,9 @@ function renderContactLink(item: Contact): string {
 function renderContact(): string {
   const links = contact.map(renderContactLink).join("");
   return `<div class="contact">
-          <p class="contact-marks">${links}</p>
-          <p class="human-mail"><span class="mail-label">${escapeHtml(personalMail.label)}</span><a class="mail-address" href="${escapeHtml(personalMail.href)}">${escapeHtml(personalMail.address)}</a></p>
-        </div>`;
-}
-
-function renderFleetFace(seat: Seat): string {
-  const name = escapeHtml(seat.name);
-  const href = escapeHtml(collectionPath);
-  const host = seat.id === "profile-engineer";
-  const mark = host
-    ? renderGrokBotMark("fleet")
-    : renderMark(seat.face, fleetMarkSize, "fleet-mark");
-  const klass = host ? "fleet-face is-host" : "fleet-face";
-  return `<a class="${klass}" href="${href}" data-seat="${escapeHtml(seat.id)}" aria-label="${name}">${mark}<span class="fleet-tip" aria-hidden="true">${name}</span></a>`;
-}
-
-function renderFresh(label: string, dates: readonly string[], now: Date = new Date()): string {
-  if (dates.length === 0) return "";
-  const hidden = dates.some((date) => isPostedToday(date, now)) ? "" : " hidden";
-  return `<span class="fresh" data-posted="${escapeHtml(dates.join(" "))}"${hidden}>${escapeHtml(label)}</span>`;
-}
-
-function renderFleet(): string {
-  const marks = seats.map(renderFleetFace).join("");
-  const fresh = renderFresh("new today", threadPostedDates());
-  const mark = fresh ? ` ${fresh}` : "";
-  return `<p class="fleet">${marks}</p>
-          <p class="fleet-line">${escapeHtml(fleetLine)}</p>
-          <p class="fleet-invite"><a href="${escapeHtml(collectionPath)}">${escapeHtml(fleetInvite)}</a></p>
-          <p class="page-link"><a href="${escapeHtml(researchPath)}">${escapeHtml(researchLinkLabel)}</a>${mark}</p>`;
+        <p class="contact-marks">${links}</p>
+        <p class="human-mail"><span class="mail-label">${escapeHtml(personalMail.label)}</span><a class="mail-address" href="${escapeHtml(personalMail.href)}">${escapeHtml(personalMail.address)}</a></p>
+      </div>`;
 }
 
 function renderInbox(label: string = agentInbox.label, tip = ""): string {
@@ -164,318 +111,117 @@ function renderInbox(label: string = agentInbox.label, tip = ""): string {
   return `<p class="inbox${extra}"><span class="inbox-label">${escapeHtml(label)}</span><a class="inbox-address" href="${escapeHtml(agentInbox.href)}"${described}${titled}>${escapeHtml(agentInbox.address)}</a>${tipHtml}</p>`;
 }
 
-function renderFact(): string {
-  return `<p class="fact">${escapeHtml(fleetFact)}</p>`;
-}
-
-function renderSolarSystem(): string {
-  return `<svg class="system" viewBox="0 0 240 240" focusable="false">
-          <g class="orbits" fill="none" stroke="rgba(250,250,247,0.1)" stroke-width="0.45">
-            <circle cx="120" cy="120" r="16"/>
-            <circle cx="120" cy="120" r="26"/>
-            <circle cx="120" cy="120" r="38"/>
-            <circle cx="120" cy="120" r="52"/>
-            <circle cx="120" cy="120" r="68"/>
-            <circle cx="120" cy="120" r="84"/>
-            <circle cx="120" cy="120" r="98"/>
-            <circle cx="120" cy="120" r="110"/>
-          </g>
-          <g transform="translate(120 120)">
-            <circle class="sun" cx="0" cy="0" r="4.4" fill="#d4b56a"/>
-            <g class="spin spin-1"><circle cx="16" cy="0" r="1.05" fill="#9a9590"/></g>
-            <g class="spin spin-2"><circle cx="26" cy="0" r="1.45" fill="#b8a078"/></g>
-            <g class="spin spin-3"><circle cx="38" cy="0" r="1.55" fill="#6d8a9a"/></g>
-            <g class="spin spin-4"><circle cx="52" cy="0" r="1.2" fill="#a86a50"/></g>
-            <g class="spin spin-5"><circle cx="68" cy="0" r="2.25" fill="#b89870"/></g>
-            <g class="spin spin-6"><circle cx="84" cy="0" r="1.9" fill="#c4b48a"/></g>
-            <g class="spin spin-7"><circle cx="98" cy="0" r="1.45" fill="#7a9aa8"/></g>
-            <g class="spin spin-8"><circle cx="110" cy="0" r="1.35" fill="#5a6f9a"/></g>
-          </g>
-        </svg>`;
-}
-
 export function renderSite(): string {
-  const paragraphs = body.map(renderParagraph).join("\n          ");
+  const paragraphs = body.map(renderParagraph).join("\n        ");
 
   return `<div class="page" id="holder">
-      <div class="stage">
-      <main class="him">
-        <div class="bio">
-          <header>
-            <h1>${escapeHtml(name)}<span class="scope" aria-hidden="true"></span></h1>
-          </header>
-          ${paragraphs}
-        </div>
-        ${renderContact()}
-      </main>
-      <aside class="panel">
-        ${renderFact()}
-        ${renderFleet()}
-        ${renderManagedBy()}
-        ${renderInbox()}
-      </aside>
+    <main class="stage">
+      <header>
+        <h1>${escapeHtml(name)}</h1>
+      </header>
+      <div class="bio">
+        ${paragraphs}
       </div>
-      <div class="sky" aria-hidden="true">
-        ${renderSolarSystem()}
-      </div>
-    </div>`;
+      ${renderContact()}
+      <p class="page-link"><a href="${escapeHtml(researchPath)}">${escapeHtml(researchLinkLabel)}</a></p>
+      ${renderManagedBy()}
+      ${renderInbox()}
+    </main>
+  </div>`;
 }
 
-function renderRow(seat: Seat, on = false): string {
-  const pressed = on ? "true" : "false";
-  const klass = on ? "row is-on" : "row";
-  return `<button type="button" class="${klass}" role="listitem" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" data-blurb="${escapeHtml(seat.blurb)}" aria-pressed="${pressed}" aria-label="${escapeHtml(seat.name)}">${renderMark(seat.face, 40, "row-face")}<span class="row-id"><span class="row-name">${escapeHtml(seat.name)}</span><span class="row-blurb">${escapeHtml(seat.blurb)}</span></span></button>`;
-}
-
-function renderBoard(): string {
-  const rows = seats.map((seat, index) => renderRow(seat, index === 0)).join("");
-  return `<main class="board" data-cycle="3000">
-        <div class="roster" role="list">${rows}</div>
-      </main>`;
+function renderRow(seat: Seat): string {
+  return `<li class="row" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}"><img class="row-face" src="${escapeHtml(seat.face)}" alt="" width="36" height="36" decoding="async" /><span class="row-id"><span class="row-name">${escapeHtml(seat.name)}</span><span class="row-blurb">${escapeHtml(seat.blurb)}</span></span></li>`;
 }
 
 export function renderBot(): string {
+  const rows = seats.map(renderRow).join("");
   return `<div class="page profile" id="holder">
-      <div class="stage">
+    <main class="stage">
       <header class="mast">
-        <h1>${escapeHtml(collectionTitle)}<span class="scope" aria-hidden="true"></span></h1>
+        <h1>${escapeHtml(collectionTitle)}</h1>
       </header>
-      ${renderBoard()}
+      <ul class="roster">${rows}</ul>
       <footer class="foot">
         ${renderInbox(agentInbox.label, agentInbox.tip)}
         ${renderManagedBy()}
       </footer>
-      </div>
-    </div>`;
+    </main>
+  </div>`;
 }
 
 function renderProtocolFigure(): string {
   return `<svg class="thread-fig" viewBox="0 0 140 108" width="140" height="108" focusable="false" aria-hidden="true">
-            <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
-            <path d="M16 18v72" fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.7"/>
-            <rect x="24" y="16" width="96" height="22" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.9"/>
-            <rect x="28" y="20" width="26" height="14" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.7"/>
-            <rect x="59" y="20" width="26" height="14" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.7"/>
-            <rect x="90" y="20" width="26" height="14" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.7"/>
-            <rect x="24" y="43" width="96" height="22" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.8"/>
-            <circle cx="42" cy="51" r="2.1" fill="none" stroke="rgba(250,250,247,0.4)" stroke-width="0.75"/>
-            <circle cx="62" cy="59" r="2.1" fill="none" stroke="rgba(250,250,247,0.4)" stroke-width="0.75"/>
-            <circle cx="82" cy="51" r="2.1" fill="none" stroke="rgba(250,250,247,0.4)" stroke-width="0.75"/>
-            <circle cx="102" cy="59" r="2.1" fill="none" stroke="rgba(250,250,247,0.4)" stroke-width="0.75"/>
-            <path d="M44 52.2l16 6.2M44 51.4l36-.2M84 52.2l16 6.2" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.7"/>
-            <rect x="24" y="70" width="96" height="22" fill="none" stroke="rgba(250,250,247,0.24)" stroke-width="0.75"/>
-            <g fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.6">
-              <rect x="30" y="75" width="6" height="5.5"/>
-              <rect x="39" y="75" width="6" height="5.5"/>
-              <rect x="48" y="75" width="6" height="5.5"/>
-              <rect x="57" y="75" width="6" height="5.5"/>
-              <rect x="66" y="75" width="6" height="5.5"/>
-              <rect x="75" y="75" width="6" height="5.5"/>
-              <rect x="84" y="75" width="6" height="5.5"/>
-              <rect x="93" y="75" width="6" height="5.5"/>
-              <rect x="102" y="75" width="6" height="5.5"/>
-              <rect x="30" y="83" width="6" height="5.5"/>
-              <rect x="39" y="83" width="6" height="5.5"/>
-              <rect x="48" y="83" width="6" height="5.5"/>
-              <rect x="57" y="83" width="6" height="5.5"/>
-              <rect x="66" y="83" width="6" height="5.5"/>
-              <rect x="75" y="83" width="6" height="5.5"/>
-              <rect x="84" y="83" width="6" height="5.5"/>
-              <rect x="93" y="83" width="6" height="5.5"/>
-              <rect x="102" y="83" width="6" height="5.5"/>
-            </g>
-          </svg>`;
+          <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
+          <path d="M16 18v72" fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.7"/>
+          <rect x="24" y="16" width="96" height="22" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.9"/>
+          <rect x="28" y="20" width="26" height="14" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.7"/>
+          <rect x="59" y="20" width="26" height="14" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.7"/>
+          <rect x="90" y="20" width="26" height="14" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.7"/>
+          <rect x="24" y="43" width="96" height="22" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.8"/>
+          <path d="M44 52.2l16 6.2M44 51.4l36-.2M84 52.2l16 6.2" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.7"/>
+          <rect x="24" y="70" width="96" height="22" fill="none" stroke="rgba(250,250,247,0.24)" stroke-width="0.75"/>
+        </svg>`;
 }
 
 function renderAxesFigure(): string {
   return `<svg class="thread-fig" viewBox="0 0 140 108" width="140" height="108" focusable="false" aria-hidden="true">
-            <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
-            <path d="M26 86V22M26 86h96" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.8"/>
-            <path d="M46 86v3M66 86v3M86 86v3M106 86v3M26 70h-3M26 54h-3M26 38h-3" fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.7"/>
-            <circle cx="46" cy="72" r="2.3" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.75"/>
-            <circle cx="58" cy="40" r="2.3" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.75"/>
-            <circle cx="74" cy="62" r="2.3" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.75"/>
-            <circle cx="88" cy="48" r="2.3" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.75"/>
-            <circle cx="104" cy="74" r="2.3" fill="none" stroke="rgba(250,250,247,0.46)" stroke-width="0.75"/>
-            <circle cx="116" cy="44" r="2.3" fill="none" stroke="rgba(250,250,247,0.46)" stroke-width="0.75"/>
-          </svg>`;
+          <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
+          <path d="M26 86V22M26 86h96" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.8"/>
+          <circle cx="46" cy="72" r="2.3" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.75"/>
+          <circle cx="74" cy="48" r="2.3" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.75"/>
+          <circle cx="104" cy="60" r="2.3" fill="none" stroke="rgba(250,250,247,0.46)" stroke-width="0.75"/>
+        </svg>`;
 }
 
 function renderGapsFigure(): string {
   return `<svg class="thread-fig" viewBox="0 0 140 108" width="140" height="108" focusable="false" aria-hidden="true">
-            <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
-            <path d="M16 90h108" fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.7"/>
-            <path d="M30 90v3M58 90v3M86 90v3M114 90v3" fill="none" stroke="rgba(250,250,247,0.18)" stroke-width="0.7"/>
-            <circle cx="30" cy="40" r="3.1" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
-            <circle cx="58" cy="40" r="3.1" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
-            <circle cx="114" cy="40" r="3.1" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
-            <circle cx="30" cy="68" r="3.1" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
-            <circle cx="86" cy="68" r="3.1" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
-            <path d="M33.2 40h21.6" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.85"/>
-            <path d="M30 43.2v21.6" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.85"/>
-            <path d="M89.2 68h21.4" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.85"/>
-            <path d="M61.2 40h49.6" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.85" stroke-dasharray="2.4 2.2"/>
-            <path d="M33.2 68h49.6" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.85" stroke-dasharray="2.4 2.2"/>
-          </svg>`;
-}
-
-function renderFishbowlFigure(): string {
-  return `<svg class="thread-fig" viewBox="0 0 140 108" width="140" height="108" focusable="false" aria-hidden="true">
-            <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
-            <circle cx="70" cy="18" r="3" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
-            <path d="M70 21.1v6.2" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.7"/>
-            <rect x="41" y="27.4" width="58" height="14" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.9"/>
-            <path d="M70 41.4v5.2" fill="none" stroke="rgba(250,250,247,0.24)" stroke-width="0.7"/>
-            <rect x="45" y="46.6" width="12" height="7" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.7"/>
-            <rect x="64" y="46.6" width="12" height="7" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.7"/>
-            <rect x="83" y="46.6" width="12" height="7" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.7"/>
-            <path d="M22 61.5h96" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.7"/>
-            <path d="M34 61.5v3M50 61.5v3M66 61.5v3M82 61.5v3M98 61.5v3M114 61.5v3" fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.7"/>
-            <rect x="20" y="70" width="46" height="20" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.8"/>
-            <rect x="74" y="70" width="46" height="20" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
-            <path d="M43 90v3.2M97 90v3.2" fill="none" stroke="rgba(250,250,247,0.22)" stroke-width="0.7"/>
-            <rect x="58" y="93.2" width="24" height="6.2" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.8"/>
-            <path d="M20 80H14V18h53" fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.7" stroke-dasharray="2.4 2.2"/>
-          </svg>`;
+          <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
+          <path d="M16 90h108" fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.7"/>
+          <circle cx="30" cy="40" r="3.1" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
+          <circle cx="58" cy="40" r="3.1" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
+          <circle cx="114" cy="68" r="3.1" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
+          <path d="M33.2 40h21.6" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.85"/>
+          <path d="M61.2 40h49.6" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.85" stroke-dasharray="2.4 2.2"/>
+        </svg>`;
 }
 
 function renderThreadFigure(figure: Thread["figure"]): string {
   if (figure === "protocol") return renderProtocolFigure();
   if (figure === "axes") return renderAxesFigure();
-  if (figure === "gaps") return renderGapsFigure();
-  return renderFishbowlFigure();
+  return renderGapsFigure();
 }
 
-function threadLinks(thread: Thread): readonly ThreadLink[] {
-  if (thread.links) return thread.links;
-  if (thread.href) {
-    return [{ href: thread.href, label: thread.linkLabel ?? "code" }];
-  }
-  return [];
-}
-
-function renderThreadLinks(thread: Thread): string {
-  const items = threadLinks(thread);
-  if (items.length === 0) return "";
-  const inner = items
-    .map((item) => `<a href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a>`)
-    .join(" ");
-  return `<p class="thread-link">${inner}</p>`;
+function renderExternalIcon(): string {
+  return `<svg class="ext" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.4 2.4h6.2v6.2M9.3 2.7 2.7 9.3" fill="none" stroke="currentColor" stroke-width="1.15"/></svg>`;
 }
 
 function renderThread(thread: Thread): string {
-  const fresh = thread.posted ? ` ${renderFresh("posted today", [thread.posted])}` : "";
+  const title = escapeHtml(thread.title);
+  const heading = thread.href
+    ? `<h2><a href="${escapeHtml(thread.href)}"${thread.external ? ` rel="noopener noreferrer"` : ""}>${title}${thread.external ? renderExternalIcon() : ""}</a></h2>`
+    : `<h2>${title}</h2>`;
   return `<article class="thread" data-thread="${escapeHtml(thread.id)}">
-          ${renderThreadFigure(thread.figure)}
-          <div class="thread-copy">
-            <h2>${escapeHtml(thread.title)}${fresh}</h2>
-            <p class="status">${escapeHtml(thread.status)}</p>
-            <p>${escapeHtml(thread.abstract)}</p>
-            ${renderThreadLinks(thread)}
-          </div>
-        </article>`;
-}
-
-function renderThreads(): string {
-  return `<main class="threads">${threads.map(renderThread).join("")}</main>`;
-}
-
-function renderRackBayFigure(bay: RackBay): string {
-  const empty = bay.state === "empty";
-  const slot = empty
-    ? `<rect class="rack-slot" x="16" y="20" width="40" height="70" fill="none" stroke="rgba(250,250,247,0.16)" stroke-width="0.7" stroke-dasharray="2.4 2.2"/>`
-    : `<rect class="rack-slot" x="16" y="20" width="40" height="70" fill="none" stroke="rgba(250,250,247,0.46)" stroke-width="0.85"/>
-            <path d="M20 26h32M20 31h22" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.7"/>
-            <circle cx="22" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>
-            <circle cx="28" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>
-            <circle cx="34" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>
-            <circle cx="40" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>`;
-  return `<svg class="rack-fig" viewBox="0 0 72 108" width="72" height="108" focusable="false" aria-hidden="true">
-            <rect x="3.5" y="3.5" width="65" height="101" fill="none" stroke="rgba(250,250,247,0.16)" stroke-width="0.75"/>
-            <path d="M9 8v92M63 8v92" fill="none" stroke="rgba(250,250,247,0.22)" stroke-width="1.15"/>
-            <circle cx="9" cy="16" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            <circle cx="9" cy="54" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            <circle cx="9" cy="92" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            <circle cx="63" cy="16" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            <circle cx="63" cy="54" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            <circle cx="63" cy="92" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
-            ${slot}
-            <circle class="rack-led" cx="36" cy="13" r="2.15"/>
-          </svg>`;
-}
-
-function rackBayClass(state: RackBay["state"]): string {
-  if (state === "empty") return "rack-bay is-empty";
-  if (state === "active") return "rack-bay is-active";
-  if (state === "reserved") return "rack-bay is-reserved";
-  return "rack-bay is-held";
-}
-
-function renderRackLoad(bay: RackBay, now: number): string {
-  if (!rackBayOccupied(bay) || !rackHeartbeatFresh(bay.heartbeat, now)) return "";
-  const cpu = rackPercent(bay.cpu);
-  if (cpu === null) return "";
-  const shown = Math.round(cpu);
-  const label = `cpu ${String(shown)}%`;
-  const mem = rackPercent(bay.mem);
-  const memHtml =
-    mem === null ? "" : `<span class="rack-mem">mem ${String(Math.round(mem))}%</span>`;
-  return `<p class="rack-load" style="--cpu:${String(shown)}"><span class="rack-meter" aria-hidden="true"><span class="rack-meter-fill"></span></span><span class="rack-cpu">${escapeHtml(label)}</span>${memHtml}</p>`;
-}
-
-export function renderRackBay(bay: RackBay, now: number = Date.now()): string {
-  const empty = bay.state === "empty";
-  const name = bay.name ?? "empty";
-  const klass = rackBayClass(bay.state);
-  const title = bay.href
-    ? `<p class="rack-name"><a href="${escapeHtml(bay.href)}">${escapeHtml(name)}</a></p>`
-    : `<p class="rack-name">${escapeHtml(name)}</p>`;
-  const role = bay.role ? `<p class="rack-role">${escapeHtml(bay.role)}</p>` : "";
-  const status = empty ? "" : `<p class="status">${escapeHtml(bay.state)}</p>`;
-  const note = bay.note ? `<p class="rack-note">${escapeHtml(bay.note)}</p>` : "";
-  const load = renderRackLoad(bay, now);
-  return `<li class="${klass}" data-bay="${escapeHtml(bay.id)}" data-state="${escapeHtml(bay.state)}">
-            ${renderRackBayFigure(bay)}
-            <div class="rack-copy">${title}${role}${status}${note}${load}</div>
-          </li>`;
-}
-
-export function renderRackBays(status: RackStatus, now: number = Date.now()): string {
-  return status.bays.map((bay) => renderRackBay(bay, now)).join("");
-}
-
-function renderRack(): string {
-  return `<section class="rack" aria-label="${escapeHtml(rackCue)}">
-          <p class="cue">${escapeHtml(rackCue)}</p>
-          <div class="rack-chassis">
-          <ol class="rack-bays">${renderRackBays(rackStatus)}</ol>
-          </div>
-        </section>`;
+        ${renderThreadFigure(thread.figure)}
+        <div class="thread-copy">
+          ${heading}
+          <p>${escapeHtml(thread.abstract)}</p>
+        </div>
+      </article>`;
 }
 
 export function renderResearch(): string {
   return `<div class="page research" id="holder">
-      <div class="stage">
+    <main class="stage">
       <header class="mast">
-        <h1>${escapeHtml(researchTitle)}<span class="scope" aria-hidden="true"></span></h1>
-        <p class="cue">${escapeHtml(researchNote)}</p>
+        <h1>${escapeHtml(researchTitle)}</h1>
       </header>
-      ${renderRack()}
-      ${renderThreads()}
+      <div class="threads">${threads.map(renderThread).join("")}</div>
       <footer class="foot">
         ${renderManagedBy()}
       </footer>
-      </div>
-    </div>`;
-}
-
-export function renderEssay(): string {
-  const href = escapeHtml(paperHref);
-  const title = escapeHtml(paperTitle);
-  return `<div class="page essay" id="holder">
-      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a> <a href="${href}">pdf</a></p>
-      <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
-    </div>`;
+    </main>
+  </div>`;
 }
 
 export function renderFishbowl(): string {
@@ -484,9 +230,31 @@ export function renderFishbowl(): string {
   const flow = escapeHtml(flowHref);
   const mesh = escapeHtml(meshHref);
   return `<div class="page essay" id="holder">
-      <p class="essay-back"><a href="${escapeHtml(researchPath)}">research</a> <a href="${href}">pdf</a> <a href="${flow}">flow</a> <a href="${mesh}">mesh</a> <span>stream planned later</span></p>
-      <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
-    </div>`;
+    <p class="essay-back"><a href="${escapeHtml(researchPath)}">Research</a> <a href="${href}">pdf</a> <a href="${flow}">flow</a> <a href="${mesh}">mesh</a></p>
+    <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
+  </div>`;
+}
+
+export function essayRedirectHtml(): string {
+  const href = paperHref;
+  const title = escapeHtml(paperTitle);
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${title}</title>
+    <meta name="description" content="${title}" />
+    <link rel="canonical" href="https://akashnaren.github.io${href}" />
+    <meta http-equiv="refresh" content="0;url=${href}" />
+    <script>location.replace(${JSON.stringify(href)})</script>
+    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "0470f893bb1740a88848e29324507551"}'></script><!-- End Cloudflare Web Analytics -->
+  </head>
+  <body>
+    <p><a href="${href}">${title}</a></p>
+  </body>
+</html>
+`;
 }
 
 export function replaceHolder(html: string, next: string): string {

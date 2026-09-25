@@ -1,4 +1,4 @@
-import { essayUrl, fishbowlUrl } from "./content.ts";
+import { fishbowlUrl } from "./content.ts";
 
 export const paperHref = "/research/agent-native-ui/paper.pdf";
 
@@ -12,25 +12,11 @@ export const fishbowlPaperTitle =
 
 export const flowHref = "/research/fishbowl/flow.pdf";
 
-export const flowTitle = "Fishbowl on a Raspberry Pi";
-
 export const meshHref = "/research/fishbowl/mesh-architecture.pdf";
 
-export const meshTitle = "Pi mesh architecture";
-
-export function essayMetaFrom(): {
-  readonly title: string;
-  readonly description: string;
-  readonly url: string;
-  readonly themeColor: string;
-} {
-  return {
-    title: paperTitle,
-    description: paperTitle,
-    url: essayUrl,
-    themeColor: "#ffffff",
-  };
-}
+// Product renders belong in paper.pdf: rack-hero-render, rack-front-render,
+// rack-top-render from /workspace/state/profile-ideas/pi-paper-photos/.
+// Run scripts/embed-fishbowl-renders.py when that set is on disk. No studio crops, no P2S.
 
 export function fishbowlMetaFrom(): {
   readonly title: string;
