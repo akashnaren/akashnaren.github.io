@@ -206,7 +206,7 @@ export const threads: readonly Thread[] = [
     title: piPaperTitle,
     figure: "mesh",
     abstract:
-      "I am running local language-model chat on a Raspberry Pi mesh, behind one OpenAI-style route.",
+      "I am running local language-model chat on a Raspberry Pi mesh.",
     href: piPaperHref,
   },
   {
