@@ -39,6 +39,8 @@ export type PageMeta = {
   readonly description: string;
   readonly url: string;
   readonly themeColor?: string;
+  /** When set, written as `<meta name="robots">`. Omit on public landings. */
+  readonly robots?: string;
 };
 
 export const homeMeta: PageMeta = {
@@ -302,6 +304,16 @@ export function applyPageMeta(html: string, meta: PageMeta): string {
     .replace(
       /(<meta name="theme-color" content=")[^"]*("\s*\/?>)/,
       `$1${escapeHtml(meta.themeColor ?? "#0a0a0a")}$2`,
+    )
+    .replace(
+      /\s*<meta name="robots" content="[^"]*"\s*\/?>/,
+      "",
+    )
+    .replace(
+      /(<meta name="description" content="[^"]*"\s*\/?>)/,
+      meta.robots
+        ? `$1\n    <meta name="robots" content="${escapeHtml(meta.robots)}" />`
+        : "$1",
     );
 }
 
@@ -320,4 +332,13 @@ export function applyDocumentMeta(meta: PageMeta): void {
     document.querySelector(selector)?.setAttribute("content", value);
   }
   document.querySelector('link[rel="canonical"]')?.setAttribute("href", meta.url);
+  const robots = document.querySelector('meta[name="robots"]');
+  if (meta.robots) {
+    const tag = robots ?? document.createElement("meta");
+    tag.setAttribute("name", "robots");
+    tag.setAttribute("content", meta.robots);
+    if (!robots) document.head.appendChild(tag);
+    return;
+  }
+  robots?.remove();
 }

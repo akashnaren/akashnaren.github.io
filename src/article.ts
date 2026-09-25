@@ -19,11 +19,13 @@ export function fishbowlMetaFrom(): {
   readonly description: string;
   readonly url: string;
   readonly themeColor: string;
+  readonly robots: "noindex,nofollow";
 } {
   return {
     title: fishbowlPaperTitle,
     description: fishbowlPaperTitle,
     url: fishbowlUrl,
     themeColor: "#ffffff",
+    robots: "noindex,nofollow",
   };
 }

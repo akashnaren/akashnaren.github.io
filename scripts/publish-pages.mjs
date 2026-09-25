@@ -57,6 +57,8 @@ for (const file of [
   "favicon.ico",
   "favicon-32.png",
   "site.webmanifest",
+  "robots.txt",
+  "sitemap.xml",
   ".nojekyll",
   "404.html",
 ]) {
@@ -83,10 +85,12 @@ if (
   !existsSync("research/index.html") ||
   !existsSync("research/agent-native-ui/index.html") ||
   !existsSync("research/fishbowl/index.html") ||
-  !existsSync("404.html")
+  !existsSync("404.html") ||
+  !existsSync("robots.txt") ||
+  !existsSync("sitemap.xml")
 ) {
   console.error(
-    "publish-pages: bot/index.html, research/index.html, research/agent-native-ui/index.html, research/fishbowl/index.html, or 404.html missing at repo root",
+    "publish-pages: bot/index.html, research/index.html, research/agent-native-ui/index.html, research/fishbowl/index.html, 404.html, robots.txt, or sitemap.xml missing at repo root",
   );
   process.exit(1);
 }

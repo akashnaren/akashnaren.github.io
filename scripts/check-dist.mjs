@@ -67,6 +67,10 @@ for (const [dist, root] of [
   ["dist/research/fishbowl/index.html", "research/fishbowl/index.html"],
   ["dist/research/agent-native-ui/index.html", "research/agent-native-ui/index.html"],
   ["dist/404.html", "404.html"],
+  ["dist/robots.txt", "robots.txt"],
+  ["dist/sitemap.xml", "sitemap.xml"],
+  ["public/robots.txt", "dist/robots.txt"],
+  ["public/sitemap.xml", "dist/sitemap.xml"],
 ]) {
   same(dist, root);
 }
@@ -147,6 +151,7 @@ mustExclude(
     "I work on",
     "og:image",
     "#e3925a",
+    "noindex",
   ],
   "home",
 );
@@ -211,6 +216,7 @@ mustExclude(
     "models",
     'class="sky"',
     "akashnaren@gmail.com",
+    "noindex",
   ],
   "bot",
 );
@@ -266,6 +272,7 @@ mustExclude(
     ">code</a>",
     ">demo</a>",
     "ten grok bots",
+    "noindex",
   ],
   "research",
 );
@@ -293,6 +300,7 @@ mustInclude(
     'href="/research/fishbowl/flow.pdf"',
     'href="/research/fishbowl/mesh-architecture.pdf"',
     'href="/research"',
+    '<meta name="robots" content="noindex,nofollow" />',
   ],
   "fishbowl",
 );
@@ -377,4 +385,44 @@ for (const banned of ["rack-hero-studio", "rack-front-ports-studio", "rack-top-s
   if (paperLatin.includes(banned)) fail(`fishbowl paper.pdf still names ${banned}`);
 }
 
-console.log("dist matches the public pages, favicon, and fishbowl paper photos.");
+const robots = read("dist/robots.txt");
+if (!robots.startsWith("User-agent:")) fail("robots.txt must start with User-agent");
+if (robots.includes("<html") || robots.includes("<!DOCTYPE")) {
+  fail("robots.txt must be plain text, not the HTML shell");
+}
+mustInclude(
+  robots,
+  [
+    "Allow: /",
+    "Allow: /bot/",
+    "Allow: /research/",
+    "Allow: /assets/",
+    "Sitemap: https://akashnaren.github.io/sitemap.xml",
+  ],
+  "robots.txt",
+);
+mustExclude(robots, ["Disallow: /research/fishbowl"], "robots.txt");
+
+const sitemap = read("dist/sitemap.xml");
+if (!sitemap.startsWith("<?xml")) fail("sitemap.xml must be XML");
+if (sitemap.includes("<html") || sitemap.includes("<!DOCTYPE html")) {
+  fail("sitemap.xml must be XML, not the HTML shell");
+}
+mustInclude(
+  sitemap,
+  [
+    'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
+    "<loc>https://akashnaren.github.io/</loc>",
+    "<loc>https://akashnaren.github.io/bot/</loc>",
+    "<loc>https://akashnaren.github.io/research/</loc>",
+    "<loc>https://akashnaren.github.io/research/agent-native-ui/paper.pdf</loc>",
+  ],
+  "sitemap.xml",
+);
+mustExclude(
+  sitemap,
+  ["fishbowl", "status.json", "/research/rack"],
+  "sitemap.xml",
+);
+
+console.log("dist matches the public pages, favicon, fishbowl paper photos, robots.txt, and sitemap.xml.");
