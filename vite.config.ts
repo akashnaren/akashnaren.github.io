@@ -1,14 +1,12 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
-import { fishbowlMetaFrom } from "./src/article.ts";
 import {
   applyPageMeta,
   botMeta,
   essayRedirectHtml,
   homeMeta,
   renderBot,
-  renderFishbowl,
   renderResearch,
   renderSite,
   replaceHolder,
@@ -21,7 +19,6 @@ function rewritePageIndex(req: { url?: string }): void {
   if (req.url === "/bot") req.url = "/bot/";
   if (req.url === "/research") req.url = "/research/";
   if (req.url === "/research/agent-native-ui") req.url = "/research/agent-native-ui/";
-  if (req.url === "/research/fishbowl") req.url = "/research/fishbowl/";
 }
 
 export default defineConfig({
@@ -71,11 +68,6 @@ export default defineConfig({
         writeFileSync(
           resolve("dist/research/agent-native-ui/index.html"),
           essayRedirectHtml(),
-        );
-        mkdirSync(resolve("dist/research/fishbowl"), { recursive: true });
-        writeFileSync(
-          resolve("dist/research/fishbowl/index.html"),
-          applyPageMeta(replaceHolder(home, renderFishbowl()), fishbowlMetaFrom()),
         );
         writeFileSync(
           resolve("dist/404.html"),

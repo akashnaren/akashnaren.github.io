@@ -1,21 +1,21 @@
 {
-  "updated": "2026-09-22",
+  "updated": "2026-09-25",
   "bays": [
     {
       "id": "bay-1",
-      "name": "Fishbowl",
+      "name": "mesh",
       "role": "pi3",
       "state": "active",
       "note": "mesh peer",
-      "href": "/research/fishbowl/"
+      "href": null
     },
     {
       "id": "bay-2",
       "name": "Qwen mesh",
       "role": "pi4",
       "state": "active",
-      "note": "local qwen2.5 · Pi-PAIR",
-      "href": "/research/fishbowl/mesh-architecture.pdf"
+      "note": "local qwen2.5",
+      "href": null
     },
     {
       "id": "bay-3",

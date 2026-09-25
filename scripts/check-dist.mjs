@@ -65,12 +65,13 @@ const leakNeedles = [
   "10.0.0.",
   "100.64.",
   "P2S",
+  /fishbowl/i,
+  /raspberry pi/i,
 ];
 
 const home = read("dist/index.html");
 const bot = read("dist/bot/index.html");
 const research = read("dist/research/index.html");
-const fishbowl = read("dist/research/fishbowl/index.html");
 const essay = read("dist/research/agent-native-ui/index.html");
 const spa = read("dist/404.html");
 
@@ -78,13 +79,14 @@ for (const [dist, root] of [
   ["dist/index.html", "index.html"],
   ["dist/bot/index.html", "bot/index.html"],
   ["dist/research/index.html", "research/index.html"],
-  ["dist/research/fishbowl/index.html", "research/fishbowl/index.html"],
   ["dist/research/agent-native-ui/index.html", "research/agent-native-ui/index.html"],
   ["dist/404.html", "404.html"],
   ["dist/robots.txt", "robots.txt"],
   ["dist/sitemap.xml", "sitemap.xml"],
   ["public/robots.txt", "dist/robots.txt"],
   ["public/sitemap.xml", "dist/sitemap.xml"],
+  ["public/research/rack/status.json", "dist/research/rack/status.json"],
+  ["dist/research/rack/status.json", "research/rack/status.json"],
 ]) {
   same(dist, root);
 }
@@ -165,6 +167,8 @@ mustExclude(
     "og:image",
     "#e3925a",
     "noindex",
+    'class="rack"',
+    "Pi 0.2 High",
   ],
   "home",
 );
@@ -237,6 +241,8 @@ mustExclude(
     'class="sky"',
     "akashnaren@gmail.com",
     "noindex",
+    'class="rack"',
+    "Pi 0.2 High",
   ],
   "bot",
 );
@@ -259,6 +265,17 @@ mustInclude(
     "this site is managed by",
     'href="/bot"',
     'class="thread"',
+    "Pi 0.2 High",
+    'class="rack"',
+    'aria-label="Pi 0.2 High"',
+    'data-bay="bay-1"',
+    'data-bay="bay-2"',
+    'data-bay="bay-3"',
+    'class="rack-name">mesh</p>',
+    "Qwen mesh",
+    "mesh peer",
+    "local qwen2.5",
+    "pi2",
   ],
   "research",
 );
@@ -284,6 +301,16 @@ mustIconInside(
   "research",
 );
 if (arc.includes('class="ext"')) fail("ARC-AGI thread must not show a link icon");
+const rackAt = research.indexOf('class="rack"');
+const threadAt = research.indexOf('class="thread"');
+if (rackAt < 0 || threadAt < 0 || rackAt > threadAt) {
+  fail("Pi 0.2 High rack must sit above the model threads");
+}
+for (const article of articles) {
+  if (article.includes('class="status"') || article.includes("exploring") || article.includes("drafting")) {
+    fail("model threads must not carry status or exploring tags");
+  }
+}
 
 mustExclude(
   research,
@@ -292,10 +319,7 @@ mustExclude(
     "still researching",
     "exploring",
     "drafting",
-    "Fishbowl on a Raspberry Pi",
-    'class="rack"',
     "pi rack",
-    "data-bay",
     "new today",
     "data-posted",
     'class="status"',
@@ -307,6 +331,7 @@ mustExclude(
     ">demo</a>",
     "ten grok bots",
     "noindex",
+    "/research/fishbowl/",
   ],
   "research",
 );
@@ -321,25 +346,20 @@ mustInclude(
   ],
   "essay redirect",
 );
-if (essay.includes('class="essay-pdf"') || essay.includes("still researching")) {
+if (essay.includes('class="essay-pdf"') || essay.includes("<iframe") || essay.includes("still researching")) {
   fail("agent-native route must redirect to the PDF, not an HTML reader");
 }
+mustExclude(essay, leakNeedles, "essay redirect");
 
-mustInclude(
-  fishbowl,
-  [
-    "Fishbowl: An Event-Log Truthful Multi-Agent Office on a Raspberry Pi",
-    'src="/research/fishbowl/paper.pdf"',
-    'href="/research/fishbowl/paper.pdf"',
-    'href="/research/fishbowl/flow.pdf"',
-    'href="/research/fishbowl/mesh-architecture.pdf"',
-    'href="/research"',
-    '<meta name="robots" content="noindex,nofollow" />',
-  ],
-  "fishbowl",
-);
-mustExclude(fishbowl, [...leakNeedles, "coming soon", "still researching"], "fishbowl");
-mustIconInside(fishbowl, "/research", "Research", "fishbowl");
+for (const [page, label] of [
+  [home, "home"],
+  [bot, "bot"],
+  [research, "research"],
+  [essay, "essay redirect"],
+  [spa, "404"],
+]) {
+  if (/<iframe/i.test(page)) fail(`${label} must not embed a paper in an iframe`);
+}
 
 mustInclude(spa, ['<div id="holder"></div>'], "404");
 if (!/\/assets\/index-[^"]+\.js/.test(spa)) fail("404 must reference hashed js");
@@ -349,7 +369,6 @@ for (const [page, label] of [
   [home, "home"],
   [bot, "bot"],
   [research, "research"],
-  [fishbowl, "fishbowl"],
   [spa, "404"],
 ]) {
   if (!page.includes("static.cloudflareinsights.com/beacon.min.js") || !page.includes("data-cf-beacon")) {
@@ -369,23 +388,19 @@ const jsName = readdirSync("dist/assets").find((name) => name.endsWith(".js"));
 if (!cssName || !jsName) fail("dist/assets is missing hashed css or js");
 const css = read(`dist/assets/${cssName}`);
 const js = read(`dist/assets/${jsName}`);
-mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist"], "css");
+mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist", ".rack", "live-pulse"], "css");
 mustExclude(
   css,
-  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "live-pulse", "@keyframes"],
+  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay"],
   "css",
 );
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl"], "js");
+mustInclude(js, ["/research/rack/status.json", "setInterval"], "js");
+mustExclude(js, ["requestAnimationFrame", "webgl", "essay-pdf", "essay-back", /raspberry pi/i], "js");
 
 const pdfs = [
-  "public/research/fishbowl/paper.pdf",
-  "public/research/fishbowl/flow.pdf",
-  "public/research/fishbowl/mesh-architecture.pdf",
   "public/research/agent-native-ui/paper.pdf",
-  "dist/research/fishbowl/paper.pdf",
-  "dist/research/fishbowl/flow.pdf",
-  "dist/research/fishbowl/mesh-architecture.pdf",
   "dist/research/agent-native-ui/paper.pdf",
+  "research/agent-native-ui/paper.pdf",
 ];
 for (const path of pdfs) {
   if (!existsSync(path)) fail(`missing ${path}`);
@@ -397,27 +412,22 @@ for (const path of pdfs) {
   }
 }
 
-const photos = [
-  "rack-hero-paper.jpg",
-  "rack-front-ports-paper.jpg",
-  "rack-top-paper.jpg",
-];
-for (const name of photos) {
-  if (!existsSync(`public/research/fishbowl/${name}`)) {
-    fail(`fishbowl paper photos missing ${name}`);
-  }
-}
-const paper = readFileSync("public/research/fishbowl/paper.pdf");
-const published = readFileSync("research/fishbowl/paper.pdf");
-if (!paper.equals(published)) fail("research/fishbowl/paper.pdf is not the public paper");
-let jpegs = 0;
-for (let at = 0; (at = paper.indexOf(Buffer.from([0xff, 0xd8, 0xff]), at)) !== -1; at += 3) {
-  jpegs += 1;
-}
-if (jpegs < 3) fail(`fishbowl paper.pdf should embed three photos, found ${String(jpegs)}`);
-const paperLatin = paper.toString("latin1");
-for (const banned of ["rack-hero-studio", "rack-front-ports-studio", "rack-top-studio", "paper-crop"]) {
-  if (paperLatin.includes(banned)) fail(`fishbowl paper.pdf still names ${banned}`);
+const rackStatus = read("public/research/rack/status.json");
+mustInclude(
+  rackStatus,
+  ['"id": "bay-1"', '"id": "bay-2"', '"id": "bay-3"', "Qwen mesh", "mesh peer", "local qwen2.5"],
+  "rack status",
+);
+mustExclude(rackStatus, [/fishbowl/i, "MiniShop", "Meridian", "/research/fishbowl/"], "rack status");
+
+for (const path of [
+  "dist/research/fishbowl",
+  "public/research/fishbowl",
+  "research/fishbowl",
+  "scripts/build-fishbowl-paper.py",
+  "scripts/fishbowl-manuscript.pdf",
+]) {
+  if (existsSync(path)) fail(`removed path still present: ${path}`);
 }
 
 const robots = read("dist/robots.txt");
@@ -436,7 +446,7 @@ mustInclude(
   ],
   "robots.txt",
 );
-mustExclude(robots, ["Disallow: /research/fishbowl"], "robots.txt");
+mustExclude(robots, [/fishbowl/i, "Disallow: /research/fishbowl"], "robots.txt");
 
 const sitemap = read("dist/sitemap.xml");
 if (!sitemap.startsWith("<?xml")) fail("sitemap.xml must be XML");
@@ -460,4 +470,4 @@ mustExclude(
   "sitemap.xml",
 );
 
-console.log("dist matches the public pages, favicon, fishbowl paper photos, robots.txt, and sitemap.xml.");
+console.log("dist matches the public pages, favicon, research PDF, robots.txt, and sitemap.xml.");

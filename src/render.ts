@@ -11,6 +11,11 @@ import {
   managedBy,
   name,
   personalMail,
+  rackBayOccupied,
+  rackCue,
+  rackHeartbeatFresh,
+  rackPercent,
+  rackStatus,
   researchDescription,
   researchLinkLabel,
   researchPath,
@@ -22,17 +27,12 @@ import {
   type Contact,
   type Paragraph,
   type Phrase,
+  type RackBay,
+  type RackStatus,
   type Seat,
   type Thread,
 } from "./content.ts";
-import {
-  fishbowlPaperHref,
-  fishbowlPaperTitle,
-  flowHref,
-  meshHref,
-  paperHref,
-  paperTitle,
-} from "./article.ts";
+import { paperHref, paperTitle } from "./article.ts";
 
 export type PageMeta = {
   readonly title: string;
@@ -227,28 +227,89 @@ function renderThread(thread: Thread): string {
       </article>`;
 }
 
+function renderRackBayFigure(bay: RackBay): string {
+  const empty = bay.state === "empty";
+  const slot = empty
+    ? `<rect class="rack-slot" x="16" y="20" width="40" height="70" fill="none" stroke="rgba(250,250,247,0.16)" stroke-width="0.7" stroke-dasharray="2.4 2.2"/>`
+    : `<rect class="rack-slot" x="16" y="20" width="40" height="70" fill="none" stroke="rgba(250,250,247,0.46)" stroke-width="0.85"/>
+            <path d="M20 26h32M20 31h22" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.7"/>
+            <circle cx="22" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>
+            <circle cx="28" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>
+            <circle cx="34" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>
+            <circle cx="40" cy="80" r="1.45" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.6"/>`;
+  return `<svg class="rack-fig" viewBox="0 0 72 108" width="72" height="108" focusable="false" aria-hidden="true">
+            <rect x="3.5" y="3.5" width="65" height="101" fill="none" stroke="rgba(250,250,247,0.16)" stroke-width="0.75"/>
+            <path d="M9 8v92M63 8v92" fill="none" stroke="rgba(250,250,247,0.22)" stroke-width="1.15"/>
+            <circle cx="9" cy="16" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
+            <circle cx="9" cy="54" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
+            <circle cx="9" cy="92" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
+            <circle cx="63" cy="16" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
+            <circle cx="63" cy="54" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
+            <circle cx="63" cy="92" r="1.15" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.55"/>
+            ${slot}
+            <circle class="rack-led" cx="36" cy="13" r="2.15"/>
+          </svg>`;
+}
+
+function rackBayClass(state: RackBay["state"]): string {
+  if (state === "empty") return "rack-bay is-empty";
+  if (state === "active") return "rack-bay is-active";
+  if (state === "reserved") return "rack-bay is-reserved";
+  return "rack-bay is-held";
+}
+
+function renderRackLoad(bay: RackBay, now: number): string {
+  if (!rackBayOccupied(bay) || !rackHeartbeatFresh(bay.heartbeat, now)) return "";
+  const cpu = rackPercent(bay.cpu);
+  if (cpu === null) return "";
+  const shown = Math.round(cpu);
+  const label = `cpu ${String(shown)}%`;
+  const mem = rackPercent(bay.mem);
+  const memHtml =
+    mem === null ? "" : `<span class="rack-mem">mem ${String(Math.round(mem))}%</span>`;
+  return `<p class="rack-load" style="--cpu:${String(shown)}"><span class="rack-meter" aria-hidden="true"><span class="rack-meter-fill"></span></span><span class="rack-cpu">${escapeHtml(label)}</span>${memHtml}</p>`;
+}
+
+function renderRackBay(bay: RackBay, now: number = Date.now()): string {
+  const name = bay.name ?? "empty";
+  const klass = rackBayClass(bay.state);
+  const title = bay.href
+    ? `<p class="rack-name"><a href="${escapeHtml(bay.href)}">${escapeHtml(name)}</a></p>`
+    : `<p class="rack-name">${escapeHtml(name)}</p>`;
+  const role = bay.role ? `<p class="rack-role">${escapeHtml(bay.role)}</p>` : "";
+  const note = bay.note ? `<p class="rack-note">${escapeHtml(bay.note)}</p>` : "";
+  const load = renderRackLoad(bay, now);
+  return `<li class="${klass}" data-bay="${escapeHtml(bay.id)}" data-state="${escapeHtml(bay.state)}">
+            ${renderRackBayFigure(bay)}
+            <div class="rack-copy">${title}${role}${note}${load}</div>
+          </li>`;
+}
+
+export function renderRackBays(status: RackStatus, now: number = Date.now()): string {
+  return status.bays.map((bay) => renderRackBay(bay, now)).join("");
+}
+
+function renderRack(): string {
+  return `<section class="rack" aria-label="${escapeHtml(rackCue)}">
+          <p class="cue">${escapeHtml(rackCue)}</p>
+          <div class="rack-chassis">
+          <ol class="rack-bays">${renderRackBays(rackStatus)}</ol>
+          </div>
+        </section>`;
+}
+
 export function renderResearch(): string {
   return `<div class="page research" id="holder">
     <main class="stage">
       <header class="mast">
         <h1>${escapeHtml(researchTitle)}</h1>
       </header>
+      ${renderRack()}
       <div class="threads">${threads.map(renderThread).join("")}</div>
       <footer class="foot">
         ${renderManagedBy()}
       </footer>
     </main>
-  </div>`;
-}
-
-export function renderFishbowl(): string {
-  const href = escapeHtml(fishbowlPaperHref);
-  const title = escapeHtml(fishbowlPaperTitle);
-  const flow = escapeHtml(flowHref);
-  const mesh = escapeHtml(meshHref);
-  return `<div class="page essay" id="holder">
-    <p class="essay-back"><a href="${escapeHtml(researchPath)}">Research${renderLinkIcon()}</a> <a href="${href}">pdf</a> <a href="${flow}">flow</a> <a href="${mesh}">mesh</a></p>
-    <iframe class="essay-pdf" src="${href}" title="${title}"></iframe>
   </div>`;
 }
 
