@@ -125,7 +125,7 @@ export function renderSite(): string {
         ${paragraphs}
       </div>
       ${renderContact()}
-      <p class="page-link"><a href="${escapeHtml(researchPath)}">${escapeHtml(researchLinkLabel)}</a></p>
+      <p class="page-link"><a href="${escapeHtml(researchPath)}">${escapeHtml(researchLinkLabel)}${renderExternalIcon()}</a></p>
       ${renderManagedBy()}
       ${renderInbox()}
     </main>
@@ -201,7 +201,7 @@ function renderExternalIcon(): string {
 function renderThread(thread: Thread): string {
   const title = escapeHtml(thread.title);
   const heading = thread.href
-    ? `<h2><a href="${escapeHtml(thread.href)}"${thread.external ? ` rel="noopener noreferrer"` : ""}>${title}${thread.external ? renderExternalIcon() : ""}</a></h2>`
+    ? `<h2><a href="${escapeHtml(thread.href)}"${thread.external ? ` rel="noopener noreferrer"` : ""}>${title}${renderExternalIcon()}</a></h2>`
     : `<h2>${title}</h2>`;
   return `<article class="thread" data-thread="${escapeHtml(thread.id)}">
         ${renderThreadFigure(thread.figure)}

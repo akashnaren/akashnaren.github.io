@@ -117,7 +117,7 @@ mustInclude(
     "grok bot",
     'class="managed-copy"',
     'href="/research"',
-    ">Research</a>",
+    ">Research<svg class=\"ext\"",
     'name="theme-color" content="#0a0a0a"',
     "family=Geist",
   ],
@@ -247,8 +247,14 @@ const articles = research.match(/<article class="thread"[\s\S]*?<\/article>/g) ?
 if (articles.length !== 3) fail(`research must list three threads, found ${String(articles.length)}`);
 const arc = articles.find((article) => article.includes("ARC-AGI and Hallucination Risk")) ?? "";
 if (arc.includes("<a ")) fail("ARC-AGI thread must not invent a link");
-if (!articles.some((article) => article.includes('href="/research/agent-native-ui/paper.pdf"') && article.includes("Structured Views for Agent-Native UIs"))) {
-  fail("agent-native title must open the PDF directly");
+if (arc.includes('class="ext"')) fail("ARC-AGI thread must not show a link icon");
+const pdfThread = articles.find((article) => article.includes("Structured Views for Agent-Native UIs")) ?? "";
+if (!pdfThread.includes('href="/research/agent-native-ui/paper.pdf"') || !pdfThread.includes('class="ext"')) {
+  fail("agent-native title must open the PDF directly and show the link icon");
+}
+const externalThread = articles.find((article) => article.includes("Entity Investigation Across Fragmented Records")) ?? "";
+if (!externalThread.includes('class="ext"') || !externalThread.includes('rel="noopener noreferrer"')) {
+  fail("external thread title must keep the link icon");
 }
 
 mustExclude(
