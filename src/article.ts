@@ -14,10 +14,6 @@ export const flowHref = "/research/fishbowl/flow.pdf";
 
 export const meshHref = "/research/fishbowl/mesh-architecture.pdf";
 
-// Product renders belong in paper.pdf: rack-hero-render, rack-front-render,
-// rack-top-render from /workspace/state/profile-ideas/pi-paper-photos/.
-// Run scripts/embed-fishbowl-renders.py when that set is on disk. No studio crops, no P2S.
-
 export function fishbowlMetaFrom(): {
   readonly title: string;
   readonly description: string;

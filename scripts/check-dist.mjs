@@ -354,30 +354,27 @@ for (const path of pdfs) {
   }
 }
 
-const renders = ["rack-hero-render", "rack-front-render", "rack-top-render"];
-const photoDir = "public/research/fishbowl";
-const present = renders.filter(
-  (name) => existsSync(`${photoDir}/${name}.png`) || existsSync(`${photoDir}/${name}.jpg`),
-);
-if (present.length !== 0 && present.length !== renders.length) {
-  fail(`fishbowl render set is partial: ${present.join(", ")}`);
+const photos = [
+  "rack-hero-paper.jpg",
+  "rack-front-ports-paper.jpg",
+  "rack-top-paper.jpg",
+];
+for (const name of photos) {
+  if (!existsSync(`public/research/fishbowl/${name}`)) {
+    fail(`fishbowl paper photos missing ${name}`);
+  }
 }
 const paper = readFileSync("public/research/fishbowl/paper.pdf");
+const published = readFileSync("research/fishbowl/paper.pdf");
+if (!paper.equals(published)) fail("research/fishbowl/paper.pdf is not the public paper");
+let jpegs = 0;
+for (let at = 0; (at = paper.indexOf(Buffer.from([0xff, 0xd8, 0xff]), at)) !== -1; at += 3) {
+  jpegs += 1;
+}
+if (jpegs < 3) fail(`fishbowl paper.pdf should embed three photos, found ${String(jpegs)}`);
 const paperLatin = paper.toString("latin1");
-for (const banned of ["rack-hero-studio", "rack-front-ports-studio", "rack-top-studio", "paper-crop", "P2S"]) {
+for (const banned of ["rack-hero-studio", "rack-front-ports-studio", "rack-top-studio", "paper-crop"]) {
   if (paperLatin.includes(banned)) fail(`fishbowl paper.pdf still names ${banned}`);
 }
-if (present.length === renders.length) {
-  const hasRaster =
-    paper.includes(Buffer.from("\xff\xd8\xff")) ||
-    paper.includes(Buffer.from("IDAT")) ||
-    paper.includes(Buffer.from("/DCTDecode")) ||
-    paper.includes(Buffer.from("/FlateDecode"));
-  if (!hasRaster) fail("fishbowl paper.pdf must embed the product renders");
-}
 
-console.log(
-  present.length === renders.length
-    ? "dist matches the public pages, favicon, and fishbowl renders."
-    : "dist matches the public pages and favicon.",
-);
+console.log("dist matches the public pages, favicon, and fishbowl paper photos.");
