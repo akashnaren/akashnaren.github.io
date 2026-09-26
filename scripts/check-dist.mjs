@@ -507,7 +507,7 @@ mustInclude(
 );
 mustExclude(
   piSource,
-  ["Pi PAIR", "Fishbowl", "MiniShop", "Meridian", "harness", "10.0.0.", "192.168.", "AI Office"],
+  ["Pi PAIR", "Fishbowl", "MiniShop", "Meridian", "harness", "10.0.0.", "192.168.", "AI Office", "OpenAI-style route", "OpenAI-style"],
   "pi paper source",
 );
 
