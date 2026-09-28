@@ -145,6 +145,7 @@ export function renderBot(): string {
     <main class="stage">
       <header class="mast">
         <h1>${escapeHtml(collectionTitle)}</h1>
+        <p class="count">${escapeHtml(botDescription)}</p>
       </header>
       <ul class="roster">${rows}</ul>
       <footer class="foot">

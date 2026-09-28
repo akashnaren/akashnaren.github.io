@@ -194,6 +194,13 @@ a:focus-visible {
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 
+.mast .count {
+  margin-top: 0.35rem;
+  color: #a3a39c;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
 .roster {
   list-style: none;
   width: 100%;
