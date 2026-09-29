@@ -33,7 +33,7 @@ function mount(): void {
 
   const paintedBot = root.classList.contains("profile");
   const paintedResearch = root.classList.contains("research");
-  const paintedHome = Boolean(root.querySelector(".bio"));
+  const paintedHome = root.classList.contains("home");
   if (bot && !paintedBot) {
     root.outerHTML = renderBot();
   } else if (research && !paintedResearch) {

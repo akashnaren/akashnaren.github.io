@@ -1,6 +1,5 @@
 import {
   agentInbox,
-  body,
   botDescription,
   botTitle,
   botUrl,
@@ -12,10 +11,13 @@ import {
   name,
   personalMail,
   researchDescription,
-  researchLinkLabel,
+  researchHeading,
+  researchLines,
   researchPath,
   researchTitle,
   researchUrl,
+  workHeading,
+  workLines,
   seats,
   threads,
   url,
@@ -79,8 +81,16 @@ function renderPhrase(part: Phrase): string {
   return escapeHtml(part);
 }
 
-function renderParagraph(paragraph: readonly Phrase[]): string {
-  return `<p>${paragraph.map(renderPhrase).join("")}</p>`;
+function renderBand(id: string, heading: string, lines: readonly Paragraph[]): string {
+  const items = lines
+    .map((line) => `<li>${line.map(renderPhrase).join("")}</li>`)
+    .join("\n          ");
+  return `<section class="section" aria-labelledby="${escapeHtml(id)}">
+        <h2 id="${escapeHtml(id)}">${escapeHtml(heading)}</h2>
+        <ul class="entries">
+          ${items}
+        </ul>
+      </section>`;
 }
 
 function renderGrokBotMark(): string {
@@ -117,18 +127,14 @@ function renderInbox(label: string = agentInbox.label, tip = ""): string {
 }
 
 export function renderSite(): string {
-  const paragraphs = body.map(renderParagraph).join("\n        ");
-
-  return `<div class="page" id="holder">
+  return `<div class="page home" id="holder">
     <main class="stage">
       <header>
         <h1>${escapeHtml(name)}</h1>
       </header>
-      <div class="bio">
-        ${paragraphs}
-      </div>
+      ${renderBand("work", workHeading, workLines)}
+      ${renderBand("research", researchHeading, researchLines)}
       ${renderContact()}
-      <p class="page-link"><a href="${escapeHtml(researchPath)}">${escapeHtml(researchLinkLabel)}${renderLinkIcon()}</a></p>
       ${renderManagedBy()}
       ${renderInbox()}
     </main>
