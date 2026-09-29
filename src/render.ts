@@ -6,10 +6,13 @@ import {
   collectionTitle,
   contact,
   description,
+  homeManagedBy,
   isLink,
+  mailHeading,
   managedBy,
   name,
   personalMail,
+  profilesHeading,
   researchDescription,
   researchHeading,
   researchLines,
@@ -81,9 +84,16 @@ function renderPhrase(part: Phrase): string {
   return escapeHtml(part);
 }
 
+function lineText(line: readonly Phrase[]): string {
+  return line.map((part) => (isLink(part) ? part.label : part)).join("");
+}
+
 function renderBand(id: string, heading: string, lines: readonly Paragraph[]): string {
   const items = lines
-    .map((line) => `<li>${line.map(renderPhrase).join("")}</li>`)
+    .map((line) => {
+      const text = lineText(line);
+      return `<li title="${escapeHtml(text)}">${line.map(renderPhrase).join("")}</li>`;
+    })
     .join("\n          ");
   return `<section class="section" aria-labelledby="${escapeHtml(id)}">
         <h2 id="${escapeHtml(id)}">${escapeHtml(heading)}</h2>
@@ -97,8 +107,9 @@ function renderGrokBotMark(): string {
   return `<svg class="grok-bot-mark" viewBox="0 0 32 32" width="15" height="15" aria-hidden="true" focusable="false"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></svg>`;
 }
 
-function renderManagedBy(line: Paragraph = managedBy): string {
-  return `<p class="managed">${renderGrokBotMark()}<span class="managed-copy">${line.map(renderPhrase).join("")}</span></p>`;
+function renderManagedBy(line: Paragraph = managedBy, extra = ""): string {
+  const cls = extra ? `managed ${extra}` : "managed";
+  return `<p class="${cls}">${renderGrokBotMark()}<span class="managed-copy">${line.map(renderPhrase).join("")}</span></p>`;
 }
 
 function renderContactLink(item: Contact): string {
@@ -108,12 +119,22 @@ function renderContactLink(item: Contact): string {
   return `<a class="contact-link" href="${escapeHtml(item.href)}">${mark}<span>${escapeHtml(item.label)}</span></a>`;
 }
 
-function renderContact(): string {
-  const links = contact.map(renderContactLink).join("");
-  return `<div class="contact">
-        <p class="contact-marks">${links}</p>
-        <p class="human-mail"><span class="mail-label">${escapeHtml(personalMail.label)}</span><a class="mail-address" href="${escapeHtml(personalMail.href)}">${escapeHtml(personalMail.address)}</a></p>
-      </div>`;
+function renderProfiles(): string {
+  const items = contact.map((item) => `<li>${renderContactLink(item)}</li>`).join("");
+  return `<section class="section" aria-labelledby="profiles">
+        <h2 id="profiles">${escapeHtml(profilesHeading)}</h2>
+        <ul class="profiles">${items}</ul>
+      </section>`;
+}
+
+function renderMail(): string {
+  return `<section class="section" aria-labelledby="mail">
+        <h2 id="mail">${escapeHtml(mailHeading)}</h2>
+        <ul class="mail-row">
+          <li><a class="mail-address" href="${escapeHtml(personalMail.href)}">${escapeHtml(personalMail.address)}</a></li>
+          <li><span class="mail-kind">${escapeHtml(agentInbox.label)}</span><a class="mail-address" href="${escapeHtml(agentInbox.href)}">${escapeHtml(agentInbox.address)}</a></li>
+        </ul>
+      </section>`;
 }
 
 function renderInbox(label: string = agentInbox.label, tip = ""): string {
@@ -131,12 +152,15 @@ export function renderSite(): string {
     <main class="stage">
       <header>
         <h1>${escapeHtml(name)}</h1>
+        ${renderManagedBy(homeManagedBy, "byline")}
       </header>
       ${renderBand("work", workHeading, workLines)}
       ${renderBand("research", researchHeading, researchLines)}
-      ${renderContact()}
-      ${renderManagedBy()}
-      ${renderInbox()}
+      ${renderProfiles()}
+      ${renderMail()}
+      <footer class="foot home-foot">
+        ${renderManagedBy(homeManagedBy)}
+      </footer>
     </main>
   </div>`;
 }

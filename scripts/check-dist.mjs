@@ -104,16 +104,14 @@ mustInclude(
     "Akash Premkumar",
     'class="page home"',
     '<h2 id="work">Work</h2>',
-    "Vehicle Service Systems (Diagnostics, Telemetry, Data Analysis)",
-    "Vehicle Engineering (Bill of Materials, Fullstack Applications, ",
+    "Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis)",
+    "Vehicle Engineering (Part Data Hub, ",
     "https://www.tesla.com/",
     ">Tesla</a>",
     "https://www.tesla.com/robotaxi",
-    ">Robotaxi</a>",
-    "https://www.tesla.com/AI",
-    ">Optimus</a>",
+    ">Cybercab + Robotaxi Program</a>",
     "https://grok.com",
-    ">Grok</a>",
+    ">Grok</a> Integrations)",
     "https://www.rtx.com/raytheon",
     ">Raytheon</a>",
     "Avionics Networking Test Suite",
@@ -123,7 +121,17 @@ mustInclude(
     "https://asanchez.ucsd.edu/research/reactive-flows/",
     ">Fire whirl research</a>",
     ">Independent work",
-    "Tesla vehicle service systems and vehicle engineering, including Robotaxi, Optimus, and Grok. Raytheon avionics networking. NASA L’SPACE. Fire whirl research at the Multiscale Flow Physics Lab, UC San Diego, and independent work.",
+    '<h2 id="profiles">Profiles</h2>',
+    ">GitHub</span>",
+    ">LinkedIn</span>",
+    ">X</span>",
+    ">Cursor</span>",
+    ">Hugging Face</span>",
+    ">Kaggle</span>",
+    '<h2 id="mail">Mail</h2>',
+    "Managed by ",
+    ">Grok Bot<svg",
+    "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Project Engineer. Fire whirl research at the Multiscale Flow Physics Lab, UC San Diego, and independent work.",
     "https://github.com/akashnaren",
     "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
     "https://x.com/akashpn",
@@ -137,10 +145,10 @@ mustInclude(
     "mailto:apn@agentmail.to",
     "apn@agentmail.to",
     "bots' inbox",
-    "this site is managed by",
     'href="/bot"',
-    "grok bot",
     'class="managed-copy"',
+    'class="managed byline"',
+    'class="foot home-foot"',
     'href="/research"',
     'name="theme-color" content="#0a0a0a"',
     "family=Geist",
@@ -187,6 +195,13 @@ mustExclude(
     "fire-whirl",
     'class="bio"',
     'class="page-link"',
+    "Optimus",
+    "tesla.com/AI",
+    "Bill of Materials",
+    "Fullstack Applications",
+    "Vehicle Service Systems",
+    "this site is managed by",
+    "grok bot",
   ],
   "home",
 );
@@ -195,14 +210,27 @@ if (!home.includes("by grok") && !home.includes("by <a")) {
   fail("home must keep a real space before grok bot");
 }
 mustIconInside(home, "/research", "Independent work", "home");
-mustIconInside(home, "/bot", "grok bot", "home");
+mustIconInside(home, "/bot", "Grok Bot", "home");
 if (/>(?:Tesla|Robotaxi|Optimus|Grok|Raytheon|Fire whirl research)<svg class="ext"/.test(home)) {
   fail("biography links must stay unmarked");
 }
 if (/<a[^>]*>[^<]*NASA/.test(home)) fail("NASA L’SPACE stays unlinked");
+if (/target="_blank"/.test(home)) fail("home links stay in the same tab");
+for (const plain of ["Part Data Hub", "Internal Tooling", "Diagnostics", "Telemetry", "Data Analysis"]) {
+  if (new RegExp(`<a[^>]*>[^<]*${plain}`).test(home)) {
+    fail(`${plain} stays plain text`);
+  }
+}
 const homeSections = home.match(/<section class="section"/g) ?? [];
-if (homeSections.length !== 2) {
-  fail(`home must have Work and Research sections, found ${String(homeSections.length)}`);
+if (homeSections.length !== 4) {
+  fail(`home must have Work, Research, Profiles, and Mail sections, found ${String(homeSections.length)}`);
+}
+const sectionOrder = ["work", "research", "profiles", "mail"].map((id) => home.indexOf(`id="${id}"`));
+if (sectionOrder.some((at) => at < 0) || sectionOrder.some((at, i) => i > 0 && at < sectionOrder[i - 1])) {
+  fail("home sections must run Work, Research, Profiles, Mail");
+}
+if ((home.match(/>Grok Bot</g) ?? []).length < 2) {
+  fail("home must state Managed by Grok Bot under the name and in the footer");
 }
 if (!/\/assets\/index-[^"]+\.js/.test(home)) fail("home must reference hashed /assets/index-*.js");
 if (home.includes("/src/main.ts")) fail("built home must not be the Vite shell");
