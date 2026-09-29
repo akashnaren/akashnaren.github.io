@@ -102,15 +102,12 @@ mustInclude(
   home,
   [
     "Akash Premkumar",
-    "I live in Redwood City.",
-    "I worked on vehicle service systems",
-    "diagnostics",
-    "telemetry",
-    "data analysis for service",
-    "Worked at Tesla in Redwood City on vehicle service systems",
-    "Previously I worked on vehicle engineering",
-    "bill of materials",
-    "fullstack applications",
+    'class="page home"',
+    '<h2 id="work">Work</h2>',
+    "Vehicle Service Systems (Diagnostics, Telemetry, Data Analysis)",
+    "Vehicle Engineering (Bill of Materials, Fullstack Applications, ",
+    "https://www.tesla.com/",
+    ">Tesla</a>",
     "https://www.tesla.com/robotaxi",
     ">Robotaxi</a>",
     "https://www.tesla.com/AI",
@@ -118,10 +115,15 @@ mustInclude(
     "https://grok.com",
     ">Grok</a>",
     "https://www.rtx.com/raytheon",
-    "avionics networking test suite",
-    "NASA L’SPACE",
-    "fire-whirl research",
-    "CS and Math",
+    ">Raytheon</a>",
+    "Avionics Networking Test Suite",
+    "NASA L’SPACE — Project Engineer",
+    '<h2 id="research">Research</h2>',
+    "Multiscale Flow Physics Lab, UC San Diego",
+    "https://asanchez.ucsd.edu/research/reactive-flows/",
+    ">Fire whirl research</a>",
+    ">Independent work",
+    "Tesla vehicle service systems and vehicle engineering, including Robotaxi, Optimus, and Grok. Raytheon avionics networking. NASA L’SPACE. Fire whirl research at the Multiscale Flow Physics Lab, UC San Diego, and independent work.",
     "https://github.com/akashnaren",
     "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
     "https://x.com/akashpn",
@@ -176,6 +178,15 @@ mustExclude(
     "noindex",
     'class="rack"',
     "Pi 0.2 High",
+    "Redwood City",
+    "I live in",
+    "Interests",
+    "Academia",
+    "CS and Math",
+    "Collins",
+    "fire-whirl",
+    'class="bio"',
+    'class="page-link"',
   ],
   "home",
 );
@@ -183,10 +194,15 @@ mustExclude(
 if (!home.includes("by grok") && !home.includes("by <a")) {
   fail("home must keep a real space before grok bot");
 }
-mustIconInside(home, "/research", "Research", "home");
+mustIconInside(home, "/research", "Independent work", "home");
 mustIconInside(home, "/bot", "grok bot", "home");
-if (/>(?:Tesla|Robotaxi|Optimus|Grok|Raytheon|fire-whirl research)<svg class="ext"/.test(home)) {
+if (/>(?:Tesla|Robotaxi|Optimus|Grok|Raytheon|Fire whirl research)<svg class="ext"/.test(home)) {
   fail("biography links must stay unmarked");
+}
+if (/<a[^>]*>[^<]*NASA/.test(home)) fail("NASA L’SPACE stays unlinked");
+const homeSections = home.match(/<section class="section"/g) ?? [];
+if (homeSections.length !== 2) {
+  fail(`home must have Work and Research sections, found ${String(homeSections.length)}`);
 }
 if (!/\/assets\/index-[^"]+\.js/.test(home)) fail("home must reference hashed /assets/index-*.js");
 if (home.includes("/src/main.ts")) fail("built home must not be the Vite shell");
@@ -423,7 +439,9 @@ for (const [page, label] of [
 
 mustInclude(spa, ['<div id="holder"></div>'], "404");
 if (!/\/assets\/index-[^"]+\.js/.test(spa)) fail("404 must reference hashed js");
-if (spa.includes('class="sky"') || spa.includes('class="bio"')) fail("404 must not pre-paint a page");
+if (spa.includes('class="sky"') || spa.includes('class="bio"') || spa.includes('class="page home"')) {
+  fail("404 must not pre-paint a page");
+}
 
 for (const [page, label] of [
   [home, "home"],

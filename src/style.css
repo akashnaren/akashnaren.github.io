@@ -52,15 +52,40 @@ h1 {
   letter-spacing: -0.03em;
 }
 
-.bio p {
-  max-width: 38em;
-  padding-top: 0.9rem;
+.page.home .section {
+  margin-top: 2.75rem;
+}
+
+.page.home .section h2 {
+  color: #8a8e86;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}
+
+.page.home .entries {
+  list-style: none;
+  max-width: 36em;
+  margin-top: 0.85rem;
+}
+
+.page.home .entries li {
+  line-height: 1.45;
+}
+
+.page.home .entries li + li {
+  margin-top: 0.6rem;
 }
 
 .contact {
   margin-top: 1.75rem;
   padding-top: 1.1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.page.home .contact {
+  margin-top: 2.75rem;
 }
 
 .contact-marks {
@@ -113,15 +138,8 @@ h1 {
   overflow-wrap: anywhere;
 }
 
-.page-link {
+.page.home .managed {
   margin-top: 1.35rem;
-}
-
-.page-link a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-weight: 600;
 }
 
 .managed {

@@ -13,39 +13,46 @@ export type Contact = Link & {
 
 export const name = "Akash Premkumar";
 export const description =
-  "Worked at Tesla in Redwood City on vehicle service systems: diagnostics, telemetry, and data analysis. Previously vehicle engineering: Robotaxi, Optimus, and Grok. CS and Math, UC San Diego.";
+  "Tesla vehicle service systems and vehicle engineering, including Robotaxi, Optimus, and Grok. Raytheon avionics networking. NASA L’SPACE. Fire whirl research at the Multiscale Flow Physics Lab, UC San Diego, and independent work.";
 export const url = "https://akashnaren.github.io/";
 export const themeColor = "#0a0a0a";
 
-export const body: readonly Paragraph[] = [
-  ["I live in Redwood City."],
+export const workHeading = "Work";
+
+export const workLines: readonly Paragraph[] = [
   [
-    "At ",
     { href: "https://www.tesla.com/", label: "Tesla" },
-    " I worked on vehicle service systems: diagnostics, telemetry, and data analysis for service.",
+    " — Vehicle Service Systems (Diagnostics, Telemetry, Data Analysis)",
   ],
   [
-    "Previously I worked on vehicle engineering: bill of materials, fullstack applications, ",
+    { href: "https://www.tesla.com/", label: "Tesla" },
+    " — Vehicle Engineering (Bill of Materials, Fullstack Applications, ",
     { href: "https://www.tesla.com/robotaxi", label: "Robotaxi" },
     ", ",
     { href: "https://www.tesla.com/AI", label: "Optimus" },
-    ", and ",
+    ", ",
     { href: "https://grok.com", label: "Grok" },
-    " integrations.",
+    ")",
   ],
   [
-    "I interned at ",
     { href: "https://www.rtx.com/raytheon", label: "Raytheon" },
-    " on an avionics networking test suite.",
+    " — Avionics Networking Test Suite",
   ],
+  ["NASA L’SPACE — Project Engineer"],
+];
+
+export const researchHeading = "Research";
+
+/** Landing lines only. Topic blurbs stay on /research. */
+export const researchLines: readonly Paragraph[] = [
   [
-    "I was a project engineer on NASA L’SPACE. I did ",
+    "Multiscale Flow Physics Lab, UC San Diego — ",
     {
       href: "https://asanchez.ucsd.edu/research/reactive-flows/",
-      label: "fire-whirl research",
+      label: "Fire whirl research",
     },
-    " at UC San Diego, and studied CS and Math there.",
   ],
+  [{ href: "/research", label: "Independent work" }],
 ];
 
 export const contact: readonly Contact[] = [
@@ -182,8 +189,6 @@ export const researchUrl = "https://akashnaren.github.io/research";
 
 export const researchDescription =
   "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.";
-
-export const researchLinkLabel = "Research";
 
 export type ThreadFigure = "mesh" | "protocol" | "axes" | "gaps";
 
