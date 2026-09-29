@@ -218,16 +218,31 @@ function threadOpensDocument(thread: Thread): boolean {
   );
 }
 
+function renderThreadSubLinks(thread: Thread): string {
+  const links = thread.links;
+  if (!links || links.length === 0) return "";
+  const anchors = links
+    .map((link) => {
+      const external = /^https?:\/\//i.test(link.href);
+      const rel = external ? ` rel="noopener noreferrer"` : "";
+      const icon = external ? renderLinkIcon() : "";
+      return `<a href="${escapeHtml(link.href)}"${rel}>${escapeHtml(link.label)}${icon}</a>`;
+    })
+    .join("");
+  return `<p class="thread-sub">${anchors}</p>`;
+}
+
 function renderThread(thread: Thread): string {
   const title = escapeHtml(thread.title);
   const heading = thread.href
     ? `<h2><a href="${escapeHtml(thread.href)}"${thread.external ? ` rel="noopener noreferrer"` : ""}>${title}${threadOpensDocument(thread) ? renderLinkIcon() : ""}</a></h2>`
     : `<h2>${title}</h2>`;
+  const sub = renderThreadSubLinks(thread);
   return `<article class="thread" data-thread="${escapeHtml(thread.id)}">
         ${renderThreadFigure(thread.figure)}
         <div class="thread-copy">
           ${heading}
-          <p>${escapeHtml(thread.abstract)}</p>
+          <p>${escapeHtml(thread.abstract)}</p>${sub ? `\n          ${sub}` : ""}
         </div>
       </article>`;
 }

@@ -306,6 +306,22 @@ a:focus-visible {
   line-height: 1.5;
 }
 
+.thread-sub {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.15rem;
+  padding-top: 0.45rem;
+}
+
+.thread-sub a {
+  display: inline-block;
+  min-height: 44px;
+  padding: 0.1rem 0;
+  color: #a3a39c;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 .thread-fig {
   display: block;
   width: 140px;
