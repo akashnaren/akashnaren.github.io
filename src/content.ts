@@ -198,6 +198,8 @@ export type Thread = {
   readonly abstract: string;
   readonly href?: string;
   readonly external?: boolean;
+  /** Links listed under the thread title and abstract. */
+  readonly links?: readonly Link[];
 };
 
 export const threads: readonly Thread[] = [
@@ -230,8 +232,16 @@ export const threads: readonly Thread[] = [
     figure: "gaps",
     abstract:
       "I am looking at how to reason over fragmented records and link events to the right address over time.",
-    href: "https://temporal-buddies5.vercel.app/",
-    external: true,
+    links: [
+      {
+        href: "https://temporal-buddies5.vercel.app/",
+        label: "Temporal",
+      },
+      {
+        href: "https://www.meetlavalamp.com/",
+        label: "Lavalamp",
+      },
+    ],
   },
 ];
 

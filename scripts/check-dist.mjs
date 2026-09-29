@@ -270,6 +270,9 @@ mustInclude(
     "ARC-AGI and Hallucination Risk",
     "Entity Investigation Across Fragmented Records",
     'href="https://temporal-buddies5.vercel.app/"',
+    'href="https://www.meetlavalamp.com/"',
+    ">Temporal<svg",
+    ">Lavalamp<svg",
     'class="ext"',
     "rel=\"noopener noreferrer\"",
     "screenshots or a flat accessibility tree",
@@ -309,12 +312,34 @@ mustIconInside(
   "Structured Views for Agent-Native UIs",
   "research",
 );
+const entity = articles.find((article) => article.includes("Entity Investigation Across Fragmented Records")) ?? "";
+const entityHeading = entity.match(/<h2>[\s\S]*?<\/h2>/)?.[0] ?? "";
+if (entityHeading !== "<h2>Entity Investigation Across Fragmented Records</h2>") {
+  fail("entity investigation title must stay plain text");
+}
+if (!entity.includes("I am looking at how to reason over fragmented records and link events to the right address over time.")) {
+  fail("entity investigation blurb changed");
+}
+if (/paper\.pdf/i.test(entity)) fail("entity investigation must not link a paper PDF");
+const entityAnchors = entity.match(/<a /g) ?? [];
+if (entityAnchors.length !== 2) {
+  fail(`entity investigation must show exactly two sub-links, found ${String(entityAnchors.length)}`);
+}
 mustIconInside(
-  research,
+  entity,
   "https://temporal-buddies5.vercel.app/",
-  "Entity Investigation Across Fragmented Records",
-  "research",
+  "Temporal",
+  "entity investigation",
 );
+mustIconInside(
+  entity,
+  "https://www.meetlavalamp.com/",
+  "Lavalamp",
+  "entity investigation",
+);
+if (articles.some((article) => article !== entity && /lavalamp|meetlavalamp|temporal-buddies/i.test(article))) {
+  fail("Temporal and Lavalamp must stay under the entity investigation thread");
+}
 if (arc.includes('class="ext"')) fail("ARC-AGI thread must not show a link icon");
 for (const article of articles) {
   if (article.includes('class="status"') || article.includes("exploring") || article.includes("drafting")) {
