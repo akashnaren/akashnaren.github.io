@@ -385,8 +385,83 @@ a:focus-visible {
   border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 
+.page.profile h1 {
+  font-size: 1.72rem;
+  line-height: 1.2;
+  letter-spacing: -0.032em;
+}
+
+.page.profile .mast {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.page.profile .mast .count {
+  margin-top: 0.5rem;
+  color: rgba(250, 250, 247, 0.42);
+  font-size: 13px;
+  letter-spacing: -0.011em;
+}
+
+.page.profile .roster {
+  margin-top: 1.6rem;
+}
+
+.page.profile .row {
+  min-height: 0;
+  padding: 0.62rem 0;
+  border-bottom: 0;
+  column-gap: 0.9rem;
+}
+
+.page.profile .row-name {
+  font-weight: 400;
+  letter-spacing: -0.011em;
+}
+
+.page.profile .row-blurb {
+  color: #b7b7b0;
+}
+
+.page.profile .foot {
+  margin-top: 2rem;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.page.profile .managed {
+  color: rgba(250, 250, 247, 0.42);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+
+.page.profile .foot .grok-bot-mark {
+  width: 12px;
+  height: 12px;
+}
+
+.page.profile .inbox-label {
+  color: rgba(250, 250, 247, 0.38);
+  letter-spacing: 0.04em;
+}
+
+.page.profile a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: transparent;
+  transition: color 160ms ease, text-decoration-color 160ms ease;
+}
+
+.page.profile a:hover {
+  text-decoration-line: underline;
+  text-decoration-color: rgba(250, 250, 247, 0.4);
+}
+
+.page.profile .managed a:hover {
+  color: #d4d4ce;
+}
+
 .page.profile .inbox,
-.page.research .managed,
 .foot .managed,
 .foot .inbox {
   margin-top: 0;
@@ -533,7 +608,8 @@ a:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .inbox-tip,
   .page.home a,
-  .page.home .profiles .contact-mark {
+  .page.home .profiles .contact-mark,
+  .page.profile a {
     transition: none;
   }
 }

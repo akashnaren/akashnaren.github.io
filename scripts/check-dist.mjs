@@ -164,6 +164,8 @@ mustExclude(
     "orbit-spin",
     "ten grok bots",
     "Ten grok bots",
+    "fourteen grok bots",
+    "Fourteen grok bots",
     'class="fleet"',
     'class="fleet-face"',
     "new today",
@@ -245,26 +247,30 @@ if (!/\/assets\/index-[^"]+\.js/.test(home)) fail("home must reference hashed /a
 if (home.includes("/src/main.ts")) fail("built home must not be the Vite shell");
 
 const seats = [
-  ["profile-engineer", "profile engineer", "i keep his profiles and ship this site."],
+  ["profile-lead", "profile lead", "i keep his profiles and ship this site."],
   ["software-engineer", "software engineer", "quiet diffs. a clean compile."],
   ["research-engineer", "research engineer", "i read the papers that matter."],
   ["chief-executive-officer", "chief executive officer", "i keep the work moving."],
-  ["secretary", "secretary", "i keep the notes in order."],
+  ["executive-secretary", "executive secretary", "i keep the notes in order."],
   ["chief-financial-officer", "chief financial officer", "i stay even."],
   ["finance-engineer", "finance engineer", "i keep the sheets in order."],
   ["product-engineer", "product engineer", "i file what ships."],
   ["chief-technical-officer", "chief technical officer", "i build grok bots like these."],
   ["integration-engineer", "integration engineer", "i wrap apis into quiet plugins."],
+  ["imagine-engineer", "imagine engineer", "i turn big ideas into something you can build."],
+  ["social-lead", "social lead", "i find the events worth showing up for."],
+  ["storage-engineer", "storage engineer", "i keep the disk honest."],
+  ["triage-engineer", "triage engineer", "i sort what lands first."],
 ];
 
 mustInclude(
   bot,
   [
     "<title>grok bot collection</title>",
-    '<meta name="description" content="ten grok bots, more coming." />',
-    '<meta property="og:description" content="ten grok bots, more coming." />',
-    '<meta name="twitter:description" content="ten grok bots, more coming." />',
-    '<p class="count">ten grok bots, more coming.</p>',
+    '<meta name="description" content="fourteen grok bots, more coming." />',
+    '<meta property="og:description" content="fourteen grok bots, more coming." />',
+    '<meta name="twitter:description" content="fourteen grok bots, more coming." />',
+    '<p class="count">fourteen grok bots, more coming.</p>',
     'class="page profile"',
     'class="roster"',
     "this site is managed by",
@@ -279,13 +285,15 @@ mustInclude(
       `>${name}</span>`,
       blurb,
     ]),
-    ...Array.from({ length: 10 }, (_, i) => `src="/fleet/${String(i + 1).padStart(2, "0")}.png"`),
+    ...Array.from({ length: 14 }, (_, i) => `src="/fleet/${String(i + 1).padStart(2, "0")}.png"`),
   ],
   "bot",
 );
 
 const rowCount = (bot.match(/<li class="row"/g) ?? []).length;
-if (rowCount !== 10) fail(`bot roster must list ten seats, found ${String(rowCount)}`);
+if (rowCount !== 14) fail(`bot roster must list fourteen seats, found ${String(rowCount)}`);
+if (/>secretary</.test(bot)) fail("the notes seat is executive secretary");
+if (bot.includes("profile engineer")) fail("profile engineer was renamed to profile lead");
 mustIconInside(bot, "/bot", "grok bot", "bot");
 
 mustExclude(
@@ -297,7 +305,15 @@ mustExclude(
     "Redwood City",
     "Raytheon",
     "Ten grok bots. A quiet collection.",
+    "ten grok bots",
     "Job Assistant",
+    "New Bot",
+    "All Hands",
+    "Application Team",
+    "Finance Team",
+    "Executive Team",
+    "Operations Team",
+    "Social Team",
     "desk",
     "glass",
     "models",
@@ -425,6 +441,7 @@ mustExclude(
     ">code</a>",
     ">demo</a>",
     "ten grok bots",
+    "fourteen grok bots",
     "noindex",
     "/research/fishbowl/",
     "OpenAI-style route",
