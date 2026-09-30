@@ -334,14 +334,14 @@ mustInclude(
   research,
   [
     "<title>Research</title>",
-    "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.",
+    "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity resolution across fragmented records.",
     "Raspberry Pi Inference Mesh",
     'href="/research/pi-0.2-high/paper.pdf"',
     "I am running local language-model chat on a Raspberry Pi mesh.",
     "Structured Views for Agent-Native UIs",
     'href="/research/agent-native-ui/paper.pdf"',
     "ARC-AGI and Hallucination Risk",
-    "Entity Investigation Across Fragmented Records",
+    "Entity Resolution Across Fragmented Records",
     'href="https://temporal-buddies5.vercel.app/"',
     'href="https://www.meetlavalamp.com/"',
     ">Temporal<svg",
@@ -385,9 +385,9 @@ mustIconInside(
   "Structured Views for Agent-Native UIs",
   "research",
 );
-const entity = articles.find((article) => article.includes("Entity Investigation Across Fragmented Records")) ?? "";
+const entity = articles.find((article) => article.includes("Entity Resolution Across Fragmented Records")) ?? "";
 const entityHeading = entity.match(/<h2>[\s\S]*?<\/h2>/)?.[0] ?? "";
-if (entityHeading !== "<h2>Entity Investigation Across Fragmented Records</h2>") {
+if (entityHeading !== "<h2>Entity Resolution Across Fragmented Records</h2>") {
   fail("entity investigation title must stay plain text");
 }
 if (!entity.includes("I am looking at how to reason over fragmented records and link events to the right address over time.")) {
