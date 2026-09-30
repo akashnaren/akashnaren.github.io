@@ -36,7 +36,7 @@ export const workLines: readonly Paragraph[] = [
     { href: "https://www.rtx.com/raytheon", label: "Raytheon" },
     " — Avionics Networking Test Suite",
   ],
-  ["NASA L’SPACE — Project Engineer"],
+  ["NASA L’SPACE — Asteroid PDR, Terrain Mapping Identification"],
 ];
 
 export const profilesHeading = "Profiles";

@@ -115,7 +115,7 @@ mustInclude(
     "https://www.rtx.com/raytheon",
     ">Raytheon</a>",
     "Avionics Networking Test Suite",
-    "NASA L’SPACE — Project Engineer",
+    "NASA L’SPACE — Asteroid PDR, Terrain Mapping Identification",
     '<h2 id="research">Research</h2>',
     "Multiscale Flow Physics Lab, UC San Diego",
     "https://asanchez.ucsd.edu/research/reactive-flows/",
@@ -219,6 +219,15 @@ if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|Multiscale Flow Physic
   fail("biography links must stay unmarked");
 }
 if (/<a[^>]*>[^<]*NASA/.test(home)) fail("NASA L’SPACE stays unlinked");
+const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
+if (
+  !workSection.includes(
+    '<span class="entry-name">NASA L’SPACE</span><span class="entry-detail"> — Asteroid PDR, Terrain Mapping Identification</span>',
+  )
+) {
+  fail("NASA L’SPACE work row must list Asteroid PDR, Terrain Mapping Identification");
+}
+if (workSection.includes("Project Engineer")) fail("NASA L’SPACE work row must not use the title");
 if (/target="_blank"/.test(home)) fail("home links stay in the same tab");
 for (const plain of ["Part Data Hub", "Internal Tooling", "Diagnostics", "Telemetry", "Data Analysis"]) {
   if (new RegExp(`<a[^>]*>[^<]*${plain}`).test(home)) {
