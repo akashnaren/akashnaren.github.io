@@ -88,16 +88,33 @@ function lineText(line: readonly Phrase[]): string {
   return line.map((part) => (isLink(part) ? part.label : part)).join("");
 }
 
-function renderBand(id: string, heading: string, lines: readonly Paragraph[]): string {
-  const items = lines
-    .map((line) => {
-      const text = lineText(line);
-      return `<li title="${escapeHtml(text)}">${line.map(renderPhrase).join("")}</li>`;
-    })
-    .join("\n          ");
+function splitLedger(line: readonly Phrase[]): { label: readonly Phrase[]; detail: readonly Phrase[] } {
+  if (line.length === 1 && !isLink(line[0])) {
+    const text = line[0];
+    const at = text.indexOf(" — ");
+    if (at > 0) return { label: [text.slice(0, at)], detail: [text.slice(at)] };
+  }
+  const [first, ...rest] = line;
+  if (first && isLink(first)) return { label: [first], detail: rest };
+  return { label: [...line], detail: [] };
+}
+
+function renderEntry(line: readonly Phrase[], ledger: boolean): string {
+  const title = ` title="${escapeHtml(lineText(line))}"`;
+  if (!ledger) return `<li${title}>${line.map(renderPhrase).join("")}</li>`;
+  const { label, detail } = splitLedger(line);
+  const detailHtml = detail.length
+    ? `<span class="entry-detail">${detail.map(renderPhrase).join("")}</span>`
+    : "";
+  return `<li${title}><span class="entry-name">${label.map(renderPhrase).join("")}</span>${detailHtml}</li>`;
+}
+
+function renderBand(id: string, heading: string, lines: readonly Paragraph[], ledger = false): string {
+  const items = lines.map((line) => renderEntry(line, ledger)).join("\n          ");
+  const listClass = ledger ? "entries ledger" : "entries";
   return `<section class="section" aria-labelledby="${escapeHtml(id)}">
         <h2 id="${escapeHtml(id)}">${escapeHtml(heading)}</h2>
-        <ul class="entries">
+        <ul class="${listClass}">
           ${items}
         </ul>
       </section>`;
@@ -154,7 +171,7 @@ export function renderSite(): string {
         <h1>${escapeHtml(name)}</h1>
         ${renderManagedBy(homeManagedBy, "byline")}
       </header>
-      ${renderBand("work", workHeading, workLines)}
+      ${renderBand("work", workHeading, workLines, true)}
       ${renderBand("research", researchHeading, researchLines)}
       ${renderProfiles()}
       ${renderMail()}
