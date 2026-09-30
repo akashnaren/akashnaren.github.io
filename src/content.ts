@@ -13,7 +13,7 @@ export type Contact = Link & {
 
 export const name = "Akash Premkumar";
 export const description =
-  "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Project Engineer. Fire whirl research at the Multiscale Flow Physics Lab, UC San Diego, and independent work.";
+  "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Project Engineer. Multiscale Flow Physics Lab, UC San Diego, and independent work.";
 export const url = "https://akashnaren.github.io/";
 export const themeColor = "#0a0a0a";
 
@@ -48,10 +48,9 @@ export const researchHeading = "Research";
 /** Landing lines only. Topic blurbs stay on /research. */
 export const researchLines: readonly Paragraph[] = [
   [
-    "Multiscale Flow Physics Lab, UC San Diego — ",
     {
       href: "https://asanchez.ucsd.edu/research/reactive-flows/",
-      label: "Fire whirl research",
+      label: "Multiscale Flow Physics Lab, UC San Diego",
     },
   ],
   [{ href: "/research", label: "Independent work" }],

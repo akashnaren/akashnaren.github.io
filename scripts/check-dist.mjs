@@ -119,7 +119,7 @@ mustInclude(
     '<h2 id="research">Research</h2>',
     "Multiscale Flow Physics Lab, UC San Diego",
     "https://asanchez.ucsd.edu/research/reactive-flows/",
-    ">Fire whirl research</a>",
+    ">Multiscale Flow Physics Lab, UC San Diego</a>",
     ">Independent work",
     '<h2 id="profiles">Profiles</h2>',
     ">GitHub</span>",
@@ -131,7 +131,7 @@ mustInclude(
     '<h2 id="mail">Mail</h2>',
     "Managed by ",
     ">Grok Bot<svg",
-    "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Project Engineer. Fire whirl research at the Multiscale Flow Physics Lab, UC San Diego, and independent work.",
+    "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Project Engineer. Multiscale Flow Physics Lab, UC San Diego, and independent work.",
     "https://github.com/akashnaren",
     "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
     "https://x.com/akashpn",
@@ -147,7 +147,6 @@ mustInclude(
     "bots' inbox",
     'href="/bot"',
     'class="managed-copy"',
-    'class="managed byline"',
     'class="foot home-foot"',
     'href="/research"',
     'name="theme-color" content="#0a0a0a"',
@@ -202,6 +201,9 @@ mustExclude(
     "Vehicle Service Systems",
     "this site is managed by",
     "grok bot",
+    "Fire whirl",
+    "fire whirl",
+    'class="managed byline"',
   ],
   "home",
 );
@@ -211,7 +213,7 @@ if (!home.includes("by grok") && !home.includes("by <a")) {
 }
 mustIconInside(home, "/research", "Independent work", "home");
 mustIconInside(home, "/bot", "Grok Bot", "home");
-if (/>(?:Tesla|Robotaxi|Optimus|Grok|Raytheon|Fire whirl research)<svg class="ext"/.test(home)) {
+if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|Multiscale Flow Physics Lab, UC San Diego)<svg class="ext"/.test(home)) {
   fail("biography links must stay unmarked");
 }
 if (/<a[^>]*>[^<]*NASA/.test(home)) fail("NASA L’SPACE stays unlinked");
@@ -229,8 +231,15 @@ const sectionOrder = ["work", "research", "profiles", "mail"].map((id) => home.i
 if (sectionOrder.some((at) => at < 0) || sectionOrder.some((at, i) => i > 0 && at < sectionOrder[i - 1])) {
   fail("home sections must run Work, Research, Profiles, Mail");
 }
-if ((home.match(/>Grok Bot</g) ?? []).length < 2) {
-  fail("home must state Managed by Grok Bot under the name and in the footer");
+const homeHeader = home.match(/<header>[\s\S]*?<\/header>/)?.[0] ?? "";
+if (/managed|Grok Bot|grok bot/i.test(homeHeader)) {
+  fail("home header must not include the Grok Bot line");
+}
+if ((home.match(/>Grok Bot</g) ?? []).length !== 1) {
+  fail("home keeps a single Managed by Grok Bot cue in the footer");
+}
+if (!home.includes('class="foot home-foot"') || !/class="foot home-foot"[\s\S]*Managed by /.test(home)) {
+  fail("home footer must keep Managed by Grok Bot");
 }
 if (!/\/assets\/index-[^"]+\.js/.test(home)) fail("home must reference hashed /assets/index-*.js");
 if (home.includes("/src/main.ts")) fail("built home must not be the Vite shell");
