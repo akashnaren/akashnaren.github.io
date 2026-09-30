@@ -13,7 +13,7 @@ export type Contact = Link & {
 
 export const name = "Akash Premkumar";
 export const description =
-  "Tesla vehicle service systems and vehicle engineering, including Robotaxi, Optimus, and Grok. Raytheon avionics networking. NASA L’SPACE. Fire whirl research at the Multiscale Flow Physics Lab, UC San Diego, and independent work.";
+  "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Project Engineer. Fire whirl research at the Multiscale Flow Physics Lab, UC San Diego, and independent work.";
 export const url = "https://akashnaren.github.io/";
 export const themeColor = "#0a0a0a";
 
@@ -22,17 +22,15 @@ export const workHeading = "Work";
 export const workLines: readonly Paragraph[] = [
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
-    " — Vehicle Service Systems (Diagnostics, Telemetry, Data Analysis)",
+    " — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis)",
   ],
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
-    " — Vehicle Engineering (Bill of Materials, Fullstack Applications, ",
-    { href: "https://www.tesla.com/robotaxi", label: "Robotaxi" },
-    ", ",
-    { href: "https://www.tesla.com/AI", label: "Optimus" },
+    " — Vehicle Engineering (Part Data Hub, ",
+    { href: "https://www.tesla.com/robotaxi", label: "Cybercab + Robotaxi Program" },
     ", ",
     { href: "https://grok.com", label: "Grok" },
-    ")",
+    " Integrations)",
   ],
   [
     { href: "https://www.rtx.com/raytheon", label: "Raytheon" },
@@ -40,6 +38,10 @@ export const workLines: readonly Paragraph[] = [
   ],
   ["NASA L’SPACE — Project Engineer"],
 ];
+
+export const profilesHeading = "Profiles";
+
+export const mailHeading = "Mail";
 
 export const researchHeading = "Research";
 
@@ -58,32 +60,32 @@ export const researchLines: readonly Paragraph[] = [
 export const contact: readonly Contact[] = [
   {
     href: "https://github.com/akashnaren",
-    label: "github",
+    label: "GitHub",
     mark: "/marks/github.svg",
   },
   {
     href: "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
-    label: "linkedin",
+    label: "LinkedIn",
     mark: "/marks/linkedin.svg",
   },
   {
     href: "https://x.com/akashpn",
-    label: "x",
+    label: "X",
     mark: "/marks/x.svg",
   },
   {
     href: "https://cursor.com/@akashpn",
-    label: "cursor",
+    label: "Cursor",
     mark: "/marks/cursor.svg",
   },
   {
     href: "https://huggingface.co/akashnaren",
-    label: "huggingface",
+    label: "Hugging Face",
     mark: "/marks/huggingface.svg",
   },
   {
     href: "https://www.kaggle.com/akashpnaren",
-    label: "kaggle",
+    label: "Kaggle",
     mark: "/marks/kaggle.svg",
   },
 ];
@@ -254,6 +256,12 @@ export const managedBy: Paragraph = [
   "this site is managed by ",
   { href: "/bot", label: "grok bot" },
   ".",
+];
+
+/** Home only. /bot and /research keep the quieter managedBy line. */
+export const homeManagedBy: Paragraph = [
+  "Managed by ",
+  { href: "/bot", label: "Grok Bot" },
 ];
 
 export const personalMail = {
