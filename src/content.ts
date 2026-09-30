@@ -13,7 +13,7 @@ export type Contact = Link & {
 
 export const name = "Akash Premkumar";
 export const description =
-  "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Project Engineer. Fire whirl research at the Multiscale Flow Physics Lab, UC San Diego, and independent work.";
+  "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Project Engineer. Multiscale Flow Physics Lab, UC San Diego, and independent work.";
 export const url = "https://akashnaren.github.io/";
 export const themeColor = "#0a0a0a";
 
@@ -48,10 +48,9 @@ export const researchHeading = "Research";
 /** Landing lines only. Topic blurbs stay on /research. */
 export const researchLines: readonly Paragraph[] = [
   [
-    "Multiscale Flow Physics Lab, UC San Diego — ",
     {
       href: "https://asanchez.ucsd.edu/research/reactive-flows/",
-      label: "Fire whirl research",
+      label: "Multiscale Flow Physics Lab, UC San Diego",
     },
   ],
   [{ href: "/research", label: "Independent work" }],
@@ -102,6 +101,10 @@ export const fleetMarks = [
   "/fleet/08.png",
   "/fleet/09.png",
   "/fleet/10.png",
+  "/fleet/11.png",
+  "/fleet/12.png",
+  "/fleet/13.png",
+  "/fleet/14.png",
 ] as const;
 
 export const collectionTitle = "grok bot collection";
@@ -110,7 +113,7 @@ export const botTitle = "grok bot collection";
 
 export const botUrl = "https://akashnaren.github.io/bot";
 
-export const botDescription = "ten grok bots, more coming.";
+export const botDescription = "fourteen grok bots, more coming.";
 
 export type Seat = {
   readonly id: string;
@@ -119,11 +122,11 @@ export type Seat = {
   readonly blurb: string;
 };
 
-/** Public seats only. Faces map 01–10 in this order. Never add Job Assistant, Startup Advisor, or Travel Assistant. */
+/** Public seats only. Faces map 01–14 in this order. Never add Job Assistant, Startup Advisor, or Travel Assistant. */
 export const seats: readonly Seat[] = [
   {
-    id: "profile-engineer",
-    name: "profile engineer",
+    id: "profile-lead",
+    name: "profile lead",
     face: "/fleet/01.png",
     blurb: "i keep his profiles and ship this site.",
   },
@@ -146,8 +149,8 @@ export const seats: readonly Seat[] = [
     blurb: "i keep the work moving.",
   },
   {
-    id: "secretary",
-    name: "secretary",
+    id: "executive-secretary",
+    name: "executive secretary",
     face: "/fleet/05.png",
     blurb: "i keep the notes in order.",
   },
@@ -180,6 +183,30 @@ export const seats: readonly Seat[] = [
     name: "integration engineer",
     face: "/fleet/10.png",
     blurb: "i wrap apis into quiet plugins.",
+  },
+  {
+    id: "imagine-engineer",
+    name: "imagine engineer",
+    face: "/fleet/11.png",
+    blurb: "i turn big ideas into something you can build.",
+  },
+  {
+    id: "social-lead",
+    name: "social lead",
+    face: "/fleet/12.png",
+    blurb: "i find the events worth showing up for.",
+  },
+  {
+    id: "storage-engineer",
+    name: "storage engineer",
+    face: "/fleet/13.png",
+    blurb: "i keep the disk honest.",
+  },
+  {
+    id: "triage-engineer",
+    name: "triage engineer",
+    face: "/fleet/14.png",
+    blurb: "i sort what lands first.",
   },
 ];
 

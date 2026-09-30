@@ -169,7 +169,6 @@ export function renderSite(): string {
     <main class="stage">
       <header>
         <h1>${escapeHtml(name)}</h1>
-        ${renderManagedBy(homeManagedBy, "byline")}
       </header>
       ${renderBand("work", workHeading, workLines, true)}
       ${renderBand("research", researchHeading, researchLines)}

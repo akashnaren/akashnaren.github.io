@@ -119,7 +119,7 @@ mustInclude(
     '<h2 id="research">Research</h2>',
     "Multiscale Flow Physics Lab, UC San Diego",
     "https://asanchez.ucsd.edu/research/reactive-flows/",
-    ">Fire whirl research</a>",
+    ">Multiscale Flow Physics Lab, UC San Diego</a>",
     ">Independent work",
     '<h2 id="profiles">Profiles</h2>',
     ">GitHub</span>",
@@ -131,7 +131,7 @@ mustInclude(
     '<h2 id="mail">Mail</h2>',
     "Managed by ",
     ">Grok Bot<svg",
-    "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Project Engineer. Fire whirl research at the Multiscale Flow Physics Lab, UC San Diego, and independent work.",
+    "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Project Engineer. Multiscale Flow Physics Lab, UC San Diego, and independent work.",
     "https://github.com/akashnaren",
     "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
     "https://x.com/akashpn",
@@ -147,7 +147,6 @@ mustInclude(
     "bots' inbox",
     'href="/bot"',
     'class="managed-copy"',
-    'class="managed byline"',
     'class="foot home-foot"',
     'href="/research"',
     'name="theme-color" content="#0a0a0a"',
@@ -165,6 +164,8 @@ mustExclude(
     "orbit-spin",
     "ten grok bots",
     "Ten grok bots",
+    "fourteen grok bots",
+    "Fourteen grok bots",
     'class="fleet"',
     'class="fleet-face"',
     "new today",
@@ -202,6 +203,9 @@ mustExclude(
     "Vehicle Service Systems",
     "this site is managed by",
     "grok bot",
+    "Fire whirl",
+    "fire whirl",
+    'class="managed byline"',
   ],
   "home",
 );
@@ -211,7 +215,7 @@ if (!home.includes("by grok") && !home.includes("by <a")) {
 }
 mustIconInside(home, "/research", "Independent work", "home");
 mustIconInside(home, "/bot", "Grok Bot", "home");
-if (/>(?:Tesla|Robotaxi|Optimus|Grok|Raytheon|Fire whirl research)<svg class="ext"/.test(home)) {
+if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|Multiscale Flow Physics Lab, UC San Diego)<svg class="ext"/.test(home)) {
   fail("biography links must stay unmarked");
 }
 if (/<a[^>]*>[^<]*NASA/.test(home)) fail("NASA L’SPACE stays unlinked");
@@ -229,33 +233,44 @@ const sectionOrder = ["work", "research", "profiles", "mail"].map((id) => home.i
 if (sectionOrder.some((at) => at < 0) || sectionOrder.some((at, i) => i > 0 && at < sectionOrder[i - 1])) {
   fail("home sections must run Work, Research, Profiles, Mail");
 }
-if ((home.match(/>Grok Bot</g) ?? []).length < 2) {
-  fail("home must state Managed by Grok Bot under the name and in the footer");
+const homeHeader = home.match(/<header>[\s\S]*?<\/header>/)?.[0] ?? "";
+if (/managed|Grok Bot|grok bot/i.test(homeHeader)) {
+  fail("home header must not include the Grok Bot line");
+}
+if ((home.match(/>Grok Bot</g) ?? []).length !== 1) {
+  fail("home keeps a single Managed by Grok Bot cue in the footer");
+}
+if (!home.includes('class="foot home-foot"') || !/class="foot home-foot"[\s\S]*Managed by /.test(home)) {
+  fail("home footer must keep Managed by Grok Bot");
 }
 if (!/\/assets\/index-[^"]+\.js/.test(home)) fail("home must reference hashed /assets/index-*.js");
 if (home.includes("/src/main.ts")) fail("built home must not be the Vite shell");
 
 const seats = [
-  ["profile-engineer", "profile engineer", "i keep his profiles and ship this site."],
+  ["profile-lead", "profile lead", "i keep his profiles and ship this site."],
   ["software-engineer", "software engineer", "quiet diffs. a clean compile."],
   ["research-engineer", "research engineer", "i read the papers that matter."],
   ["chief-executive-officer", "chief executive officer", "i keep the work moving."],
-  ["secretary", "secretary", "i keep the notes in order."],
+  ["executive-secretary", "executive secretary", "i keep the notes in order."],
   ["chief-financial-officer", "chief financial officer", "i stay even."],
   ["finance-engineer", "finance engineer", "i keep the sheets in order."],
   ["product-engineer", "product engineer", "i file what ships."],
   ["chief-technical-officer", "chief technical officer", "i build grok bots like these."],
   ["integration-engineer", "integration engineer", "i wrap apis into quiet plugins."],
+  ["imagine-engineer", "imagine engineer", "i turn big ideas into something you can build."],
+  ["social-lead", "social lead", "i find the events worth showing up for."],
+  ["storage-engineer", "storage engineer", "i keep the disk honest."],
+  ["triage-engineer", "triage engineer", "i sort what lands first."],
 ];
 
 mustInclude(
   bot,
   [
     "<title>grok bot collection</title>",
-    '<meta name="description" content="ten grok bots, more coming." />',
-    '<meta property="og:description" content="ten grok bots, more coming." />',
-    '<meta name="twitter:description" content="ten grok bots, more coming." />',
-    '<p class="count">ten grok bots, more coming.</p>',
+    '<meta name="description" content="fourteen grok bots, more coming." />',
+    '<meta property="og:description" content="fourteen grok bots, more coming." />',
+    '<meta name="twitter:description" content="fourteen grok bots, more coming." />',
+    '<p class="count">fourteen grok bots, more coming.</p>',
     'class="page profile"',
     'class="roster"',
     "this site is managed by",
@@ -270,13 +285,15 @@ mustInclude(
       `>${name}</span>`,
       blurb,
     ]),
-    ...Array.from({ length: 10 }, (_, i) => `src="/fleet/${String(i + 1).padStart(2, "0")}.png"`),
+    ...Array.from({ length: 14 }, (_, i) => `src="/fleet/${String(i + 1).padStart(2, "0")}.png"`),
   ],
   "bot",
 );
 
 const rowCount = (bot.match(/<li class="row"/g) ?? []).length;
-if (rowCount !== 10) fail(`bot roster must list ten seats, found ${String(rowCount)}`);
+if (rowCount !== 14) fail(`bot roster must list fourteen seats, found ${String(rowCount)}`);
+if (/>secretary</.test(bot)) fail("the notes seat is executive secretary");
+if (bot.includes("profile engineer")) fail("profile engineer was renamed to profile lead");
 mustIconInside(bot, "/bot", "grok bot", "bot");
 
 mustExclude(
@@ -288,7 +305,15 @@ mustExclude(
     "Redwood City",
     "Raytheon",
     "Ten grok bots. A quiet collection.",
+    "ten grok bots",
     "Job Assistant",
+    "New Bot",
+    "All Hands",
+    "Application Team",
+    "Finance Team",
+    "Executive Team",
+    "Operations Team",
+    "Social Team",
     "desk",
     "glass",
     "models",
@@ -416,6 +441,7 @@ mustExclude(
     ">code</a>",
     ">demo</a>",
     "ten grok bots",
+    "fourteen grok bots",
     "noindex",
     "/research/fishbowl/",
     "OpenAI-style route",
