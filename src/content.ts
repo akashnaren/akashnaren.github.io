@@ -217,7 +217,7 @@ export const researchTitle = "Research";
 export const researchUrl = "https://akashnaren.github.io/research";
 
 export const researchDescription =
-  "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity investigation across fragmented records.";
+  "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity resolution across fragmented records.";
 
 export type ThreadFigure = "mesh" | "protocol" | "axes" | "gaps";
 
@@ -262,7 +262,7 @@ export const threads: readonly Thread[] = [
   },
   {
     id: "entity-investigation",
-    title: "Entity Investigation Across Fragmented Records",
+    title: "Entity Resolution Across Fragmented Records",
     figure: "gaps",
     abstract:
       "I am looking at how to reason over fragmented records and link events to the right address over time.",
