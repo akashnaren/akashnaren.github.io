@@ -323,13 +323,6 @@ a:focus-visible {
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 
-.mast .count {
-  margin-top: 0.35rem;
-  color: #a3a39c;
-  font-size: 13px;
-  line-height: 1.35;
-}
-
 .roster {
   list-style: none;
   width: 100%;
@@ -394,13 +387,6 @@ a:focus-visible {
 .page.profile .mast {
   padding-bottom: 0;
   border-bottom: 0;
-}
-
-.page.profile .mast .count {
-  margin-top: 0.5rem;
-  color: rgba(250, 250, 247, 0.42);
-  font-size: 13px;
-  letter-spacing: -0.011em;
 }
 
 .page.profile .roster {

@@ -113,7 +113,7 @@ export const botTitle = "grok bot collection";
 
 export const botUrl = "https://akashnaren.github.io/bot";
 
-export const botDescription = "fourteen grok bots, more coming.";
+export const botDescription = "grok bot collection";
 
 export type Seat = {
   readonly id: string;
