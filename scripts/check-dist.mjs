@@ -131,7 +131,7 @@ mustInclude(
     '<h2 id="mail">Mail</h2>',
     "Managed by ",
     ">Grok Bot<svg",
-    "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Project Engineer. Multiscale Flow Physics Lab, UC San Diego, and independent work.",
+    "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Asteroid PDR, Terrain Mapping Identification. Multiscale Flow Physics Lab, UC San Diego, and independent work.",
     "https://github.com/akashnaren",
     "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
     "https://x.com/akashpn",
