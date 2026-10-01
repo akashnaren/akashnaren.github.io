@@ -271,10 +271,6 @@ export const threads: readonly Thread[] = [
         href: "https://temporal-buddies5.vercel.app/",
         label: "Temporal",
       },
-      {
-        href: "https://www.meetlavalamp.com/",
-        label: "Lavalamp",
-      },
     ],
   },
 ];
