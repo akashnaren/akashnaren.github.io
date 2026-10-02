@@ -13,7 +13,7 @@ export type Contact = Link & {
 
 export const name = "Akash Premkumar";
 export const description =
-  "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Asteroid PDR, Terrain Mapping Identification. Multiscale Flow Physics Lab, UC San Diego, and independent work.";
+  "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — asteroid preliminary design review, terrain mapping identification proposal. Multiscale Flow Physics Lab, UC San Diego, and independent work.";
 export const url = "https://akashnaren.github.io/";
 export const themeColor = "#0a0a0a";
 
@@ -36,7 +36,10 @@ export const workLines: readonly Paragraph[] = [
     { href: "https://www.rtx.com/raytheon", label: "Raytheon" },
     " — Avionics Networking Test Suite",
   ],
-  ["NASA L’SPACE — Asteroid PDR, Terrain Mapping Identification"],
+  [
+    { href: "https://www.lspace.asu.edu/", label: "NASA L’SPACE" },
+    " — asteroid preliminary design review, terrain mapping identification proposal",
+  ],
 ];
 
 export const profilesHeading = "Profiles";
