@@ -115,7 +115,9 @@ mustInclude(
     "https://www.rtx.com/raytheon",
     ">Raytheon</a>",
     "Avionics Networking Test Suite",
-    "NASA L’SPACE — Asteroid PDR, Terrain Mapping Identification",
+    "https://www.lspace.asu.edu/",
+    ">NASA L’SPACE</a>",
+    "asteroid preliminary design review, terrain mapping identification proposal",
     '<h2 id="research">Research</h2>',
     "Multiscale Flow Physics Lab, UC San Diego",
     "https://asanchez.ucsd.edu/research/reactive-flows/",
@@ -131,7 +133,7 @@ mustInclude(
     '<h2 id="mail">Mail</h2>',
     "Managed by ",
     ">Grok Bot<svg",
-    "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — Asteroid PDR, Terrain Mapping Identification. Multiscale Flow Physics Lab, UC San Diego, and independent work.",
+    "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — asteroid preliminary design review, terrain mapping identification proposal. Multiscale Flow Physics Lab, UC San Diego, and independent work.",
     "https://github.com/akashnaren",
     "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
     "https://x.com/akashpn",
@@ -215,17 +217,23 @@ if (!home.includes("by grok") && !home.includes("by <a")) {
 }
 mustIconInside(home, "/research", "Independent work", "home");
 mustIconInside(home, "/bot", "Grok Bot", "home");
-if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|Multiscale Flow Physics Lab, UC San Diego)<svg class="ext"/.test(home)) {
+if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego)<svg class="ext"/.test(home)) {
   fail("biography links must stay unmarked");
 }
-if (/<a[^>]*>[^<]*NASA/.test(home)) fail("NASA L’SPACE stays unlinked");
 const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
 if (
   !workSection.includes(
-    '<span class="entry-name">NASA L’SPACE</span><span class="entry-detail"> — Asteroid PDR, Terrain Mapping Identification</span>',
+    '<span class="entry-name"><a href="https://www.lspace.asu.edu/">NASA L’SPACE</a></span><span class="entry-detail"> — asteroid preliminary design review, terrain mapping identification proposal</span>',
   )
 ) {
-  fail("NASA L’SPACE work row must list Asteroid PDR, Terrain Mapping Identification");
+  fail("NASA L’SPACE work row must link https://www.lspace.asu.edu/ and list asteroid preliminary design review, terrain mapping identification proposal");
+}
+if (
+  !workSection.includes(
+    'title="NASA L’SPACE — asteroid preliminary design review, terrain mapping identification proposal"',
+  )
+) {
+  fail("NASA L’SPACE title must spell out asteroid preliminary design review, terrain mapping identification proposal");
 }
 if (workSection.includes("Project Engineer")) fail("NASA L’SPACE work row must not use the title");
 if (/target="_blank"/.test(home)) fail("home links stay in the same tab");
