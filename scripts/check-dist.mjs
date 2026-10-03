@@ -359,6 +359,8 @@ mustInclude(
     'href="/research/agent-native-ui/paper.pdf"',
     "ARC-AGI and Hallucination Risk",
     "Entity Resolution Across Fragmented Records",
+    'href="https://shirts-sparc-stood-rainbow.trycloudflare.com"',
+    ">Pi GPT 1.0<svg",
     'href="https://temporal-buddies5.vercel.app/"',
     ">Temporal<svg",
     'class="ext"',
@@ -381,6 +383,22 @@ if (!piThread.includes("Raspberry Pi Inference Mesh")) {
 }
 if (!piThread.includes('href="/research/pi-0.2-high/paper.pdf"')) {
   fail("Pi 0.2 High title must open the PDF directly");
+}
+const piSub = piThread.match(/<p class="thread-sub">[\s\S]*?<\/p>/)?.[0] ?? "";
+if ((piSub.match(/<a /g) ?? []).length !== 1) {
+  fail("Pi thread must list exactly one chat link under the abstract");
+}
+mustIconInside(
+  piSub,
+  "https://shirts-sparc-stood-rainbow.trycloudflare.com",
+  "Pi GPT 1.0",
+  "pi thread",
+);
+if (!piSub.includes('rel="noopener noreferrer"') || /target="_blank"/.test(piThread)) {
+  fail("Pi GPT must open like other external research links");
+}
+if (articles.some((article) => article !== piThread && /trycloudflare|Pi GPT 1\.0/.test(article))) {
+  fail("Pi GPT must stay under the Raspberry Pi Inference Mesh thread");
 }
 const arc = articles.find((article) => article.includes("ARC-AGI and Hallucination Risk")) ?? "";
 if (arc.includes("<a ")) fail("ARC-AGI thread must not invent a link");

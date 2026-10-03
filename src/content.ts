@@ -247,6 +247,12 @@ export const threads: readonly Thread[] = [
     abstract:
       "I am running local language-model chat on a Raspberry Pi mesh.",
     href: piPaperHref,
+    links: [
+      {
+        href: "https://shirts-sparc-stood-rainbow.trycloudflare.com",
+        label: "Pi GPT 1.0",
+      },
+    ],
   },
   {
     id: "agent-native-ui-protocols",
