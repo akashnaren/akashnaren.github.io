@@ -359,7 +359,7 @@ mustInclude(
     'href="/research/agent-native-ui/paper.pdf"',
     "ARC-AGI and Hallucination Risk",
     "Entity Resolution Across Fragmented Records",
-    'href="https://shirts-sparc-stood-rainbow.trycloudflare.com"',
+    'href="http://100.100.197.18:18080/"',
     ">Pi GPT 1.0<svg",
     'href="https://temporal-buddies5.vercel.app/"',
     ">Temporal<svg",
@@ -390,7 +390,7 @@ if ((piSub.match(/<a /g) ?? []).length !== 1) {
 }
 mustIconInside(
   piSub,
-  "https://shirts-sparc-stood-rainbow.trycloudflare.com",
+  "http://100.100.197.18:18080/",
   "Pi GPT 1.0",
   "pi thread",
 );
