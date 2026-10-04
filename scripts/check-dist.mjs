@@ -359,7 +359,7 @@ mustInclude(
     'href="/research/agent-native-ui/paper.pdf"',
     "ARC-AGI and Hallucination Risk",
     "Entity Resolution Across Fragmented Records",
-    'href="http://100.100.197.18:18080/"',
+    'href="https://would-bride-celebrities-enables.trycloudflare.com/"',
     ">Pi GPT 1.0<svg",
     'href="https://temporal-buddies5.vercel.app/"',
     ">Temporal<svg",
@@ -390,7 +390,7 @@ if ((piSub.match(/<a /g) ?? []).length !== 1) {
 }
 mustIconInside(
   piSub,
-  "http://100.100.197.18:18080/",
+  "https://would-bride-celebrities-enables.trycloudflare.com/",
   "Pi GPT 1.0",
   "pi thread",
 );
