@@ -249,7 +249,7 @@ export const threads: readonly Thread[] = [
     href: piPaperHref,
     links: [
       {
-        href: "https://shirts-sparc-stood-rainbow.trycloudflare.com",
+        href: "http://100.100.197.18:18080/",
         label: "Pi GPT 1.0",
       },
     ],
