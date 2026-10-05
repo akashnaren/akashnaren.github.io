@@ -270,7 +270,7 @@ const seats = [
   ["chief-executive-officer", "chief executive officer", "i keep the work moving."],
   ["executive-secretary", "executive secretary", "i keep the notes in order."],
   ["chief-financial-officer", "chief financial officer", "i stay even."],
-  ["finance-engineer", "finance engineer", "i keep the sheets in order."],
+  ["finance-engineer", "finance engineer", "i check the math twice."],
   ["product-engineer", "product engineer", "i file what ships."],
   ["chief-technical-officer", "chief technical officer", "i build grok bots like these."],
   ["integration-engineer", "integration engineer", "i wrap apis into quiet plugins."],

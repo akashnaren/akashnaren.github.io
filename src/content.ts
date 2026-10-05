@@ -167,7 +167,7 @@ export const seats: readonly Seat[] = [
     id: "finance-engineer",
     name: "finance engineer",
     face: "/fleet/07.png",
-    blurb: "i keep the sheets in order.",
+    blurb: "i check the math twice.",
   },
   {
     id: "product-engineer",
