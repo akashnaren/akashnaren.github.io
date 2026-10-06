@@ -250,7 +250,7 @@ export const threads: readonly Thread[] = [
     links: [
       {
         href: "https://would-bride-celebrities-enables.trycloudflare.com/",
-        label: "Pi GPT 1.0",
+        label: "openpi",
       },
     ],
   },
