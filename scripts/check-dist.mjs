@@ -369,7 +369,7 @@ mustInclude(
     "ARC-AGI and Hallucination Risk",
     "Entity Resolution Across Fragmented Records",
     'href="https://would-bride-celebrities-enables.trycloudflare.com/"',
-    ">Pi GPT 1.0<svg",
+    ">openpi<svg",
     'href="https://temporal-buddies5.vercel.app/"',
     ">Temporal<svg",
     'class="ext"',
@@ -400,14 +400,14 @@ if ((piSub.match(/<a /g) ?? []).length !== 1) {
 mustIconInside(
   piSub,
   "https://would-bride-celebrities-enables.trycloudflare.com/",
-  "Pi GPT 1.0",
+  "openpi",
   "pi thread",
 );
 if (!piSub.includes('rel="noopener noreferrer"') || /target="_blank"/.test(piThread)) {
-  fail("Pi GPT must open like other external research links");
+  fail("openpi must open like other external research links");
 }
-if (articles.some((article) => article !== piThread && /trycloudflare|Pi GPT 1\.0/.test(article))) {
-  fail("Pi GPT must stay under the Raspberry Pi Inference Mesh thread");
+if (articles.some((article) => article !== piThread && /trycloudflare|openpi/.test(article))) {
+  fail("openpi must stay under the Raspberry Pi Inference Mesh thread");
 }
 const arc = articles.find((article) => article.includes("ARC-AGI and Hallucination Risk")) ?? "";
 if (arc.includes("<a ")) fail("ARC-AGI thread must not invent a link");
