@@ -54,7 +54,7 @@ export const botMeta: PageMeta = {
 };
 
 export const researchMeta: PageMeta = {
-  title: researchTitle,
+  title: `${researchTitle} · ${name}`,
   description: researchDescription,
   url: researchUrl,
 };

@@ -13,7 +13,7 @@ export type Contact = Link & {
 
 export const name = "Akash Premkumar";
 export const description =
-  "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — asteroid preliminary design review, terrain mapping identification proposal. Multiscale Flow Physics Lab, UC San Diego, and independent work.";
+  "Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego.";
 export const url = "https://akashnaren.github.io/";
 export const themeColor = "#0a0a0a";
 
@@ -112,11 +112,11 @@ export const fleetMarks = [
 
 export const collectionTitle = "grok bot collection";
 
-export const botTitle = "grok bot collection";
+export const botTitle = "grok bot collection · Akash Premkumar";
 
 export const botUrl = "https://akashnaren.github.io/bot";
 
-export const botDescription = "grok bot collection";
+export const botDescription = "The grok bot collection behind akashnaren.github.io.";
 
 export type Seat = {
   readonly id: string;
@@ -137,7 +137,7 @@ export const seats: readonly Seat[] = [
     id: "software-engineer",
     name: "software engineer",
     face: "/fleet/02.png",
-    blurb: "quiet diffs. a clean compile.",
+    blurb: "i ship quiet diffs that compile clean.",
   },
   {
     id: "research-engineer",
