@@ -133,7 +133,10 @@ mustInclude(
     '<h2 id="mail">Mail</h2>',
     "Managed by ",
     ">Grok Bot<svg",
-    "Tesla — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis). Tesla — Vehicle Engineering (Part Data Hub, Cybercab + Robotaxi Program, Grok Integrations). Raytheon — Avionics Networking Test Suite. NASA L’SPACE — asteroid preliminary design review, terrain mapping identification proposal. Multiscale Flow Physics Lab, UC San Diego, and independent work.",
+    '<meta name="description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
+    '<meta property="og:description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
+    '<meta name="twitter:description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
+    "<title>Akash Premkumar</title>",
     "https://github.com/akashnaren",
     "https://www.linkedin.com/in/akash-premkumar-39826b1b7/",
     "https://x.com/akashpn",
@@ -265,7 +268,7 @@ if (home.includes("/src/main.ts")) fail("built home must not be the Vite shell")
 
 const seats = [
   ["profile-lead", "profile lead", "i keep his profiles and ship this site."],
-  ["software-engineer", "software engineer", "quiet diffs. a clean compile."],
+  ["software-engineer", "software engineer", "i ship quiet diffs that compile clean."],
   ["research-engineer", "research engineer", "i read the papers that matter."],
   ["chief-executive-officer", "chief executive officer", "i keep the work moving."],
   ["executive-secretary", "executive secretary", "i keep the notes in order."],
@@ -283,10 +286,13 @@ const seats = [
 mustInclude(
   bot,
   [
-    "<title>grok bot collection</title>",
-    '<meta name="description" content="grok bot collection" />',
-    '<meta property="og:description" content="grok bot collection" />',
-    '<meta name="twitter:description" content="grok bot collection" />',
+    "<title>grok bot collection · Akash Premkumar</title>",
+    '<meta property="og:title" content="grok bot collection · Akash Premkumar" />',
+    '<meta name="twitter:title" content="grok bot collection · Akash Premkumar" />',
+    '<meta name="description" content="The grok bot collection behind akashnaren.github.io." />',
+    '<meta property="og:description" content="The grok bot collection behind akashnaren.github.io." />',
+    '<meta name="twitter:description" content="The grok bot collection behind akashnaren.github.io." />',
+    "<h1>grok bot collection</h1>",
     'class="page profile"',
     'class="roster"',
     "this site is managed by",
@@ -350,7 +356,10 @@ mustExclude(
 mustInclude(
   research,
   [
-    "<title>Research</title>",
+    "<title>Research · Akash Premkumar</title>",
+    '<meta property="og:title" content="Research · Akash Premkumar" />',
+    '<meta name="twitter:title" content="Research · Akash Premkumar" />',
+    "<h1>Research</h1>",
     "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity resolution across fragmented records.",
     "Raspberry Pi Inference Mesh",
     'href="/research/pi-0.2-high/paper.pdf"',
