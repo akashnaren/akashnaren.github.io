@@ -249,7 +249,7 @@ export const threads: readonly Thread[] = [
     href: piPaperHref,
     links: [
       {
-        href: "https://would-bride-celebrities-enables.trycloudflare.com/",
+        href: "https://seller-hotels-stay-role.trycloudflare.com/",
         label: "openpi",
       },
     ],
