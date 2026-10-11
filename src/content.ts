@@ -50,11 +50,11 @@ export const researchHeading = "Research";
 
 export const projectsHeading = "Projects";
 
-/** Lab line on the landing page. Paper titles render under it. */
+/** Lab line on the landing page. */
 export const researchLines: readonly Paragraph[] = [
   [
     {
-      href: "https://asanchez.ucsd.edu/research/reactive-flows/",
+      href: "https://asanchez.ucsd.edu/",
       label: "Multiscale Flow Physics Lab, UC San Diego",
     },
   ],
@@ -221,7 +221,7 @@ export const researchTitle = "Research";
 export const researchUrl = "https://akashnaren.github.io/research";
 
 export const researchDescription =
-  "Multiscale Flow Physics Lab, UC San Diego, OpenPi, and Structured Views for Agent-Native UIs.";
+  "Multiscale Flow Physics Lab, UC San Diego, OpenPi, and Agent-Native UI.";
 
 export const piPaperHref = "/research/pi-0.2-high/paper.pdf";
 
@@ -239,35 +239,23 @@ export const researchEntries: readonly ListedWork[] = [
   {
     id: "openpi",
     title: "OpenPi",
-    href: piPaperHref,
-    links: [
-      {
-        href: "https://seller-hotels-stay-role.trycloudflare.com/",
-        label: "openpi",
-      },
-    ],
+    href: "https://seller-hotels-stay-role.trycloudflare.com/",
   },
   {
     id: "agent-native-ui",
-    title: "Structured Views for Agent-Native UIs",
+    title: "Agent-Native UI",
     href: "/research/agent-native-ui/paper.pdf",
   },
 ];
 
-export const projectEntries: readonly ListedWork[] = [
+export const projectLinks: readonly Link[] = [
   {
-    id: "entity-resolution",
-    title: "Entity Resolution",
-    links: [
-      {
-        href: "https://temporal-buddies5.vercel.app/",
-        label: "Temporal",
-      },
-      {
-        href: "https://meetlavalamp.com",
-        label: "Lavalamp",
-      },
-    ],
+    href: "https://temporal-buddies5.vercel.app/",
+    label: "Temporal",
+  },
+  {
+    href: "https://meetlavalamp.com",
+    label: "Lavalamp",
   },
 ];
 

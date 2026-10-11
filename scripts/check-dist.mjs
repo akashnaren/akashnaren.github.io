@@ -120,8 +120,8 @@ mustInclude(
     "asteroid preliminary design review, terrain mapping identification proposal",
     '<h2 id="research">Research</h2>',
     "Multiscale Flow Physics Lab, UC San Diego",
-    "https://asanchez.ucsd.edu/research/reactive-flows/",
-    ">Multiscale Flow Physics Lab, UC San Diego</a>",
+    'href="https://asanchez.ucsd.edu/"',
+    ">Multiscale Flow Physics Lab, UC San Diego<svg",
     '<h2 id="profiles">Profiles</h2>',
     ">GitHub</span>",
     ">LinkedIn</span>",
@@ -159,13 +159,12 @@ mustInclude(
     'id="bot"',
     "<h2 id=\"bot\">personal agents collection</h2>",
     "<h2 id=\"projects\">Projects</h2>",
-    'href="/research/pi-0.2-high/paper.pdf"',
     ">OpenPi<svg",
-    "Structured Views for Agent-Native UIs",
+    "Agent-Native UI",
     'href="/research/agent-native-ui/paper.pdf"',
-    '<span class="entry-name">Entity Resolution</span>',
     'href="https://seller-hotels-stay-role.trycloudflare.com/"',
-    ">openpi<svg",
+    'tabindex="0"',
+    'role="tooltip"',
     'href="https://temporal-buddies5.vercel.app/"',
     ">Temporal<svg",
     'href="https://meetlavalamp.com"',
@@ -226,6 +225,10 @@ mustExclude(
     "Independent work",
     "grok bot collection",
     "Raspberry Pi Inference Mesh",
+    "Structured Views for Agent-Native UIs",
+    "Entity Resolution",
+    "reactive-flows",
+    ">openpi<",
     "ARC-AGI",
     "Entity Resolution Across Fragmented Records",
     "I am running local language-model chat on a Raspberry Pi mesh.",
@@ -254,7 +257,7 @@ if (!/<a href="#bot">Grok Bot<\/a>/.test(home)) {
 if (home.includes('href="/bot"') || home.includes('href="/research"')) {
   fail("home must link the footer to #bot and inline research, not the old routes");
 }
-if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego)<svg class="ext"/.test(home)) {
+if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE)<svg class="ext"/.test(home)) {
   fail("biography links must stay unmarked");
 }
 const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
@@ -336,8 +339,10 @@ mustInclude(
     ...seats.flatMap(([id, name, blurb]) => [
       `data-seat="${id}"`,
       `data-name="${name}"`,
+      `aria-label="${name}"`,
+      `aria-describedby="tip-${id}"`,
+      `id="tip-${id}" role="tooltip">${blurb}</span>`,
       `>${name}</span>`,
-      blurb,
     ]),
     ...Array.from({ length: 14 }, (_, i) => `src="/fleet/${String(i + 1).padStart(2, "0")}.png"`),
   ],
@@ -347,9 +352,21 @@ mustInclude(
 const roster = home.match(/<ul class="roster">[\s\S]*?<\/ul>/)?.[0] ?? "";
 const rowCount = (roster.match(/<li class="row"/g) ?? []).length;
 if (rowCount !== 14) fail(`home roster must list fourteen seats, found ${String(rowCount)}`);
+if ((roster.match(/tabindex="0"/g) ?? []).length !== 14) {
+  fail("every seat must be keyboard focusable");
+}
+if ((roster.match(/role="tooltip"/g) ?? []).length !== 14) {
+  fail("every seat blurb must live in a tooltip");
+}
+if (roster.includes('class="row-blurb"')) {
+  fail("seat blurbs must not render as a visible sub-line");
+}
 const firstRow = roster.match(/<li class="row"[\s\S]*?<\/li>/)?.[0] ?? "";
 if (!firstRow.includes('data-seat="profile-lead"') || !firstRow.includes(">profile lead</span>")) {
   fail("the host seat must be profile lead");
+}
+if (!firstRow.includes('role="tooltip">i keep his profiles and ship this site.</span>')) {
+  fail("the host seat tooltip must keep its blurb");
 }
 if (/>secretary</.test(home)) fail("the notes seat is executive secretary");
 if ((home.match(/<ul class="roster"/g) ?? []).length !== 1) {
@@ -360,85 +377,83 @@ const researchSection = home.match(/aria-labelledby="research">[\s\S]*?<\/sectio
 const projectsSection = home.match(/aria-labelledby="projects">[\s\S]*?<\/section>/)?.[0] ?? "";
 const researchItems = researchSection.match(/<li[\s>]/g) ?? [];
 if (researchItems.length !== 3) {
-  fail(`research must list the lab, OpenPi, and Structured Views, found ${String(researchItems.length)}`);
+  fail(`research must list the lab, OpenPi, and Agent-Native UI, found ${String(researchItems.length)}`);
 }
 const projectItems = projectsSection.match(/<li[\s>]/g) ?? [];
-if (projectItems.length !== 1) {
-  fail(`projects must list only Entity Resolution, found ${String(projectItems.length)}`);
+if (projectItems.length !== 2) {
+  fail(`projects must list Temporal and Lavalamp, found ${String(projectItems.length)}`);
 }
 if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
   fail("research and projects must not include blurbs");
 }
+const lab = researchSection.match(/<li>[\s\S]*?<\/li>/)?.[0] ?? "";
+if ((lab.match(/<a /g) ?? []).length !== 1) {
+  fail("the lab line must be a single link");
+}
+mustIconInside(
+  lab,
+  "https://asanchez.ucsd.edu/",
+  "Multiscale Flow Physics Lab, UC San Diego",
+  "lab",
+);
+if (!lab.includes('rel="noopener noreferrer"') || lab.includes("reactive-flows") || /target="_blank"/.test(lab)) {
+  fail("the lab link must open https://asanchez.ucsd.edu/ like other external links");
+}
 const openPi = researchSection.match(/<li data-entry="openpi">[\s\S]*?<\/li>/)?.[0] ?? "";
-if (!openPi.includes('href="/research/pi-0.2-high/paper.pdf"')) {
-  fail("OpenPi must open the PDF directly");
+if ((openPi.match(/<a /g) ?? []).length !== 1) {
+  fail("OpenPi must be a single link");
 }
-if ((openPi.match(/<a /g) ?? []).length !== 2) {
-  fail("OpenPi must keep the PDF title link and the openpi link");
-}
-const openPiTitleAt = openPi.indexOf(">OpenPi<svg");
-const openPiLinkAt = openPi.indexOf(">openpi<svg");
-if (openPiTitleAt < 0 || openPiLinkAt < openPiTitleAt) {
-  fail("the openpi link must follow the OpenPi title");
+if (/paper\.pdf|>openpi</.test(openPi)) {
+  fail("OpenPi must not keep a PDF link or a separate openpi link");
 }
 mustIconInside(
   openPi,
   "https://seller-hotels-stay-role.trycloudflare.com/",
-  "openpi",
+  "OpenPi",
   "OpenPi",
 );
 if (!openPi.includes('rel="noopener noreferrer"') || /target="_blank"/.test(openPi)) {
-  fail("openpi must open like other external links");
+  fail("OpenPi must open like other external links");
 }
-if (/trycloudflare|openpi/.test(projectsSection) || /trycloudflare|>openpi</.test(researchSection.replace(openPi, ""))) {
-  fail("openpi must stay on the OpenPi entry");
+if (/trycloudflare/.test(projectsSection) || /trycloudflare/.test(researchSection.replace(openPi, ""))) {
+  fail("OpenPi must stay on its own entry");
+}
+if (home.includes('href="/research/pi-0.2-high/paper.pdf"')) {
+  fail("the home page must not link the Pi paper PDF");
 }
 const views = researchSection.match(/<li data-entry="agent-native-ui">[\s\S]*?<\/li>/)?.[0] ?? "";
-if ((views.match(/<a /g) ?? []).length !== 1 || !views.includes("Structured Views for Agent-Native UIs")) {
-  fail("Structured Views must be a single PDF link with no blurb");
+if ((views.match(/<a /g) ?? []).length !== 1 || !views.includes("Agent-Native UI") || views.includes("Structured Views")) {
+  fail("Agent-Native UI must be a single PDF link with no blurb");
 }
-mustIconInside(
-  home,
-  "/research/pi-0.2-high/paper.pdf",
-  "OpenPi",
-  "home",
-);
 mustIconInside(
   home,
   "/research/agent-native-ui/paper.pdf",
-  "Structured Views for Agent-Native UIs",
+  "Agent-Native UI",
   "home",
 );
-const entity = projectsSection.match(/<li data-entry="entity-resolution">[\s\S]*?<\/li>/)?.[0] ?? "";
-if (!entity.includes('<span class="entry-name">Entity Resolution</span>')) {
-  fail("Entity Resolution title must stay plain text");
+if (/Entity Resolution|entity-resolution/.test(projectsSection) || /<p[\s>]/.test(projectsSection) || /paper\.pdf/i.test(projectsSection)) {
+  fail("Projects must show only the Temporal and Lavalamp links");
 }
-if (/<a[^>]*>[^<]*Entity Resolution/.test(entity)) {
-  fail("Entity Resolution title must not be a link");
-}
-if (/paper\.pdf/i.test(entity) || /<p[\s>]/.test(entity)) {
-  fail("Entity Resolution must not link a paper or include a blurb");
-}
-const entityAnchors = entity.match(/<a /g) ?? [];
-if (entityAnchors.length !== 2) {
-  fail(`Entity Resolution must show exactly two links, found ${String(entityAnchors.length)}`);
+const projectAnchors = projectsSection.match(/<a /g) ?? [];
+if (projectAnchors.length !== 2) {
+  fail(`Projects must show exactly two links, found ${String(projectAnchors.length)}`);
 }
 mustIconInside(
-  entity,
+  projectsSection,
   "https://temporal-buddies5.vercel.app/",
   "Temporal",
-  "Entity Resolution",
+  "Projects",
 );
 mustIconInside(
-  entity,
+  projectsSection,
   "https://meetlavalamp.com",
   "Lavalamp",
-  "Entity Resolution",
+  "Projects",
 );
-const temporalAt = entity.indexOf(">Temporal<svg");
-const lavalampAt = entity.indexOf(">Lavalamp<svg");
+const temporalAt = projectsSection.indexOf(">Temporal<svg");
+const lavalampAt = projectsSection.indexOf(">Lavalamp<svg");
 if (temporalAt === -1 || lavalampAt < temporalAt) {
-  fail("Lavalamp must follow Temporal under Entity Resolution");
+  fail("Lavalamp must follow Temporal");
 }
 if (/lavalamp|meetlavalamp|temporal-buddies/i.test(researchSection)) {
   fail("Temporal and Lavalamp must stay in Projects");
@@ -541,7 +556,7 @@ mustBeSectionRedirect(
   research,
   "/#research",
   "Research · Akash Premkumar",
-  "Multiscale Flow Physics Lab, UC San Diego, OpenPi, and Structured Views for Agent-Native UIs.",
+  "Multiscale Flow Physics Lab, UC San Diego, OpenPi, and Agent-Native UI.",
   "research redirect",
 );
 mustExclude(
@@ -576,6 +591,9 @@ mustExclude(
     "OpenAI-style route",
     "paper.pdf",
     "Raspberry Pi Inference Mesh",
+    "Structured Views for Agent-Native UIs",
+    "Entity Resolution",
+    "reactive-flows",
     "ARC-AGI",
     "Entity Resolution Across Fragmented Records",
     "I am running local language-model chat on a Raspberry Pi mesh.",
@@ -658,13 +676,28 @@ const jsName = readdirSync("dist/assets").find((name) => name.endsWith(".js"));
 if (!cssName || !jsName) fail("dist/assets is missing hashed css or js");
 const css = read(`dist/assets/${cssName}`);
 const js = read(`dist/assets/${jsName}`);
-mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist", "position:sticky", ".home-foot{grid-column:1}"], "css");
+mustInclude(
+  css,
+  [
+    "100dvh",
+    "color-scheme:dark",
+    "overflow-x:hidden",
+    "Geist",
+    "position:sticky",
+    ".home-foot{grid-column:1}",
+    ".row-tip",
+    ".row:hover .row-tip",
+    ".row:focus .row-tip",
+    ".row.is-open .row-tip",
+  ],
+  "css",
+);
 mustExclude(
   css,
   ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes"],
   "css",
 );
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution Across Fragmented Records", "fragmented records", "hallucination", "screenshots or a flat accessibility tree"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<"], "js");
 
 const pdfs = [
   "public/research/agent-native-ui/paper.pdf",
@@ -786,7 +819,7 @@ mustInclude(
 );
 mustExclude(
   sitemap,
-  ["fishbowl", "status.json", "/research/rack", "ARC-AGI", "fragmented records", "hallucination", "Raspberry Pi Inference Mesh"],
+  ["fishbowl", "status.json", "/research/rack", "ARC-AGI", "fragmented records", "hallucination", "Raspberry Pi Inference Mesh", "Structured Views for Agent-Native UIs", "Entity Resolution", "reactive-flows"],
   "sitemap.xml",
 );
 

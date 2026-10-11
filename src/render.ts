@@ -13,7 +13,7 @@ import {
   personalMail,
   profilesHeading,
   researchDescription,
-  projectEntries,
+  projectLinks,
   projectsHeading,
   researchEntries,
   researchHeading,
@@ -180,19 +180,17 @@ function renderNamedList(id: string, heading: string, items: string): string {
 }
 
 function renderResearchSection(): string {
-  const items = [
-    ...researchLines.map((line) => renderEntry(line, false)),
-    ...researchEntries.map(renderListedWork),
-  ].join("\n          ");
+  const lab = researchLines.map((line) => {
+    const link = line.find(isLink);
+    return link ? `<li>${renderDocLink(link.href, link.label)}</li>` : renderEntry(line, false);
+  });
+  const items = [...lab, ...researchEntries.map(renderListedWork)].join("\n          ");
   return renderNamedList("research", researchHeading, items);
 }
 
 function renderProjectsSection(): string {
-  return renderNamedList(
-    "projects",
-    projectsHeading,
-    projectEntries.map(renderListedWork).join("\n          "),
-  );
+  const items = projectLinks.map((link) => `<li>${renderDocLink(link.href, link.label)}</li>`).join("\n          ");
+  return renderNamedList("projects", projectsHeading, items);
 }
 
 function renderCollection(): string {
@@ -225,7 +223,8 @@ export function renderSite(): string {
 }
 
 function renderRow(seat: Seat): string {
-  return `<li class="row" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}"><img class="row-face" src="${escapeHtml(seat.face)}" alt="" width="36" height="36" decoding="async" /><span class="row-id"><span class="row-name">${escapeHtml(seat.name)}</span><span class="row-blurb">${escapeHtml(seat.blurb)}</span></span></li>`;
+  const tipId = `tip-${seat.id}`;
+  return `<li class="row" tabindex="0" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" aria-label="${escapeHtml(seat.name)}" aria-describedby="${escapeHtml(tipId)}"><img class="row-face" src="${escapeHtml(seat.face)}" alt="" width="36" height="36" decoding="async" /><span class="row-name">${escapeHtml(seat.name)}</span><span class="row-tip" id="${escapeHtml(tipId)}" role="tooltip">${escapeHtml(seat.blurb)}</span></li>`;
 }
 
 export function sectionRedirectHtml(href: string, title: string, description: string): string {

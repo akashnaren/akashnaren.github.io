@@ -33,6 +33,28 @@ function mount(): void {
   }
 
   applyDocumentMeta(homeMeta);
+  bindSeatTips();
+}
+
+function bindSeatTips(): void {
+  const rows = document.querySelectorAll<HTMLElement>(".collection .row");
+  if (rows.length === 0) return;
+  const close = () => {
+    for (const row of rows) row.classList.remove("is-open");
+  };
+  for (const row of rows) {
+    row.addEventListener("pointerup", (event) => {
+      if (event.pointerType === "mouse") return;
+      const open = row.classList.contains("is-open");
+      close();
+      if (!open) row.classList.add("is-open");
+    });
+  }
+  document.addEventListener("pointerup", (event) => {
+    const target = event.target;
+    if (target instanceof Element && target.closest(".collection .row")) return;
+    close();
+  });
 }
 
 mount();
