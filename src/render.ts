@@ -79,10 +79,30 @@ function isSitePageHref(href: string): boolean {
   return path === "/bot" || path === "/bot/" || path === researchPath || path === `${researchPath}/`;
 }
 
+/** In-page anchors and the old /bot and /research redirects stay in this tab. */
+function keepsSameTab(href: string): boolean {
+  return href.startsWith("#") || isSitePageHref(href);
+}
+
+function mergeRel(existing: string): string {
+  const tokens = existing.split(/\s+/).filter(Boolean);
+  for (const token of ["noopener", "noreferrer"]) {
+    if (!tokens.includes(token)) tokens.push(token);
+  }
+  return tokens.join(" ");
+}
+
+function linkAttrs(href: string, existingRel = ""): string {
+  if (keepsSameTab(href)) {
+    return existingRel ? ` rel="${escapeHtml(existingRel)}"` : "";
+  }
+  return ` target="_blank" rel="${escapeHtml(mergeRel(existingRel))}"`;
+}
+
 function renderPhrase(part: Phrase): string {
   if (isLink(part)) {
     const icon = isSitePageHref(part.href) ? renderLinkIcon() : "";
-    return `<a href="${escapeHtml(part.href)}">${escapeHtml(part.label)}${icon}</a>`;
+    return `<a href="${escapeHtml(part.href)}"${linkAttrs(part.href)}>${escapeHtml(part.label)}${icon}</a>`;
   }
   return escapeHtml(part);
 }
@@ -136,7 +156,7 @@ function renderContactLink(item: Contact): string {
   const mark = item.mark
     ? `<img class="contact-mark" src="${escapeHtml(item.mark)}" alt="" width="14" height="14" decoding="async" />`
     : "";
-  return `<a class="contact-link" href="${escapeHtml(item.href)}">${mark}<span>${escapeHtml(item.label)}</span></a>`;
+  return `<a class="contact-link" href="${escapeHtml(item.href)}"${linkAttrs(item.href)}>${mark}<span>${escapeHtml(item.label)}</span></a>`;
 }
 
 function renderProfiles(): string {
@@ -151,17 +171,17 @@ function renderMail(): string {
   return `<section class="section" aria-labelledby="mail">
         <h2 id="mail">${escapeHtml(mailHeading)}</h2>
         <ul class="mail-row">
-          <li><a class="mail-address" href="${escapeHtml(personalMail.href)}">${escapeHtml(personalMail.address)}</a></li>
-          <li><span class="mail-kind">${escapeHtml(agentInbox.label)}</span><a class="mail-address" href="${escapeHtml(agentInbox.href)}" title="${escapeHtml(agentInbox.tip)}">${escapeHtml(agentInbox.address)}</a></li>
+          <li><a class="mail-address" href="${escapeHtml(personalMail.href)}"${linkAttrs(personalMail.href)}>${escapeHtml(personalMail.address)}</a></li>
+          <li><span class="mail-kind">${escapeHtml(agentInbox.label)}</span><a class="mail-address" href="${escapeHtml(agentInbox.href)}"${linkAttrs(agentInbox.href)} title="${escapeHtml(agentInbox.tip)}">${escapeHtml(agentInbox.address)}</a></li>
         </ul>
       </section>`;
 }
 
 function renderDocLink(href: string, label: string): string {
   const external = /^https?:\/\//i.test(href);
-  const rel = external ? ` rel="noopener noreferrer"` : "";
+  const existingRel = external ? "noopener noreferrer" : "";
   const icon = external || /\.pdf(?:$|[?#])/i.test(href) ? renderLinkIcon() : "";
-  return `<a href="${escapeHtml(href)}"${rel}>${escapeHtml(label)}${icon}</a>`;
+  return `<a href="${escapeHtml(href)}"${linkAttrs(href, existingRel)}>${escapeHtml(label)}${icon}</a>`;
 }
 
 function renderListedWork(entry: ListedWork): string {

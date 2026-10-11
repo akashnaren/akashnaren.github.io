@@ -277,10 +277,10 @@ const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0
 const workRows = [...workSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => match[0]);
 if (workRows.length !== 4) fail(`work must list four rows, found ${String(workRows.length)}`);
 const expectedWork = [
-  '<li title="Tesla — Vehicle Service"><span class="entry-name"><a href="https://www.tesla.com/">Tesla</a></span><span class="entry-detail"> — Vehicle Service</span></li>',
-  '<li title="Tesla — Vehicle Engineering"><span class="entry-name"><a href="https://www.tesla.com/">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering</span></li>',
-  '<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon">Raytheon</a></span><span class="entry-detail"> — Avionics Networking Test Suite</span></li>',
-  '<li title="NASA L’SPACE — Workforce Program"><span class="entry-name"><a href="https://www.lspace.asu.edu/">NASA L’SPACE</a></span><span class="entry-detail"> — Workforce Program</span></li>',
+  '<li title="Tesla — Vehicle Service"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Service</span></li>',
+  '<li title="Tesla — Vehicle Engineering"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering</span></li>',
+  '<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — Avionics Networking Test Suite</span></li>',
+  '<li title="NASA L’SPACE — Workforce Program"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — Workforce Program</span></li>',
 ];
 for (const [index, row] of expectedWork.entries()) {
   if (workRows[index] !== row) fail(`work row ${String(index + 1)} must keep the dash layout: ${row}`);
@@ -289,7 +289,29 @@ if ((workSection.match(/<a /g) ?? []).length !== 4) {
   fail("work rows must link only Tesla, Tesla, Raytheon, and NASA L’SPACE");
 }
 if (workSection.includes("Project Engineer")) fail("NASA L’SPACE work row must not use the title");
-if (/target="_blank"/.test(home)) fail("home links stay in the same tab");
+function sameTabHref(href) {
+  if (href.startsWith("#")) return true;
+  const path = href.split(/[?#]/, 1)[0] ?? "";
+  return path === "/bot" || path === "/bot/" || path === "/research" || path === "/research/";
+}
+
+const homeAnchors = [...home.matchAll(/<a\b([^>]*)>/g)];
+if (homeAnchors.length === 0) fail("home is missing links");
+for (const match of homeAnchors) {
+  const attrs = match[1];
+  const href = attrs.match(/\bhref="([^"]*)"/)?.[1] ?? "";
+  const target = attrs.match(/\btarget="([^"]*)"/)?.[1] ?? "";
+  const rel = attrs.match(/\brel="([^"]*)"/)?.[1] ?? "";
+  if (sameTabHref(href)) {
+    if (target || rel) fail(`in-page or legacy home link must stay in this tab: ${href}`);
+    continue;
+  }
+  if (target !== "_blank") fail(`outbound home link must set target="_blank": ${href}`);
+  const tokens = rel.split(/\s+/).filter(Boolean);
+  if (!tokens.includes("noopener") || !tokens.includes("noreferrer")) {
+    fail(`outbound home link must set rel="noopener noreferrer": ${href}`);
+  }
+}
 const homeSections = home.match(/<section class="section"/g) ?? [];
 if (homeSections.length !== 5) {
   fail(`home must have Work, Research, Projects, Profiles, and Mail sections, found ${String(homeSections.length)}`);
@@ -404,8 +426,8 @@ mustIconInside(
   "Multiscale Flow Physics Lab, UC San Diego",
   "lab",
 );
-if (!lab.includes('rel="noopener noreferrer"') || lab.includes("reactive-flows") || /target="_blank"/.test(lab)) {
-  fail("the lab link must open https://asanchez.ucsd.edu/ like other external links");
+if (!lab.includes('rel="noopener noreferrer"') || lab.includes("reactive-flows") || !lab.includes('target="_blank"')) {
+  fail("the lab link must open https://asanchez.ucsd.edu/ in a new tab");
 }
 const openPi = researchSection.match(/<li data-entry="openpi">[\s\S]*?<\/li>/)?.[0] ?? "";
 if ((openPi.match(/<a /g) ?? []).length !== 1) {
@@ -420,8 +442,8 @@ mustIconInside(
   "OpenPi",
   "OpenPi",
 );
-if (!openPi.includes('rel="noopener noreferrer"') || /target="_blank"/.test(openPi)) {
-  fail("OpenPi must open like other external links");
+if (!openPi.includes('rel="noopener noreferrer"') || !openPi.includes('target="_blank"')) {
+  fail("OpenPi must open in a new tab");
 }
 if (/trycloudflare/.test(projectsSection) || /trycloudflare/.test(researchSection.replace(openPi, ""))) {
   fail("OpenPi must stay on its own entry");
