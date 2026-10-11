@@ -22,11 +22,13 @@ export const workHeading = "Work";
 export const workLines: readonly Paragraph[] = [
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
-    " — Vehicle Service",
+    " — ",
+    { href: "https://service.tesla.com/en-US/", label: "Vehicle Service" },
   ],
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
-    " — Vehicle Engineering",
+    " — ",
+    { href: "https://www.tesla.com/AI", label: "Vehicle Engineering" },
   ],
   [
     { href: "https://www.rtx.com/raytheon", label: "Raytheon" },
@@ -246,12 +248,12 @@ export const researchEntries: readonly ListedWork[] = [
 
 export const projectLinks: readonly Link[] = [
   {
-    href: "https://temporal-buddies5.vercel.app/",
-    label: "Temporal",
-  },
-  {
     href: "https://meetlavalamp.com",
     label: "Lavalamp",
+  },
+  {
+    href: "https://temporal-buddies5.vercel.app/",
+    label: "Temporal",
   },
 ];
 

@@ -105,9 +105,11 @@ mustInclude(
     'class="page home"',
     '<h2 id="work">Work</h2>',
     'title="Tesla — Vehicle Service"',
-    '<span class="entry-detail"> — Vehicle Service</span>',
+    '<span class="entry-detail"> — <a href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Vehicle Service<svg class="ext"',
     'title="Tesla — Vehicle Engineering"',
-    '<span class="entry-detail"> — Vehicle Engineering</span>',
+    '<span class="entry-detail"> — <a href="https://www.tesla.com/AI" target="_blank" rel="noopener noreferrer">Vehicle Engineering<svg class="ext"',
+    "https://service.tesla.com/en-US/",
+    "https://www.tesla.com/AI",
     "https://www.tesla.com/",
     ">Tesla</a>",
     "https://www.rtx.com/raytheon",
@@ -218,7 +220,6 @@ mustExclude(
     'class="bio"',
     'class="page-link"',
     "Optimus",
-    "tesla.com/AI",
     "Bill of Materials",
     "Fullstack Applications",
     "Vehicle Service Systems",
@@ -276,18 +277,21 @@ if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE)<svg cl
 const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
 const workRows = [...workSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => match[0]);
 if (workRows.length !== 4) fail(`work must list four rows, found ${String(workRows.length)}`);
+const roleIcon = `<svg class="ext" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.4 2.4h6.2v6.2M9.3 2.7 2.7 9.3" fill="none" stroke="currentColor" stroke-width="1.15"/></svg>`;
 const expectedWork = [
-  '<li title="Tesla — Vehicle Service"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Service</span></li>',
-  '<li title="Tesla — Vehicle Engineering"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering</span></li>',
+  `<li title="Tesla — Vehicle Service"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — <a href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Vehicle Service${roleIcon}</a></span></li>`,
+  `<li title="Tesla — Vehicle Engineering"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — <a href="https://www.tesla.com/AI" target="_blank" rel="noopener noreferrer">Vehicle Engineering${roleIcon}</a></span></li>`,
   '<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — Avionics Networking Test Suite</span></li>',
   '<li title="NASA L’SPACE — Workforce Program"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — Workforce Program</span></li>',
 ];
 for (const [index, row] of expectedWork.entries()) {
   if (workRows[index] !== row) fail(`work row ${String(index + 1)} must keep the dash layout: ${row}`);
 }
-if ((workSection.match(/<a /g) ?? []).length !== 4) {
-  fail("work rows must link only Tesla, Tesla, Raytheon, and NASA L’SPACE");
+if ((workSection.match(/<a /g) ?? []).length !== 6) {
+  fail("work rows must link Tesla, Vehicle Service, Tesla, Vehicle Engineering, Raytheon, and NASA L’SPACE");
 }
+mustIconInside(workSection, "https://service.tesla.com/en-US/", "Vehicle Service", "Vehicle Service");
+mustIconInside(workSection, "https://www.tesla.com/AI", "Vehicle Engineering", "Vehicle Engineering");
 if (workSection.includes("Project Engineer")) fail("NASA L’SPACE work row must not use the title");
 function sameTabHref(href) {
   if (href.startsWith("#")) return true;
@@ -482,8 +486,8 @@ mustIconInside(
 );
 const temporalAt = projectsSection.indexOf(">Temporal<svg");
 const lavalampAt = projectsSection.indexOf(">Lavalamp<svg");
-if (temporalAt === -1 || lavalampAt < temporalAt) {
-  fail("Lavalamp must follow Temporal");
+if (lavalampAt === -1 || temporalAt === -1 || lavalampAt > temporalAt) {
+  fail("Lavalamp must come before Temporal");
 }
 if (/lavalamp|meetlavalamp|temporal-buddies/i.test(researchSection)) {
   fail("Temporal and Lavalamp must stay in Projects");

@@ -122,12 +122,17 @@ function splitLedger(line: readonly Phrase[]): { label: readonly Phrase[]; detai
   return { label: [...line], detail: [] };
 }
 
+function renderDetailPhrase(part: Phrase): string {
+  if (!isLink(part)) return escapeHtml(part);
+  return renderDocLink(part.href, part.label);
+}
+
 function renderEntry(line: readonly Phrase[], ledger: boolean): string {
   const title = ` title="${escapeHtml(lineText(line))}"`;
   if (!ledger) return `<li${title}>${line.map(renderPhrase).join("")}</li>`;
   const { label, detail } = splitLedger(line);
   const detailHtml = detail.length
-    ? `<span class="entry-detail">${detail.map(renderPhrase).join("")}</span>`
+    ? `<span class="entry-detail">${detail.map(renderDetailPhrase).join("")}</span>`
     : "";
   return `<li${title}><span class="entry-name">${label.map(renderPhrase).join("")}</span>${detailHtml}</li>`;
 }
