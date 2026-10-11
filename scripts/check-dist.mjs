@@ -691,8 +691,8 @@ mustInclude(
     "color-scheme:light",
     "overflow-x:hidden",
     "Charter",
-    "position:sticky",
-    ".home-foot{grid-column:1}",
+    "6.5rem",
+    "minmax(5.25rem,1fr)",
     ".row-tip",
     ".row:hover .row-tip",
     ".row:focus .row-tip",
@@ -702,7 +702,7 @@ mustInclude(
 );
 mustExclude(
   css,
-  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes", "Geist", "color-scheme:dark", "#0a0a0a"],
+  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes", "Geist", "color-scheme:dark", "#0a0a0a", "position:sticky"],
   "css",
 );
 mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping"], "js");
