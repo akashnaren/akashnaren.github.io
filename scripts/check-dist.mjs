@@ -94,6 +94,8 @@ for (const [dist, root] of [
   ["dist/sitemap.xml", "sitemap.xml"],
   ["public/robots.txt", "dist/robots.txt"],
   ["public/sitemap.xml", "dist/sitemap.xml"],
+  ["dist/site.webmanifest", "site.webmanifest"],
+  ["public/site.webmanifest", "dist/site.webmanifest"],
 ]) {
   same(dist, root);
 }
@@ -523,10 +525,10 @@ function mustBeSectionRedirect(page, href, title, description, label) {
       `<meta name="description" content="${description}" />`,
       'http-equiv="refresh"',
       `content="0;url=${href}"`,
-      `location.replace(${JSON.stringify(href)})`,
       `<a href="${href}">${title}</a>`,
       'rel="canonical" href="https://akashnaren.github.io/"',
-      "data-cf-beacon",
+      'http-equiv="Content-Security-Policy"',
+      "script-src 'self'",
     ],
     label,
   );
@@ -535,7 +537,8 @@ function mustBeSectionRedirect(page, href, title, description, label) {
     page.includes('class="thread"') ||
     page.includes('class="page home"') ||
     page.includes("/assets/index-") ||
-    page.includes("<iframe")
+    page.includes("<iframe") ||
+    page.includes("<script")
   ) {
     fail(`${label} must stay a tiny redirect to the home section`);
   }
@@ -643,12 +646,11 @@ mustInclude(
   [
     'http-equiv="refresh"',
     "/research/agent-native-ui/paper.pdf",
-    "location.replace",
-    "data-cf-beacon",
+    'http-equiv="Content-Security-Policy"',
   ],
   "essay redirect",
 );
-if (essay.includes('class="essay-pdf"') || essay.includes("<iframe") || essay.includes("still researching")) {
+if (essay.includes('class="essay-pdf"') || essay.includes("<iframe") || essay.includes("<script") || essay.includes("still researching")) {
   fail("agent-native route must redirect to the PDF, not an HTML reader");
 }
 mustExclude(essay, leakNeedles, "essay redirect");
@@ -658,13 +660,12 @@ mustInclude(
   [
     'http-equiv="refresh"',
     "/research/pi-0.2-high/paper.pdf",
-    "location.replace",
+    'http-equiv="Content-Security-Policy"',
     "Raspberry Pi Inference Mesh",
-    "data-cf-beacon",
   ],
   "pi paper redirect",
 );
-if (piPaperPage.includes('class="essay-pdf"') || piPaperPage.includes('class="rack"') || piPaperPage.includes("<iframe")) {
+if (piPaperPage.includes('class="essay-pdf"') || piPaperPage.includes('class="rack"') || piPaperPage.includes("<iframe") || piPaperPage.includes("<script")) {
   fail("pi paper route must redirect to the PDF, not a viewer or a rack");
 }
 mustExclude(piPaperPage, researchLeakNeedles, "pi paper redirect");
@@ -687,14 +688,29 @@ if (spa.includes('class="sky"') || spa.includes('class="bio"') || spa.includes('
   fail("404 must not pre-paint a page");
 }
 
+function assertNoInlineScripts(page, label) {
+  const tags = [...page.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
+  for (const [, attrs, body] of tags) {
+    if (!/\bsrc\s*=/i.test(attrs) || body.trim().length > 0) {
+      fail(`${label} has an inline script`);
+    }
+  }
+}
+
 for (const [page, label] of [
   [home, "home"],
   [bot, "bot"],
   [research, "research"],
+  [essay, "essay redirect"],
+  [piPaperPage, "pi paper redirect"],
   [spa, "404"],
 ]) {
-  if (!page.includes("static.cloudflareinsights.com/beacon.min.js") || !page.includes("data-cf-beacon")) {
-    fail(`${label} must include the Cloudflare beacon`);
+  assertNoInlineScripts(page, label);
+  if (!page.includes('http-equiv="Content-Security-Policy"') || !page.includes("script-src 'self'")) {
+    fail(`${label} must include the content security policy`);
+  }
+  if (page.includes("cloudflareinsights") || page.includes("data-cf-beacon") || page.includes("fonts.googleapis.com")) {
+    fail(`${label} must not load third-party analytics or fonts`);
   }
 }
 
@@ -728,10 +744,27 @@ mustInclude(
 );
 mustExclude(
   css,
-  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes", "Geist", "color-scheme:dark", "#0a0a0a"],
+  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes", "Geist", "color-scheme:dark", "#0a0a0a", ".inbox-address"],
   "css",
 );
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping"], "js");
+if (readdirSync("dist/assets").some((name) => name.endsWith(".map"))) {
+  fail("dist must not ship source maps");
+}
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "sourceMappingURL", "cloudflareinsights"], "js");
+
+const manifest = read("dist/site.webmanifest");
+mustInclude(
+  manifest,
+  [
+    "Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego.",
+  ],
+  "manifest",
+);
+mustExclude(
+  manifest,
+  ["Redwood City", "Robotaxi", "Optimus", "telemetry", "diagnostics", "Grok Integrations"],
+  "manifest",
+);
 
 const pdfs = [
   "public/research/agent-native-ui/paper.pdf",

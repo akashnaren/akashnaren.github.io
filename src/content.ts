@@ -257,12 +257,6 @@ export const projectLinks: readonly Link[] = [
   },
 ];
 
-export const managedBy: Paragraph = [
-  "this site is managed by ",
-  { href: "/bot", label: "grok bot" },
-  ".",
-];
-
 /** Small footer cue on the landing page. Points at the collection on this page. */
 export const homeManagedBy: Paragraph = [
   "Managed by ",

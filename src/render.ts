@@ -70,6 +70,29 @@ function escapeHtml(value: string): string {
     .replaceAll('"', "&quot;");
 }
 
+/** Same-origin scripts, styles, images, and the web manifest. No inline scripts. */
+export const contentSecurityPolicy =
+  "default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'";
+
+export function cspMetaTag(): string {
+  return `<meta http-equiv="Content-Security-Policy" content="${escapeHtml(contentSecurityPolicy)}" />`;
+}
+
+export function ensureCsp(html: string): string {
+  if (html.includes("Content-Security-Policy")) return html;
+  const charset = html.match(/<meta charset="utf-8"\s*\/?>/i);
+  if (charset && charset.index !== undefined) {
+    const insertAt = charset.index + charset[0].length;
+    return `${html.slice(0, insertAt)}\n    ${cspMetaTag()}${html.slice(insertAt)}`;
+  }
+  const head = html.match(/<head[^>]*>/);
+  if (!head || head.index === undefined) {
+    throw new Error("html is missing <head>");
+  }
+  const insertAt = head.index + head[0].length;
+  return `${html.slice(0, insertAt)}\n    ${cspMetaTag()}${html.slice(insertAt)}`;
+}
+
 function renderLinkIcon(): string {
   return `<svg class="ext" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.4 2.4h6.2v6.2M9.3 2.7 2.7 9.3" fill="none" stroke="currentColor" stroke-width="1.15"/></svg>`;
 }
@@ -267,8 +290,7 @@ export function sectionRedirectHtml(href: string, title: string, description: st
     <meta name="description" content="${safeDescription}" />
     <link rel="canonical" href="https://akashnaren.github.io/" />
     <meta http-equiv="refresh" content="0;url=${safeHref}" />
-    <script>location.replace(${JSON.stringify(href)})</script>
-    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "0470f893bb1740a88848e29324507551"}'></script><!-- End Cloudflare Web Analytics -->
+    ${cspMetaTag()}
   </head>
   <body>
     <p><a href="${safeHref}">${safeTitle}</a></p>
@@ -289,8 +311,7 @@ export function pdfRedirectHtml(href: string, title: string): string {
     <meta name="description" content="${safeTitle}" />
     <link rel="canonical" href="https://akashnaren.github.io${safeHref}" />
     <meta http-equiv="refresh" content="0;url=${safeHref}" />
-    <script>location.replace(${JSON.stringify(href)})</script>
-    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "0470f893bb1740a88848e29324507551"}'></script><!-- End Cloudflare Web Analytics -->
+    ${cspMetaTag()}
   </head>
   <body>
     <p><a href="${safeHref}">${safeTitle}</a></p>
