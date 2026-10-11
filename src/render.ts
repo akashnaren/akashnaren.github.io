@@ -21,6 +21,7 @@ import {
   researchPath,
   researchTitle,
   researchUrl,
+  themeColor,
   workHeading,
   workLines,
   seats,
@@ -46,6 +47,7 @@ export const homeMeta: PageMeta = {
   title: name,
   description,
   url,
+  themeColor,
 };
 
 export const botMeta: PageMeta = {
@@ -320,7 +322,7 @@ export function applyPageMeta(html: string, meta: PageMeta): string {
     .replace(/(<link rel="canonical" href=")[^"]*("\s*\/?>)/, `$1${href}$2`)
     .replace(
       /(<meta name="theme-color" content=")[^"]*("\s*\/?>)/,
-      `$1${escapeHtml(meta.themeColor ?? "#0a0a0a")}$2`,
+      `$1${escapeHtml(meta.themeColor ?? "#fffff8")}$2`,
     )
     .replace(
       /\s*<meta name="robots" content="[^"]*"\s*\/?>/,
@@ -343,7 +345,7 @@ export function applyDocumentMeta(meta: PageMeta): void {
     ['meta[property="og:url"]', meta.url],
     ['meta[name="twitter:title"]', meta.title],
     ['meta[name="twitter:description"]', meta.description],
-    ['meta[name="theme-color"]', meta.themeColor ?? "#0a0a0a"],
+    ['meta[name="theme-color"]', meta.themeColor ?? "#fffff8"],
   ];
   for (const [selector, value] of pairs) {
     document.querySelector(selector)?.setAttribute("content", value);

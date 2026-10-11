@@ -171,8 +171,8 @@ mustInclude(
     ">Lavalamp<svg",
     'class="ext"',
     'rel="noopener noreferrer"',
-    'name="theme-color" content="#0a0a0a"',
-    "family=Geist",
+    'name="color-scheme" content="light"',
+    'name="theme-color" content="#fffff8"',
   ],
   "home",
 );
@@ -201,6 +201,10 @@ mustExclude(
     "I work on",
     "og:image",
     "#e3925a",
+    "family=Geist",
+    "fonts.googleapis.com",
+    "color-scheme:dark",
+    'content="#0a0a0a"',
     "noindex",
     'class="rack"',
     "Pi 0.2 High",
@@ -669,8 +673,8 @@ for (const [page, label] of [
 }
 
 const favicon = read("dist/favicon.svg");
-mustInclude(favicon, ["<title>A</title>", 'aria-label="A"', "#0a0a0a", "#fafaf7"], "favicon");
-mustExclude(favicon, ["#e3925a", "#ff6b00", "rotate(-26"], "favicon");
+mustInclude(favicon, ["<title>A</title>", 'aria-label="A"', "#fffff8", "#1a1a1a"], "favicon");
+mustExclude(favicon, ["#e3925a", "#ff6b00", "rotate(-26", "#0a0a0a", "#fafaf7"], "favicon");
 if (!existsSync("dist/favicon-32.png") || !existsSync("dist/favicon.ico")) {
   fail("dist is missing favicon-32.png or favicon.ico");
 }
@@ -684,9 +688,9 @@ mustInclude(
   css,
   [
     "100dvh",
-    "color-scheme:dark",
+    "color-scheme:light",
     "overflow-x:hidden",
-    "Geist",
+    "Charter",
     "position:sticky",
     ".home-foot{grid-column:1}",
     ".row-tip",
@@ -698,7 +702,7 @@ mustInclude(
 );
 mustExclude(
   css,
-  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes"],
+  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes", "Geist", "color-scheme:dark", "#0a0a0a"],
   "css",
 );
 mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping"], "js");

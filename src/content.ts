@@ -15,7 +15,7 @@ export const name = "Akash Premkumar";
 export const description =
   "Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego.";
 export const url = "https://akashnaren.github.io/";
-export const themeColor = "#0a0a0a";
+export const themeColor = "#fffff8";
 
 export const workHeading = "Work";
 
