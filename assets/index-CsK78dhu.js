@@ -33,11 +33,11 @@
         ${R()}
         ${I()}
         ${L()}
-        <footer class="foot home-foot">
-          ${P(g)}
-        </footer>
       </main>
       ${z()}
+      <footer class="foot home-foot">
+        ${P(g)}
+      </footer>
     </div>
   </div>`}function V(e){return`<li class="row" data-seat="${T(e.id)}" data-name="${T(e.name)}"><img class="row-face" src="${T(e.face)}" alt="" width="36" height="36" decoding="async" /><span class="row-id"><span class="row-name">${T(e.name)}</span><span class="row-blurb">${T(e.blurb)}</span></span></li>`}function H(e){return e.href?e.external===!0||/\.pdf(?:$|[?#])/i.test(e.href)||/^https?:\/\//i.test(e.href):!1}function U(e){let t=e.links;return!t||t.length===0?``:`<p class="thread-sub">${t.map(e=>{let t=/^https?:\/\//i.test(e.href),n=t?` rel="noopener noreferrer"`:``,r=t?E():``;return`<a href="${T(e.href)}"${n}>${T(e.label)}${r}</a>`}).join(``)}</p>`}function W(e){let t=T(e.title),n=e.href?`<h3><a href="${T(e.href)}"${e.external?` rel="noopener noreferrer"`:``}>${t}${H(e)?E():``}</a></h3>`:`<h3>${t}</h3>`,r=U(e);return`<article class="thread" data-thread="${T(e.id)}">
         <div class="thread-copy">

@@ -183,11 +183,11 @@ export function renderSite(): string {
         ${renderResearchSection()}
         ${renderProfiles()}
         ${renderMail()}
-        <footer class="foot home-foot">
-          ${renderManagedBy(homeManagedBy)}
-        </footer>
       </main>
       ${renderCollection()}
+      <footer class="foot home-foot">
+        ${renderManagedBy(homeManagedBy)}
+      </footer>
     </div>
   </div>`;
 }

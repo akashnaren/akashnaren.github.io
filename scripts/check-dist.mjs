@@ -286,8 +286,16 @@ if (sectionOrder.some((at) => at < 0) || sectionOrder.some((at, i) => i > 0 && a
 }
 const mainEnd = home.indexOf("</main>");
 const botAt = home.indexOf('id="bot"');
+const footAt = home.indexOf('class="foot home-foot"');
 if (mainEnd < 0 || botAt < mainEnd) {
   fail("the bot collection must follow the main column");
+}
+const mainHtml = home.slice(home.indexOf("<main"), mainEnd);
+if (mainHtml.includes('class="foot home-foot"') || mainHtml.includes("Managed by ")) {
+  fail("the Managed by line must sit after the roster in source order");
+}
+if (footAt < botAt) {
+  fail("the Managed by line must follow the personal agents collection");
 }
 const homeHeader = home.match(/<header>[\s\S]*?<\/header>/)?.[0] ?? "";
 if (/managed|Grok Bot|grok bot/i.test(homeHeader)) {
@@ -635,7 +643,7 @@ const jsName = readdirSync("dist/assets").find((name) => name.endsWith(".js"));
 if (!cssName || !jsName) fail("dist/assets is missing hashed css or js");
 const css = read(`dist/assets/${cssName}`);
 const js = read(`dist/assets/${jsName}`);
-mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist", "position:sticky"], "css");
+mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist", "position:sticky", ".home-foot{grid-column:1}"], "css");
 mustExclude(
   css,
   ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes"],

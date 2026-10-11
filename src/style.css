@@ -591,6 +591,10 @@ a:focus-visible {
     scrollbar-width: thin;
     scrollbar-color: rgba(250, 250, 247, 0.28) transparent;
   }
+
+  .page.home .home-foot {
+    grid-column: 1;
+  }
 }
 
 @media (max-width: 700px) {
