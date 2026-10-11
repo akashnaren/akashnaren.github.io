@@ -22,15 +22,11 @@ export const workHeading = "Work";
 export const workLines: readonly Paragraph[] = [
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
-    " — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis)",
+    " — Vehicle Service",
   ],
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
-    " — Vehicle Engineering (Part Data Hub, ",
-    { href: "https://www.tesla.com/robotaxi", label: "Cybercab + Robotaxi Program" },
-    ", ",
-    { href: "https://grok.com", label: "Grok" },
-    " Integrations)",
+    " — Vehicle Engineering",
   ],
   [
     { href: "https://www.rtx.com/raytheon", label: "Raytheon" },
@@ -38,7 +34,7 @@ export const workLines: readonly Paragraph[] = [
   ],
   [
     { href: "https://www.lspace.asu.edu/", label: "NASA L’SPACE" },
-    " — asteroid preliminary design review, terrain mapping identification proposal",
+    " — Workforce Program",
   ],
 ];
 

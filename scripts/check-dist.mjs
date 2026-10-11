@@ -104,20 +104,20 @@ mustInclude(
     "Akash Premkumar",
     'class="page home"',
     '<h2 id="work">Work</h2>',
-    "Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis)",
-    "Vehicle Engineering (Part Data Hub, ",
+    'title="Tesla — Vehicle Service"',
+    '<span class="entry-detail"> — Vehicle Service</span>',
+    'title="Tesla — Vehicle Engineering"',
+    '<span class="entry-detail"> — Vehicle Engineering</span>',
     "https://www.tesla.com/",
     ">Tesla</a>",
-    "https://www.tesla.com/robotaxi",
-    ">Cybercab + Robotaxi Program</a>",
-    "https://grok.com",
-    ">Grok</a> Integrations)",
     "https://www.rtx.com/raytheon",
     ">Raytheon</a>",
-    "Avionics Networking Test Suite",
+    'title="Raytheon — Avionics Networking Test Suite"',
+    '<span class="entry-detail"> — Avionics Networking Test Suite</span>',
     "https://www.lspace.asu.edu/",
     ">NASA L’SPACE</a>",
-    "asteroid preliminary design review, terrain mapping identification proposal",
+    'title="NASA L’SPACE — Workforce Program"',
+    '<span class="entry-detail"> — Workforce Program</span>',
     '<h2 id="research">Research</h2>',
     "Multiscale Flow Physics Lab, UC San Diego",
     'href="https://asanchez.ucsd.edu/"',
@@ -218,6 +218,15 @@ mustExclude(
     "Bill of Materials",
     "Fullstack Applications",
     "Vehicle Service Systems",
+    "Internal Tooling",
+    "Part Data Hub",
+    "Cybercab",
+    "Robotaxi",
+    "Grok Integrations",
+    "https://www.tesla.com/robotaxi",
+    "https://grok.com",
+    "asteroid preliminary design review",
+    "terrain mapping",
     "this site is managed by",
     "Fire whirl",
     "fire whirl",
@@ -261,27 +270,22 @@ if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE)<svg cl
   fail("biography links must stay unmarked");
 }
 const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
-if (
-  !workSection.includes(
-    '<span class="entry-name"><a href="https://www.lspace.asu.edu/">NASA L’SPACE</a></span><span class="entry-detail"> — asteroid preliminary design review, terrain mapping identification proposal</span>',
-  )
-) {
-  fail("NASA L’SPACE work row must link https://www.lspace.asu.edu/ and list asteroid preliminary design review, terrain mapping identification proposal");
+const workRows = [...workSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => match[0]);
+if (workRows.length !== 4) fail(`work must list four rows, found ${String(workRows.length)}`);
+const expectedWork = [
+  '<li title="Tesla — Vehicle Service"><span class="entry-name"><a href="https://www.tesla.com/">Tesla</a></span><span class="entry-detail"> — Vehicle Service</span></li>',
+  '<li title="Tesla — Vehicle Engineering"><span class="entry-name"><a href="https://www.tesla.com/">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering</span></li>',
+  '<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon">Raytheon</a></span><span class="entry-detail"> — Avionics Networking Test Suite</span></li>',
+  '<li title="NASA L’SPACE — Workforce Program"><span class="entry-name"><a href="https://www.lspace.asu.edu/">NASA L’SPACE</a></span><span class="entry-detail"> — Workforce Program</span></li>',
+];
+for (const [index, row] of expectedWork.entries()) {
+  if (workRows[index] !== row) fail(`work row ${String(index + 1)} must keep the dash layout: ${row}`);
 }
-if (
-  !workSection.includes(
-    'title="NASA L’SPACE — asteroid preliminary design review, terrain mapping identification proposal"',
-  )
-) {
-  fail("NASA L’SPACE title must spell out asteroid preliminary design review, terrain mapping identification proposal");
+if ((workSection.match(/<a /g) ?? []).length !== 4) {
+  fail("work rows must link only Tesla, Tesla, Raytheon, and NASA L’SPACE");
 }
 if (workSection.includes("Project Engineer")) fail("NASA L’SPACE work row must not use the title");
 if (/target="_blank"/.test(home)) fail("home links stay in the same tab");
-for (const plain of ["Part Data Hub", "Internal Tooling", "Diagnostics", "Telemetry", "Data Analysis"]) {
-  if (new RegExp(`<a[^>]*>[^<]*${plain}`).test(home)) {
-    fail(`${plain} stays plain text`);
-  }
-}
 const homeSections = home.match(/<section class="section"/g) ?? [];
 if (homeSections.length !== 5) {
   fail(`home must have Work, Research, Projects, Profiles, and Mail sections, found ${String(homeSections.length)}`);
@@ -697,7 +701,7 @@ mustExclude(
   ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes"],
   "css",
 );
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping"], "js");
 
 const pdfs = [
   "public/research/agent-native-ui/paper.pdf",
