@@ -156,16 +156,14 @@ mustInclude(
     'class="layout"',
     'class="collection"',
     'class="roster"',
-    'class="threads"',
     'id="bot"',
     "<h2 id=\"bot\">personal agents collection</h2>",
-    "Raspberry Pi Inference Mesh",
+    "<h2 id=\"projects\">Projects</h2>",
     'href="/research/pi-0.2-high/paper.pdf"',
-    "I am running local language-model chat on a Raspberry Pi mesh.",
+    ">OpenPi<svg",
     "Structured Views for Agent-Native UIs",
     'href="/research/agent-native-ui/paper.pdf"',
-    "ARC-AGI and Hallucination Risk",
-    "Entity Resolution Across Fragmented Records",
+    '<span class="entry-name">Entity Resolution</span>',
     'href="https://seller-hotels-stay-role.trycloudflare.com/"',
     ">openpi<svg",
     'href="https://temporal-buddies5.vercel.app/"',
@@ -174,9 +172,6 @@ mustInclude(
     ">Lavalamp<svg",
     'class="ext"',
     'rel="noopener noreferrer"',
-    "screenshots or a flat accessibility tree",
-    "ARC-AGI-1",
-    "fragmented records",
     'name="theme-color" content="#0a0a0a"',
     "family=Geist",
   ],
@@ -186,7 +181,7 @@ mustInclude(
 mustExclude(
   home,
   [
-    ...researchLeakNeedles,
+    ...leakNeedles,
     'class="sky"',
     'class="system"',
     "orbit-spin",
@@ -230,6 +225,14 @@ mustExclude(
     'class="managed byline"',
     "Independent work",
     "grok bot collection",
+    "Raspberry Pi Inference Mesh",
+    "ARC-AGI",
+    "Entity Resolution Across Fragmented Records",
+    "I am running local language-model chat on a Raspberry Pi mesh.",
+    "screenshots or a flat accessibility tree",
+    "I am looking at how to reason over fragmented records",
+    "fragmented records",
+    "hallucination",
     "more coming",
     'class="count"',
     'class="thread-fig"',
@@ -277,12 +280,12 @@ for (const plain of ["Part Data Hub", "Internal Tooling", "Diagnostics", "Teleme
   }
 }
 const homeSections = home.match(/<section class="section"/g) ?? [];
-if (homeSections.length !== 4) {
-  fail(`home must have Work, Research, Profiles, and Mail sections, found ${String(homeSections.length)}`);
+if (homeSections.length !== 5) {
+  fail(`home must have Work, Research, Projects, Profiles, and Mail sections, found ${String(homeSections.length)}`);
 }
-const sectionOrder = ["work", "research", "profiles", "mail", "bot"].map((id) => home.indexOf(`id="${id}"`));
+const sectionOrder = ["work", "research", "projects", "profiles", "mail", "bot"].map((id) => home.indexOf(`id="${id}"`));
 if (sectionOrder.some((at) => at < 0) || sectionOrder.some((at, i) => i > 0 && at < sectionOrder[i - 1])) {
-  fail("home sections must run Work, Research, Profiles, Mail, then the bot collection");
+  fail("home sections must run Work, Research, Projects, Profiles, Mail, then the bot collection");
 }
 const mainEnd = home.indexOf("</main>");
 const botAt = home.indexOf('id="bot"');
@@ -353,40 +356,51 @@ if ((home.match(/<ul class="roster"/g) ?? []).length !== 1) {
   fail("home must have one bot roster");
 }
 
-const articles = home.match(/<article class="thread"[\s\S]*?<\/article>/g) ?? [];
-if (articles.length !== 4) fail(`home must list four research threads, found ${String(articles.length)}`);
-const piThread = articles[0] ?? "";
-if (!piThread.includes("Raspberry Pi Inference Mesh")) {
-  fail("Raspberry Pi Inference Mesh must be the first research thread");
+const researchSection = home.match(/aria-labelledby="research">[\s\S]*?<\/section>/)?.[0] ?? "";
+const projectsSection = home.match(/aria-labelledby="projects">[\s\S]*?<\/section>/)?.[0] ?? "";
+const researchItems = researchSection.match(/<li[\s>]/g) ?? [];
+if (researchItems.length !== 3) {
+  fail(`research must list the lab, OpenPi, and Structured Views, found ${String(researchItems.length)}`);
 }
-if (!piThread.includes('href="/research/pi-0.2-high/paper.pdf"')) {
-  fail("Pi 0.2 High title must open the PDF directly");
+const projectItems = projectsSection.match(/<li[\s>]/g) ?? [];
+if (projectItems.length !== 1) {
+  fail(`projects must list only Entity Resolution, found ${String(projectItems.length)}`);
 }
-const piSub = piThread.match(/<p class="thread-sub">[\s\S]*?<\/p>/)?.[0] ?? "";
-if ((piSub.match(/<a /g) ?? []).length !== 1) {
-  fail("Pi thread must list exactly one chat link under the abstract");
+if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
+  fail("research and projects must not include blurbs");
+}
+const openPi = researchSection.match(/<li data-entry="openpi">[\s\S]*?<\/li>/)?.[0] ?? "";
+if (!openPi.includes('href="/research/pi-0.2-high/paper.pdf"')) {
+  fail("OpenPi must open the PDF directly");
+}
+if ((openPi.match(/<a /g) ?? []).length !== 2) {
+  fail("OpenPi must keep the PDF title link and the openpi link");
+}
+const openPiTitleAt = openPi.indexOf(">OpenPi<svg");
+const openPiLinkAt = openPi.indexOf(">openpi<svg");
+if (openPiTitleAt < 0 || openPiLinkAt < openPiTitleAt) {
+  fail("the openpi link must follow the OpenPi title");
 }
 mustIconInside(
-  piSub,
+  openPi,
   "https://seller-hotels-stay-role.trycloudflare.com/",
   "openpi",
-  "pi thread",
+  "OpenPi",
 );
-if (!piSub.includes('rel="noopener noreferrer"') || /target="_blank"/.test(piThread)) {
-  fail("openpi must open like other external research links");
+if (!openPi.includes('rel="noopener noreferrer"') || /target="_blank"/.test(openPi)) {
+  fail("openpi must open like other external links");
 }
-if (articles.some((article) => article !== piThread && /trycloudflare|openpi/.test(article))) {
-  fail("openpi must stay under the Raspberry Pi Inference Mesh thread");
+if (/trycloudflare|openpi/.test(projectsSection) || /trycloudflare|>openpi</.test(researchSection.replace(openPi, ""))) {
+  fail("openpi must stay on the OpenPi entry");
 }
-const arc = articles.find((article) => article.includes("ARC-AGI and Hallucination Risk")) ?? "";
-if (arc.includes("<a ")) fail("ARC-AGI thread must not invent a link");
-if (!articles.some((article) => article.includes('href="/research/agent-native-ui/paper.pdf"') && article.includes("Structured Views for Agent-Native UIs"))) {
-  fail("agent-native title must open the PDF directly");
+const views = researchSection.match(/<li data-entry="agent-native-ui">[\s\S]*?<\/li>/)?.[0] ?? "";
+if ((views.match(/<a /g) ?? []).length !== 1 || !views.includes("Structured Views for Agent-Native UIs")) {
+  fail("Structured Views must be a single PDF link with no blurb");
 }
 mustIconInside(
   home,
   "/research/pi-0.2-high/paper.pdf",
-  "Raspberry Pi Inference Mesh",
+  "OpenPi",
   "home",
 );
 mustIconInside(
@@ -395,44 +409,39 @@ mustIconInside(
   "Structured Views for Agent-Native UIs",
   "home",
 );
-const entity = articles.find((article) => article.includes("Entity Resolution Across Fragmented Records")) ?? "";
-const entityHeading = entity.match(/<h3>[\s\S]*?<\/h3>/)?.[0] ?? "";
-if (entityHeading !== "<h3>Entity Resolution Across Fragmented Records</h3>") {
-  fail("entity investigation title must stay plain text");
+const entity = projectsSection.match(/<li data-entry="entity-resolution">[\s\S]*?<\/li>/)?.[0] ?? "";
+if (!entity.includes('<span class="entry-name">Entity Resolution</span>')) {
+  fail("Entity Resolution title must stay plain text");
 }
-if (!entity.includes("I am looking at how to reason over fragmented records and link events to the right address over time.")) {
-  fail("entity investigation blurb changed");
+if (/<a[^>]*>[^<]*Entity Resolution/.test(entity)) {
+  fail("Entity Resolution title must not be a link");
 }
-if (/paper\.pdf/i.test(entity)) fail("entity investigation must not link a paper PDF");
+if (/paper\.pdf/i.test(entity) || /<p[\s>]/.test(entity)) {
+  fail("Entity Resolution must not link a paper or include a blurb");
+}
 const entityAnchors = entity.match(/<a /g) ?? [];
 if (entityAnchors.length !== 2) {
-  fail(`entity investigation must show exactly two sub-links, found ${String(entityAnchors.length)}`);
+  fail(`Entity Resolution must show exactly two links, found ${String(entityAnchors.length)}`);
 }
 mustIconInside(
   entity,
   "https://temporal-buddies5.vercel.app/",
   "Temporal",
-  "entity investigation",
+  "Entity Resolution",
 );
 mustIconInside(
   entity,
   "https://meetlavalamp.com",
   "Lavalamp",
-  "entity investigation",
+  "Entity Resolution",
 );
 const temporalAt = entity.indexOf(">Temporal<svg");
 const lavalampAt = entity.indexOf(">Lavalamp<svg");
 if (temporalAt === -1 || lavalampAt < temporalAt) {
-  fail("Lavalamp must follow Temporal under the entity investigation thread");
+  fail("Lavalamp must follow Temporal under Entity Resolution");
 }
-if (articles.some((article) => article !== entity && /lavalamp|meetlavalamp|temporal-buddies/i.test(article))) {
-  fail("Temporal and Lavalamp must stay under the entity investigation thread");
-}
-if (arc.includes('class="ext"')) fail("ARC-AGI thread must not show a link icon");
-for (const article of articles) {
-  if (article.includes('class="status"') || article.includes("exploring") || article.includes("drafting")) {
-    fail("model threads must not carry status or exploring tags");
-  }
+if (/lavalamp|meetlavalamp|temporal-buddies/i.test(researchSection)) {
+  fail("Temporal and Lavalamp must stay in Projects");
 }
 
 mustExclude(
@@ -532,7 +541,7 @@ mustBeSectionRedirect(
   research,
   "/#research",
   "Research · Akash Premkumar",
-  "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity resolution across fragmented records.",
+  "Multiscale Flow Physics Lab, UC San Diego, OpenPi, and Structured Views for Agent-Native UIs.",
   "research redirect",
 );
 mustExclude(
@@ -567,6 +576,12 @@ mustExclude(
     "OpenAI-style route",
     "paper.pdf",
     "Raspberry Pi Inference Mesh",
+    "ARC-AGI",
+    "Entity Resolution Across Fragmented Records",
+    "I am running local language-model chat on a Raspberry Pi mesh.",
+    "screenshots or a flat accessibility tree",
+    "fragmented records",
+    "hallucination",
   ],
   "research redirect",
 );
@@ -649,7 +664,7 @@ mustExclude(
   ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes"],
   "css",
 );
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution Across Fragmented Records", "fragmented records", "hallucination", "screenshots or a flat accessibility tree"], "js");
 
 const pdfs = [
   "public/research/agent-native-ui/paper.pdf",
@@ -771,7 +786,7 @@ mustInclude(
 );
 mustExclude(
   sitemap,
-  ["fishbowl", "status.json", "/research/rack"],
+  ["fishbowl", "status.json", "/research/rack", "ARC-AGI", "fragmented records", "hallucination", "Raspberry Pi Inference Mesh"],
   "sitemap.xml",
 );
 

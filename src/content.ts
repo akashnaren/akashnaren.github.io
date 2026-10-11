@@ -48,7 +48,9 @@ export const mailHeading = "Mail";
 
 export const researchHeading = "Research";
 
-/** Lab line on the landing page. Threads render under it. */
+export const projectsHeading = "Projects";
+
+/** Lab line on the landing page. Paper titles render under it. */
 export const researchLines: readonly Paragraph[] = [
   [
     {
@@ -219,28 +221,24 @@ export const researchTitle = "Research";
 export const researchUrl = "https://akashnaren.github.io/research";
 
 export const researchDescription =
-  "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity resolution across fragmented records.";
+  "Multiscale Flow Physics Lab, UC San Diego, OpenPi, and Structured Views for Agent-Native UIs.";
 
 export const piPaperHref = "/research/pi-0.2-high/paper.pdf";
 
 export const piPaperTitle = "Raspberry Pi Inference Mesh";
 
-export type Thread = {
+export type ListedWork = {
   readonly id: string;
   readonly title: string;
-  readonly abstract: string;
   readonly href?: string;
-  readonly external?: boolean;
-  /** Links listed under the thread title and abstract. */
+  /** Extra links after the title. */
   readonly links?: readonly Link[];
 };
 
-export const threads: readonly Thread[] = [
+export const researchEntries: readonly ListedWork[] = [
   {
-    id: "pi-0-2-high",
-    title: piPaperTitle,
-    abstract:
-      "I am running local language-model chat on a Raspberry Pi mesh.",
+    id: "openpi",
+    title: "OpenPi",
     href: piPaperHref,
     links: [
       {
@@ -250,23 +248,16 @@ export const threads: readonly Thread[] = [
     ],
   },
   {
-    id: "agent-native-ui-protocols",
+    id: "agent-native-ui",
     title: "Structured Views for Agent-Native UIs",
-    abstract:
-      "Agents still drive apps through screenshots or a flat accessibility tree. I am comparing those to a structured view the agent can read.",
     href: "/research/agent-native-ui/paper.pdf",
   },
+];
+
+export const projectEntries: readonly ListedWork[] = [
   {
-    id: "arc-agi-vs-hallucination-risk",
-    title: "ARC-AGI and Hallucination Risk",
-    abstract:
-      "ARC-AGI-1 measures puzzle solving. I am checking whether those scores track how often a model hallucinates.",
-  },
-  {
-    id: "entity-investigation",
-    title: "Entity Resolution Across Fragmented Records",
-    abstract:
-      "I am looking at how to reason over fragmented records and link events to the right address over time.",
+    id: "entity-resolution",
+    title: "Entity Resolution",
     links: [
       {
         href: "https://temporal-buddies5.vercel.app/",

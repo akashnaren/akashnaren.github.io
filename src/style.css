@@ -112,6 +112,14 @@ h1 {
   min-width: 0;
 }
 
+.page.home .entries:not(.ledger) li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 1.15rem;
+  row-gap: 0.15rem;
+}
+
 .page.home .entries li + li {
   margin-top: 0.55rem;
 }

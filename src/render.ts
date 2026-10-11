@@ -13,6 +13,9 @@ import {
   personalMail,
   profilesHeading,
   researchDescription,
+  projectEntries,
+  projectsHeading,
+  researchEntries,
   researchHeading,
   researchLines,
   researchPath,
@@ -21,13 +24,12 @@ import {
   workHeading,
   workLines,
   seats,
-  threads,
   url,
   type Contact,
+  type ListedWork,
   type Paragraph,
   type Phrase,
   type Seat,
-  type Thread,
 } from "./content.ts";
 import { paperHref, paperTitle } from "./article.ts";
 
@@ -153,15 +155,44 @@ function renderMail(): string {
       </section>`;
 }
 
-function renderResearchSection(): string {
-  const items = researchLines.map((line) => renderEntry(line, false)).join("\n          ");
-  return `<section class="section" aria-labelledby="research">
-        <h2 id="research">${escapeHtml(researchHeading)}</h2>
+function renderDocLink(href: string, label: string): string {
+  const external = /^https?:\/\//i.test(href);
+  const rel = external ? ` rel="noopener noreferrer"` : "";
+  const icon = external || /\.pdf(?:$|[?#])/i.test(href) ? renderLinkIcon() : "";
+  return `<a href="${escapeHtml(href)}"${rel}>${escapeHtml(label)}${icon}</a>`;
+}
+
+function renderListedWork(entry: ListedWork): string {
+  const title = entry.href
+    ? renderDocLink(entry.href, entry.title)
+    : `<span class="entry-name">${escapeHtml(entry.title)}</span>`;
+  const extra = (entry.links ?? []).map((link) => renderDocLink(link.href, link.label)).join("");
+  return `<li data-entry="${escapeHtml(entry.id)}">${title}${extra}</li>`;
+}
+
+function renderNamedList(id: string, heading: string, items: string): string {
+  return `<section class="section" aria-labelledby="${escapeHtml(id)}">
+        <h2 id="${escapeHtml(id)}">${escapeHtml(heading)}</h2>
         <ul class="entries">
           ${items}
         </ul>
-        <div class="threads">${threads.map(renderThread).join("")}</div>
       </section>`;
+}
+
+function renderResearchSection(): string {
+  const items = [
+    ...researchLines.map((line) => renderEntry(line, false)),
+    ...researchEntries.map(renderListedWork),
+  ].join("\n          ");
+  return renderNamedList("research", researchHeading, items);
+}
+
+function renderProjectsSection(): string {
+  return renderNamedList(
+    "projects",
+    projectsHeading,
+    projectEntries.map(renderListedWork).join("\n          "),
+  );
 }
 
 function renderCollection(): string {
@@ -181,6 +212,7 @@ export function renderSite(): string {
         </header>
         ${renderBand("work", workHeading, workLines, true)}
         ${renderResearchSection()}
+        ${renderProjectsSection()}
         ${renderProfiles()}
         ${renderMail()}
       </main>
@@ -194,43 +226,6 @@ export function renderSite(): string {
 
 function renderRow(seat: Seat): string {
   return `<li class="row" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}"><img class="row-face" src="${escapeHtml(seat.face)}" alt="" width="36" height="36" decoding="async" /><span class="row-id"><span class="row-name">${escapeHtml(seat.name)}</span><span class="row-blurb">${escapeHtml(seat.blurb)}</span></span></li>`;
-}
-
-function threadOpensDocument(thread: Thread): boolean {
-  if (!thread.href) return false;
-  return (
-    thread.external === true ||
-    /\.pdf(?:$|[?#])/i.test(thread.href) ||
-    /^https?:\/\//i.test(thread.href)
-  );
-}
-
-function renderThreadSubLinks(thread: Thread): string {
-  const links = thread.links;
-  if (!links || links.length === 0) return "";
-  const anchors = links
-    .map((link) => {
-      const external = /^https?:\/\//i.test(link.href);
-      const rel = external ? ` rel="noopener noreferrer"` : "";
-      const icon = external ? renderLinkIcon() : "";
-      return `<a href="${escapeHtml(link.href)}"${rel}>${escapeHtml(link.label)}${icon}</a>`;
-    })
-    .join("");
-  return `<p class="thread-sub">${anchors}</p>`;
-}
-
-function renderThread(thread: Thread): string {
-  const title = escapeHtml(thread.title);
-  const heading = thread.href
-    ? `<h3><a href="${escapeHtml(thread.href)}"${thread.external ? ` rel="noopener noreferrer"` : ""}>${title}${threadOpensDocument(thread) ? renderLinkIcon() : ""}</a></h3>`
-    : `<h3>${title}</h3>`;
-  const sub = renderThreadSubLinks(thread);
-  return `<article class="thread" data-thread="${escapeHtml(thread.id)}">
-        <div class="thread-copy">
-          ${heading}
-          <p>${escapeHtml(thread.abstract)}</p>${sub ? `\n          ${sub}` : ""}
-        </div>
-      </article>`;
 }
 
 export function sectionRedirectHtml(href: string, title: string, description: string): string {
