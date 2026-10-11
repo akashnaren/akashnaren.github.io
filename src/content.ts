@@ -48,7 +48,7 @@ export const mailHeading = "Mail";
 
 export const researchHeading = "Research";
 
-/** Landing lines only. Topic blurbs stay on /research. */
+/** Lab line on the landing page. Threads render under it. */
 export const researchLines: readonly Paragraph[] = [
   [
     {
@@ -56,7 +56,6 @@ export const researchLines: readonly Paragraph[] = [
       label: "Multiscale Flow Physics Lab, UC San Diego",
     },
   ],
-  [{ href: "/research", label: "Independent work" }],
 ];
 
 export const contact: readonly Contact[] = [
@@ -222,8 +221,6 @@ export const researchUrl = "https://akashnaren.github.io/research";
 export const researchDescription =
   "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity resolution across fragmented records.";
 
-export type ThreadFigure = "mesh" | "protocol" | "axes" | "gaps";
-
 export const piPaperHref = "/research/pi-0.2-high/paper.pdf";
 
 export const piPaperTitle = "Raspberry Pi Inference Mesh";
@@ -231,7 +228,6 @@ export const piPaperTitle = "Raspberry Pi Inference Mesh";
 export type Thread = {
   readonly id: string;
   readonly title: string;
-  readonly figure: ThreadFigure;
   readonly abstract: string;
   readonly href?: string;
   readonly external?: boolean;
@@ -243,7 +239,6 @@ export const threads: readonly Thread[] = [
   {
     id: "pi-0-2-high",
     title: piPaperTitle,
-    figure: "mesh",
     abstract:
       "I am running local language-model chat on a Raspberry Pi mesh.",
     href: piPaperHref,
@@ -257,7 +252,6 @@ export const threads: readonly Thread[] = [
   {
     id: "agent-native-ui-protocols",
     title: "Structured Views for Agent-Native UIs",
-    figure: "protocol",
     abstract:
       "Agents still drive apps through screenshots or a flat accessibility tree. I am comparing those to a structured view the agent can read.",
     href: "/research/agent-native-ui/paper.pdf",
@@ -265,14 +259,12 @@ export const threads: readonly Thread[] = [
   {
     id: "arc-agi-vs-hallucination-risk",
     title: "ARC-AGI and Hallucination Risk",
-    figure: "axes",
     abstract:
       "ARC-AGI-1 measures puzzle solving. I am checking whether those scores track how often a model hallucinates.",
   },
   {
     id: "entity-investigation",
     title: "Entity Resolution Across Fragmented Records",
-    figure: "gaps",
     abstract:
       "I am looking at how to reason over fragmented records and link events to the right address over time.",
     links: [
@@ -290,10 +282,10 @@ export const managedBy: Paragraph = [
   ".",
 ];
 
-/** Home only. /bot and /research keep the quieter managedBy line. */
+/** Small footer cue on the landing page. Points at the collection on this page. */
 export const homeManagedBy: Paragraph = [
   "Managed by ",
-  { href: "/bot", label: "Grok Bot" },
+  { href: "#bot", label: "Grok Bot" },
 ];
 
 export const personalMail = {

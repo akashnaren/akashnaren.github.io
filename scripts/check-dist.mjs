@@ -122,7 +122,6 @@ mustInclude(
     "Multiscale Flow Physics Lab, UC San Diego",
     "https://asanchez.ucsd.edu/research/reactive-flows/",
     ">Multiscale Flow Physics Lab, UC San Diego</a>",
-    ">Independent work",
     '<h2 id="profiles">Profiles</h2>',
     ">GitHub</span>",
     ">LinkedIn</span>",
@@ -132,7 +131,7 @@ mustInclude(
     ">Kaggle</span>",
     '<h2 id="mail">Mail</h2>',
     "Managed by ",
-    ">Grok Bot<svg",
+    'href="#bot">Grok Bot</a>',
     '<meta name="description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
     '<meta property="og:description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
     '<meta name="twitter:description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
@@ -150,10 +149,32 @@ mustInclude(
     "mailto:apn@agentmail.to",
     "apn@agentmail.to",
     "bots' inbox",
-    'href="/bot"',
+    "the agents' inbox — not his personal Gmail",
+    'href="#bot"',
     'class="managed-copy"',
     'class="foot home-foot"',
-    'href="/research"',
+    'class="layout"',
+    'class="collection"',
+    'class="roster"',
+    'class="threads"',
+    'id="bot"',
+    "<h2 id=\"bot\">grok bot collection</h2>",
+    "Raspberry Pi Inference Mesh",
+    'href="/research/pi-0.2-high/paper.pdf"',
+    "I am running local language-model chat on a Raspberry Pi mesh.",
+    "Structured Views for Agent-Native UIs",
+    'href="/research/agent-native-ui/paper.pdf"',
+    "ARC-AGI and Hallucination Risk",
+    "Entity Resolution Across Fragmented Records",
+    'href="https://seller-hotels-stay-role.trycloudflare.com/"',
+    ">openpi<svg",
+    'href="https://temporal-buddies5.vercel.app/"',
+    ">Temporal<svg",
+    'class="ext"',
+    'rel="noopener noreferrer"',
+    "screenshots or a flat accessibility tree",
+    "ARC-AGI-1",
+    "fragmented records",
     'name="theme-color" content="#0a0a0a"',
     "family=Geist",
   ],
@@ -163,7 +184,7 @@ mustInclude(
 mustExclude(
   home,
   [
-    ...leakNeedles,
+    ...researchLeakNeedles,
     'class="sky"',
     'class="system"',
     "orbit-spin",
@@ -177,11 +198,6 @@ mustExclude(
     "data-posted",
     "still researching",
     "profile engineer",
-    "software engineer",
-    "secretary",
-    "chief financial officer",
-    "finance engineer",
-    "integration engineer",
     ">optimus</a>",
     ">grok</a>",
     ">robotaxi</a>",
@@ -207,10 +223,20 @@ mustExclude(
     "Fullstack Applications",
     "Vehicle Service Systems",
     "this site is managed by",
-    "grok bot",
     "Fire whirl",
     "fire whirl",
     'class="managed byline"',
+    "Independent work",
+    "more coming",
+    'class="count"',
+    'class="thread-fig"',
+    'class="status"',
+    "Lavalamp",
+    "meetlavalamp.com",
+    "still researching",
+    "exploring",
+    "drafting",
+    /\b(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|\d+)\s+grok bots\b/i,
   ],
   "home",
 );
@@ -218,8 +244,12 @@ mustExclude(
 if (!home.includes("by grok") && !home.includes("by <a")) {
   fail("home must keep a real space before grok bot");
 }
-mustIconInside(home, "/research", "Independent work", "home");
-mustIconInside(home, "/bot", "Grok Bot", "home");
+if (!/<a href="#bot">Grok Bot<\/a>/.test(home)) {
+  fail("home footer must link Grok Bot to #bot");
+}
+if (home.includes('href="/bot"') || home.includes('href="/research"')) {
+  fail("home must link the footer to #bot and inline research, not the old routes");
+}
 if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego)<svg class="ext"/.test(home)) {
   fail("biography links must stay unmarked");
 }
@@ -249,9 +279,14 @@ const homeSections = home.match(/<section class="section"/g) ?? [];
 if (homeSections.length !== 4) {
   fail(`home must have Work, Research, Profiles, and Mail sections, found ${String(homeSections.length)}`);
 }
-const sectionOrder = ["work", "research", "profiles", "mail"].map((id) => home.indexOf(`id="${id}"`));
+const sectionOrder = ["work", "research", "profiles", "mail", "bot"].map((id) => home.indexOf(`id="${id}"`));
 if (sectionOrder.some((at) => at < 0) || sectionOrder.some((at, i) => i > 0 && at < sectionOrder[i - 1])) {
-  fail("home sections must run Work, Research, Profiles, Mail");
+  fail("home sections must run Work, Research, Profiles, Mail, then the bot collection");
+}
+const mainEnd = home.indexOf("</main>");
+const botAt = home.indexOf('id="bot"');
+if (mainEnd < 0 || botAt < mainEnd) {
+  fail("the bot collection must follow the main column");
 }
 const homeHeader = home.match(/<header>[\s\S]*?<\/header>/)?.[0] ?? "";
 if (/managed|Grok Bot|grok bot/i.test(homeHeader)) {
@@ -284,23 +319,8 @@ const seats = [
 ];
 
 mustInclude(
-  bot,
+  home,
   [
-    "<title>grok bot collection · Akash Premkumar</title>",
-    '<meta property="og:title" content="grok bot collection · Akash Premkumar" />',
-    '<meta name="twitter:title" content="grok bot collection · Akash Premkumar" />',
-    '<meta name="description" content="The grok bot collection behind akashnaren.github.io." />',
-    '<meta property="og:description" content="The grok bot collection behind akashnaren.github.io." />',
-    '<meta name="twitter:description" content="The grok bot collection behind akashnaren.github.io." />',
-    "<h1>grok bot collection</h1>",
-    'class="page profile"',
-    'class="roster"',
-    "this site is managed by",
-    'href="/bot"',
-    ">grok bot<svg",
-    "mailto:apn@agentmail.to",
-    "bots' inbox",
-    "the agents' inbox — not his personal Gmail",
     ...seats.flatMap(([id, name, blurb]) => [
       `data-seat="${id}"`,
       `data-name="${name}"`,
@@ -309,15 +329,150 @@ mustInclude(
     ]),
     ...Array.from({ length: 14 }, (_, i) => `src="/fleet/${String(i + 1).padStart(2, "0")}.png"`),
   ],
-  "bot",
+  "home roster",
 );
 
-const rowCount = (bot.match(/<li class="row"/g) ?? []).length;
-if (rowCount !== 14) fail(`bot roster must list fourteen seats, found ${String(rowCount)}`);
-if (/>secretary</.test(bot)) fail("the notes seat is executive secretary");
-if (bot.includes("profile engineer")) fail("profile engineer was renamed to profile lead");
-mustIconInside(bot, "/bot", "grok bot", "bot");
+const roster = home.match(/<ul class="roster">[\s\S]*?<\/ul>/)?.[0] ?? "";
+const rowCount = (roster.match(/<li class="row"/g) ?? []).length;
+if (rowCount !== 14) fail(`home roster must list fourteen seats, found ${String(rowCount)}`);
+const firstRow = roster.match(/<li class="row"[\s\S]*?<\/li>/)?.[0] ?? "";
+if (!firstRow.includes('data-seat="profile-lead"') || !firstRow.includes(">profile lead</span>")) {
+  fail("the host seat must be profile lead");
+}
+if (/>secretary</.test(home)) fail("the notes seat is executive secretary");
+if ((home.match(/<ul class="roster"/g) ?? []).length !== 1) {
+  fail("home must have one bot roster");
+}
 
+const articles = home.match(/<article class="thread"[\s\S]*?<\/article>/g) ?? [];
+if (articles.length !== 4) fail(`home must list four research threads, found ${String(articles.length)}`);
+const piThread = articles[0] ?? "";
+if (!piThread.includes("Raspberry Pi Inference Mesh")) {
+  fail("Raspberry Pi Inference Mesh must be the first research thread");
+}
+if (!piThread.includes('href="/research/pi-0.2-high/paper.pdf"')) {
+  fail("Pi 0.2 High title must open the PDF directly");
+}
+const piSub = piThread.match(/<p class="thread-sub">[\s\S]*?<\/p>/)?.[0] ?? "";
+if ((piSub.match(/<a /g) ?? []).length !== 1) {
+  fail("Pi thread must list exactly one chat link under the abstract");
+}
+mustIconInside(
+  piSub,
+  "https://seller-hotels-stay-role.trycloudflare.com/",
+  "openpi",
+  "pi thread",
+);
+if (!piSub.includes('rel="noopener noreferrer"') || /target="_blank"/.test(piThread)) {
+  fail("openpi must open like other external research links");
+}
+if (articles.some((article) => article !== piThread && /trycloudflare|openpi/.test(article))) {
+  fail("openpi must stay under the Raspberry Pi Inference Mesh thread");
+}
+const arc = articles.find((article) => article.includes("ARC-AGI and Hallucination Risk")) ?? "";
+if (arc.includes("<a ")) fail("ARC-AGI thread must not invent a link");
+if (!articles.some((article) => article.includes('href="/research/agent-native-ui/paper.pdf"') && article.includes("Structured Views for Agent-Native UIs"))) {
+  fail("agent-native title must open the PDF directly");
+}
+mustIconInside(
+  home,
+  "/research/pi-0.2-high/paper.pdf",
+  "Raspberry Pi Inference Mesh",
+  "home",
+);
+mustIconInside(
+  home,
+  "/research/agent-native-ui/paper.pdf",
+  "Structured Views for Agent-Native UIs",
+  "home",
+);
+const entity = articles.find((article) => article.includes("Entity Resolution Across Fragmented Records")) ?? "";
+const entityHeading = entity.match(/<h3>[\s\S]*?<\/h3>/)?.[0] ?? "";
+if (entityHeading !== "<h3>Entity Resolution Across Fragmented Records</h3>") {
+  fail("entity investigation title must stay plain text");
+}
+if (!entity.includes("I am looking at how to reason over fragmented records and link events to the right address over time.")) {
+  fail("entity investigation blurb changed");
+}
+if (/paper\.pdf/i.test(entity)) fail("entity investigation must not link a paper PDF");
+const entityAnchors = entity.match(/<a /g) ?? [];
+if (entityAnchors.length !== 1) {
+  fail(`entity investigation must show exactly one sub-link, found ${String(entityAnchors.length)}`);
+}
+mustIconInside(
+  entity,
+  "https://temporal-buddies5.vercel.app/",
+  "Temporal",
+  "entity investigation",
+);
+if (/lavalamp|meetlavalamp/i.test(entity)) {
+  fail("entity investigation must not link Lavalamp");
+}
+if (articles.some((article) => article !== entity && /temporal-buddies/i.test(article))) {
+  fail("Temporal must stay under the entity investigation thread");
+}
+if (arc.includes('class="ext"')) fail("ARC-AGI thread must not show a link icon");
+for (const article of articles) {
+  if (article.includes('class="status"') || article.includes("exploring") || article.includes("drafting")) {
+    fail("model threads must not carry status or exploring tags");
+  }
+}
+
+mustExclude(
+  home,
+  [
+    "three-node",
+    "Three-Node",
+    "pi rack",
+    "Pi PAIR",
+    "data-bay",
+    "status.json",
+    "/research/rack",
+    'class="thread-link"',
+    ">read</a>",
+    ">flow</a>",
+    ">mesh</a>",
+    ">code</a>",
+    ">demo</a>",
+    "/research/fishbowl/",
+    "OpenAI-style route",
+  ],
+  "home research",
+);
+
+function mustBeSectionRedirect(page, href, title, description, label) {
+  mustInclude(
+    page,
+    [
+      `<title>${title}</title>`,
+      `<meta name="description" content="${description}" />`,
+      'http-equiv="refresh"',
+      `content="0;url=${href}"`,
+      `location.replace(${JSON.stringify(href)})`,
+      `<a href="${href}">${title}</a>`,
+      'rel="canonical" href="https://akashnaren.github.io/"',
+      "data-cf-beacon",
+    ],
+    label,
+  );
+  if (
+    page.includes('class="roster"') ||
+    page.includes('class="thread"') ||
+    page.includes('class="page home"') ||
+    page.includes("/assets/index-") ||
+    page.includes("<iframe")
+  ) {
+    fail(`${label} must stay a tiny redirect to the home section`);
+  }
+}
+
+mustBeSectionRedirect(
+  bot,
+  "/#bot",
+  "grok bot collection · Akash Premkumar",
+  "The grok bot collection behind akashnaren.github.io.",
+  "bot redirect",
+);
 mustExclude(
   bot,
   [
@@ -349,116 +504,19 @@ mustExclude(
     "noindex",
     'class="rack"',
     "Pi 0.2 High",
+    "data-seat=",
+    "profile lead",
   ],
-  "bot",
+  "bot redirect",
 );
 
-mustInclude(
+mustBeSectionRedirect(
   research,
-  [
-    "<title>Research · Akash Premkumar</title>",
-    '<meta property="og:title" content="Research · Akash Premkumar" />',
-    '<meta name="twitter:title" content="Research · Akash Premkumar" />',
-    "<h1>Research</h1>",
-    "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity resolution across fragmented records.",
-    "Raspberry Pi Inference Mesh",
-    'href="/research/pi-0.2-high/paper.pdf"',
-    "I am running local language-model chat on a Raspberry Pi mesh.",
-    "Structured Views for Agent-Native UIs",
-    'href="/research/agent-native-ui/paper.pdf"',
-    "ARC-AGI and Hallucination Risk",
-    "Entity Resolution Across Fragmented Records",
-    'href="https://seller-hotels-stay-role.trycloudflare.com/"',
-    ">openpi<svg",
-    'href="https://temporal-buddies5.vercel.app/"',
-    ">Temporal<svg",
-    'class="ext"',
-    "rel=\"noopener noreferrer\"",
-    "screenshots or a flat accessibility tree",
-    "ARC-AGI-1",
-    "fragmented records",
-    "this site is managed by",
-    'href="/bot"',
-    'class="thread"',
-  ],
-  "research",
+  "/#research",
+  "Research · Akash Premkumar",
+  "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity resolution across fragmented records.",
+  "research redirect",
 );
-
-const articles = research.match(/<article class="thread"[\s\S]*?<\/article>/g) ?? [];
-if (articles.length !== 4) fail(`research must list four threads, found ${String(articles.length)}`);
-const piThread = articles[0] ?? "";
-if (!piThread.includes("Raspberry Pi Inference Mesh")) {
-  fail("Raspberry Pi Inference Mesh must be the first research thread");
-}
-if (!piThread.includes('href="/research/pi-0.2-high/paper.pdf"')) {
-  fail("Pi 0.2 High title must open the PDF directly");
-}
-const piSub = piThread.match(/<p class="thread-sub">[\s\S]*?<\/p>/)?.[0] ?? "";
-if ((piSub.match(/<a /g) ?? []).length !== 1) {
-  fail("Pi thread must list exactly one chat link under the abstract");
-}
-mustIconInside(
-  piSub,
-  "https://seller-hotels-stay-role.trycloudflare.com/",
-  "openpi",
-  "pi thread",
-);
-if (!piSub.includes('rel="noopener noreferrer"') || /target="_blank"/.test(piThread)) {
-  fail("openpi must open like other external research links");
-}
-if (articles.some((article) => article !== piThread && /trycloudflare|openpi/.test(article))) {
-  fail("openpi must stay under the Raspberry Pi Inference Mesh thread");
-}
-const arc = articles.find((article) => article.includes("ARC-AGI and Hallucination Risk")) ?? "";
-if (arc.includes("<a ")) fail("ARC-AGI thread must not invent a link");
-if (!articles.some((article) => article.includes('href="/research/agent-native-ui/paper.pdf"') && article.includes("Structured Views for Agent-Native UIs"))) {
-  fail("agent-native title must open the PDF directly");
-}
-mustIconInside(research, "/bot", "grok bot", "research");
-mustIconInside(
-  research,
-  "/research/pi-0.2-high/paper.pdf",
-  "Raspberry Pi Inference Mesh",
-  "research",
-);
-mustIconInside(
-  research,
-  "/research/agent-native-ui/paper.pdf",
-  "Structured Views for Agent-Native UIs",
-  "research",
-);
-const entity = articles.find((article) => article.includes("Entity Resolution Across Fragmented Records")) ?? "";
-const entityHeading = entity.match(/<h2>[\s\S]*?<\/h2>/)?.[0] ?? "";
-if (entityHeading !== "<h2>Entity Resolution Across Fragmented Records</h2>") {
-  fail("entity investigation title must stay plain text");
-}
-if (!entity.includes("I am looking at how to reason over fragmented records and link events to the right address over time.")) {
-  fail("entity investigation blurb changed");
-}
-if (/paper\.pdf/i.test(entity)) fail("entity investigation must not link a paper PDF");
-const entityAnchors = entity.match(/<a /g) ?? [];
-if (entityAnchors.length !== 1) {
-  fail(`entity investigation must show exactly one sub-link, found ${String(entityAnchors.length)}`);
-}
-mustIconInside(
-  entity,
-  "https://temporal-buddies5.vercel.app/",
-  "Temporal",
-  "entity investigation",
-);
-if (/lavalamp|meetlavalamp/i.test(entity)) {
-  fail("entity investigation must not link Lavalamp");
-}
-if (articles.some((article) => article !== entity && /temporal-buddies/i.test(article))) {
-  fail("Temporal must stay under the entity investigation thread");
-}
-if (arc.includes('class="ext"')) fail("ARC-AGI thread must not show a link icon");
-for (const article of articles) {
-  if (article.includes('class="status"') || article.includes("exploring") || article.includes("drafting")) {
-    fail("model threads must not carry status or exploring tags");
-  }
-}
-
 mustExclude(
   research,
   [
@@ -478,6 +536,7 @@ mustExclude(
     "data-posted",
     'class="status"',
     'class="thread-link"',
+    'class="thread"',
     ">read</a>",
     ">flow</a>",
     ">mesh</a>",
@@ -490,8 +549,10 @@ mustExclude(
     "OpenAI-style route",
     "meetlavalamp.com",
     "Lavalamp",
+    "paper.pdf",
+    "Raspberry Pi Inference Mesh",
   ],
-  "research",
+  "research redirect",
 );
 
 mustInclude(
@@ -565,7 +626,7 @@ const jsName = readdirSync("dist/assets").find((name) => name.endsWith(".js"));
 if (!cssName || !jsName) fail("dist/assets is missing hashed css or js");
 const css = read(`dist/assets/${cssName}`);
 const js = read(`dist/assets/${jsName}`);
-mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist"], "css");
+mustInclude(css, ["100dvh", "color-scheme:dark", "overflow-x:hidden", "Geist", "position:sticky"], "css");
 mustExclude(
   css,
   ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes"],

@@ -6,15 +6,7 @@ import {
   isResearchPath,
   piPaperHref,
 } from "./content.ts";
-import {
-  applyDocumentMeta,
-  botMeta,
-  homeMeta,
-  renderBot,
-  renderResearch,
-  renderSite,
-  researchMeta,
-} from "./render.ts";
+import { applyDocumentMeta, homeMeta, renderSite } from "./render.ts";
 
 function mount(): void {
   if (isEssayPath(location.pathname)) {
@@ -25,24 +17,22 @@ function mount(): void {
     location.replace(piPaperHref);
     return;
   }
+  if (isBotPath(location.pathname)) {
+    location.replace("/#bot");
+    return;
+  }
+  if (isResearchPath(location.pathname)) {
+    location.replace("/#research");
+    return;
+  }
 
-  const bot = isBotPath(location.pathname);
-  const research = isResearchPath(location.pathname);
   const root = document.getElementById("holder");
   if (!root) return;
-
-  const paintedBot = root.classList.contains("profile");
-  const paintedResearch = root.classList.contains("research");
-  const paintedHome = root.classList.contains("home");
-  if (bot && !paintedBot) {
-    root.outerHTML = renderBot();
-  } else if (research && !paintedResearch) {
-    root.outerHTML = renderResearch();
-  } else if (!bot && !research && !paintedHome) {
+  if (!root.classList.contains("home")) {
     root.outerHTML = renderSite();
   }
 
-  applyDocumentMeta(bot ? botMeta : research ? researchMeta : homeMeta);
+  applyDocumentMeta(homeMeta);
 }
 
 mount();

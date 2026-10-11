@@ -8,11 +8,10 @@ import {
   essayRedirectHtml,
   homeMeta,
   pdfRedirectHtml,
-  renderBot,
-  renderResearch,
   renderSite,
   replaceHolder,
   researchMeta,
+  sectionRedirectHtml,
 } from "./src/render.ts";
 
 const holderPattern = /<div id="holder"><\/div>/;
@@ -60,12 +59,12 @@ export default defineConfig({
         mkdirSync(resolve("dist/bot"), { recursive: true });
         writeFileSync(
           resolve("dist/bot/index.html"),
-          applyPageMeta(replaceHolder(home, renderBot()), botMeta),
+          sectionRedirectHtml("/#bot", botMeta.title, botMeta.description),
         );
         mkdirSync(resolve("dist/research"), { recursive: true });
         writeFileSync(
           resolve("dist/research/index.html"),
-          applyPageMeta(replaceHolder(home, renderResearch()), researchMeta),
+          sectionRedirectHtml("/#research", researchMeta.title, researchMeta.description),
         );
         mkdirSync(resolve("dist/research/agent-native-ui"), { recursive: true });
         writeFileSync(
