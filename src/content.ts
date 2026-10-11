@@ -15,22 +15,18 @@ export const name = "Akash Premkumar";
 export const description =
   "Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego.";
 export const url = "https://akashnaren.github.io/";
-export const themeColor = "#0a0a0a";
+export const themeColor = "#fffff8";
 
 export const workHeading = "Work";
 
 export const workLines: readonly Paragraph[] = [
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
-    " — Vehicle Service (Internal Tooling, Diagnostics, Telemetry, Data Analysis)",
+    " — Vehicle Service",
   ],
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
-    " — Vehicle Engineering (Part Data Hub, ",
-    { href: "https://www.tesla.com/robotaxi", label: "Cybercab + Robotaxi Program" },
-    ", ",
-    { href: "https://grok.com", label: "Grok" },
-    " Integrations)",
+    " — Vehicle Engineering",
   ],
   [
     { href: "https://www.rtx.com/raytheon", label: "Raytheon" },
@@ -38,7 +34,7 @@ export const workLines: readonly Paragraph[] = [
   ],
   [
     { href: "https://www.lspace.asu.edu/", label: "NASA L’SPACE" },
-    " — asteroid preliminary design review, terrain mapping identification proposal",
+    " — Workforce Program",
   ],
 ];
 
@@ -48,15 +44,16 @@ export const mailHeading = "Mail";
 
 export const researchHeading = "Research";
 
-/** Landing lines only. Topic blurbs stay on /research. */
+export const projectsHeading = "Projects";
+
+/** Lab line on the landing page. */
 export const researchLines: readonly Paragraph[] = [
   [
     {
-      href: "https://asanchez.ucsd.edu/research/reactive-flows/",
+      href: "https://asanchez.ucsd.edu/",
       label: "Multiscale Flow Physics Lab, UC San Diego",
     },
   ],
-  [{ href: "/research", label: "Independent work" }],
 ];
 
 export const contact: readonly Contact[] = [
@@ -110,13 +107,13 @@ export const fleetMarks = [
   "/fleet/14.png",
 ] as const;
 
-export const collectionTitle = "grok bot collection";
+export const collectionTitle = "personal agents collection";
 
-export const botTitle = "grok bot collection · Akash Premkumar";
+export const botTitle = "personal agents collection · Akash Premkumar";
 
 export const botUrl = "https://akashnaren.github.io/bot";
 
-export const botDescription = "The grok bot collection behind akashnaren.github.io.";
+export const botDescription = "The personal agents collection behind akashnaren.github.io.";
 
 export type Seat = {
   readonly id: string;
@@ -220,71 +217,41 @@ export const researchTitle = "Research";
 export const researchUrl = "https://akashnaren.github.io/research";
 
 export const researchDescription =
-  "Local language-model chat on a Raspberry Pi mesh, structured views for agent interfaces, ARC-AGI and hallucination, and entity resolution across fragmented records.";
-
-export type ThreadFigure = "mesh" | "protocol" | "axes" | "gaps";
+  "Multiscale Flow Physics Lab, UC San Diego, OpenPi, and Agent-Native UI.";
 
 export const piPaperHref = "/research/pi-0.2-high/paper.pdf";
 
 export const piPaperTitle = "Raspberry Pi Inference Mesh";
 
-export type Thread = {
+export type ListedWork = {
   readonly id: string;
   readonly title: string;
-  readonly figure: ThreadFigure;
-  readonly abstract: string;
   readonly href?: string;
-  readonly external?: boolean;
-  /** Links listed under the thread title and abstract. */
+  /** Extra links after the title. */
   readonly links?: readonly Link[];
 };
 
-export const threads: readonly Thread[] = [
+export const researchEntries: readonly ListedWork[] = [
   {
-    id: "pi-0-2-high",
-    title: piPaperTitle,
-    figure: "mesh",
-    abstract:
-      "I am running local language-model chat on a Raspberry Pi mesh.",
-    href: piPaperHref,
-    links: [
-      {
-        href: "https://seller-hotels-stay-role.trycloudflare.com/",
-        label: "openpi",
-      },
-    ],
+    id: "openpi",
+    title: "OpenPi",
+    href: "https://seller-hotels-stay-role.trycloudflare.com/",
   },
   {
-    id: "agent-native-ui-protocols",
-    title: "Structured Views for Agent-Native UIs",
-    figure: "protocol",
-    abstract:
-      "Agents still drive apps through screenshots or a flat accessibility tree. I am comparing those to a structured view the agent can read.",
+    id: "agent-native-ui",
+    title: "Agent-Native UI",
     href: "/research/agent-native-ui/paper.pdf",
   },
+];
+
+export const projectLinks: readonly Link[] = [
   {
-    id: "arc-agi-vs-hallucination-risk",
-    title: "ARC-AGI and Hallucination Risk",
-    figure: "axes",
-    abstract:
-      "ARC-AGI-1 measures puzzle solving. I am checking whether those scores track how often a model hallucinates.",
+    href: "https://temporal-buddies5.vercel.app/",
+    label: "Temporal",
   },
   {
-    id: "entity-investigation",
-    title: "Entity Resolution Across Fragmented Records",
-    figure: "gaps",
-    abstract:
-      "I am looking at how to reason over fragmented records and link events to the right address over time.",
-    links: [
-      {
-        href: "https://temporal-buddies5.vercel.app/",
-        label: "Temporal",
-      },
-      {
-        href: "https://meetlavalamp.com",
-        label: "Lavalamp",
-      },
-    ],
+    href: "https://meetlavalamp.com",
+    label: "Lavalamp",
   },
 ];
 
@@ -294,10 +261,10 @@ export const managedBy: Paragraph = [
   ".",
 ];
 
-/** Home only. /bot and /research keep the quieter managedBy line. */
+/** Small footer cue on the landing page. Points at the collection on this page. */
 export const homeManagedBy: Paragraph = [
   "Managed by ",
-  { href: "/bot", label: "Grok Bot" },
+  { href: "#bot", label: "Grok Bot" },
 ];
 
 export const personalMail = {
@@ -307,8 +274,8 @@ export const personalMail = {
 } as const;
 
 export const agentInbox = {
-  address: "apn@agentmail.to",
-  href: "mailto:apn@agentmail.to",
+  address: "akashnaren@mail.grokbot.com",
+  href: "mailto:akashnaren@mail.grokbot.com",
   label: "bots' inbox",
   tip: "the agents' inbox — not his personal Gmail",
 } as const;

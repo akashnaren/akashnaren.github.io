@@ -7,8 +7,8 @@ import struct
 import zlib
 from pathlib import Path
 
-INK = (250, 250, 247, 255)
-DARK = (10, 10, 10, 255)
+INK = (26, 26, 26, 255)
+DARK = (255, 255, 248, 255)
 
 # Same geometry as public/favicon.svg, in 32x32 space.
 OUTER = [

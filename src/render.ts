@@ -9,26 +9,28 @@ import {
   homeManagedBy,
   isLink,
   mailHeading,
-  managedBy,
   name,
   personalMail,
   profilesHeading,
   researchDescription,
+  projectLinks,
+  projectsHeading,
+  researchEntries,
   researchHeading,
   researchLines,
   researchPath,
   researchTitle,
   researchUrl,
+  themeColor,
   workHeading,
   workLines,
   seats,
-  threads,
   url,
   type Contact,
+  type ListedWork,
   type Paragraph,
   type Phrase,
   type Seat,
-  type Thread,
 } from "./content.ts";
 import { paperHref, paperTitle } from "./article.ts";
 
@@ -45,6 +47,7 @@ export const homeMeta: PageMeta = {
   title: name,
   description,
   url,
+  themeColor,
 };
 
 export const botMeta: PageMeta = {
@@ -124,7 +127,7 @@ function renderGrokBotMark(): string {
   return `<svg class="grok-bot-mark" viewBox="0 0 32 32" width="15" height="15" aria-hidden="true" focusable="false"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></svg>`;
 }
 
-function renderManagedBy(line: Paragraph = managedBy, extra = ""): string {
+function renderManagedBy(line: Paragraph, extra = ""): string {
   const cls = extra ? `managed ${extra}` : "managed";
   return `<p class="${cls}">${renderGrokBotMark()}<span class="managed-copy">${line.map(renderPhrase).join("")}</span></p>`;
 }
@@ -149,161 +152,104 @@ function renderMail(): string {
         <h2 id="mail">${escapeHtml(mailHeading)}</h2>
         <ul class="mail-row">
           <li><a class="mail-address" href="${escapeHtml(personalMail.href)}">${escapeHtml(personalMail.address)}</a></li>
-          <li><span class="mail-kind">${escapeHtml(agentInbox.label)}</span><a class="mail-address" href="${escapeHtml(agentInbox.href)}">${escapeHtml(agentInbox.address)}</a></li>
+          <li><span class="mail-kind">${escapeHtml(agentInbox.label)}</span><a class="mail-address" href="${escapeHtml(agentInbox.href)}" title="${escapeHtml(agentInbox.tip)}">${escapeHtml(agentInbox.address)}</a></li>
         </ul>
       </section>`;
 }
 
-function renderInbox(label: string = agentInbox.label, tip = ""): string {
-  const described = tip ? ` aria-describedby="inbox-tip"` : "";
-  const titled = tip ? ` title="${escapeHtml(tip)}"` : "";
-  const tipHtml = tip
-    ? `<span id="inbox-tip" class="inbox-tip" role="tooltip">${escapeHtml(tip)}</span>`
-    : "";
-  const extra = tip ? " has-tip" : "";
-  return `<p class="inbox${extra}"><span class="inbox-label">${escapeHtml(label)}</span><a class="inbox-address" href="${escapeHtml(agentInbox.href)}"${described}${titled}>${escapeHtml(agentInbox.address)}</a>${tipHtml}</p>`;
+function renderDocLink(href: string, label: string): string {
+  const external = /^https?:\/\//i.test(href);
+  const rel = external ? ` rel="noopener noreferrer"` : "";
+  const icon = external || /\.pdf(?:$|[?#])/i.test(href) ? renderLinkIcon() : "";
+  return `<a href="${escapeHtml(href)}"${rel}>${escapeHtml(label)}${icon}</a>`;
+}
+
+function renderListedWork(entry: ListedWork): string {
+  const title = entry.href
+    ? renderDocLink(entry.href, entry.title)
+    : `<span class="entry-name">${escapeHtml(entry.title)}</span>`;
+  const extra = (entry.links ?? []).map((link) => renderDocLink(link.href, link.label)).join("");
+  return `<li data-entry="${escapeHtml(entry.id)}">${title}${extra}</li>`;
+}
+
+function renderNamedList(id: string, heading: string, items: string): string {
+  return `<section class="section" aria-labelledby="${escapeHtml(id)}">
+        <h2 id="${escapeHtml(id)}">${escapeHtml(heading)}</h2>
+        <ul class="entries">
+          ${items}
+        </ul>
+      </section>`;
+}
+
+function renderResearchSection(): string {
+  const lab = researchLines.map((line) => {
+    const link = line.find(isLink);
+    return link ? `<li>${renderDocLink(link.href, link.label)}</li>` : renderEntry(line, false);
+  });
+  const items = [...lab, ...researchEntries.map(renderListedWork)].join("\n          ");
+  return renderNamedList("research", researchHeading, items);
+}
+
+function renderProjectsSection(): string {
+  const items = projectLinks.map((link) => `<li>${renderDocLink(link.href, link.label)}</li>`).join("\n          ");
+  return renderNamedList("projects", projectsHeading, items);
+}
+
+function renderCollection(): string {
+  const rows = seats.map(renderRow).join("");
+  return `<aside class="collection" aria-labelledby="bot">
+        <h2 id="bot">${escapeHtml(collectionTitle)}</h2>
+        <ul class="roster">${rows}</ul>
+      </aside>`;
 }
 
 export function renderSite(): string {
   return `<div class="page home" id="holder">
-    <main class="stage">
-      <header>
-        <h1>${escapeHtml(name)}</h1>
-      </header>
-      ${renderBand("work", workHeading, workLines, true)}
-      ${renderBand("research", researchHeading, researchLines)}
-      ${renderProfiles()}
-      ${renderMail()}
+    <div class="layout">
+      <main class="stage">
+        <header>
+          <h1>${escapeHtml(name)}</h1>
+        </header>
+        ${renderBand("work", workHeading, workLines, true)}
+        ${renderResearchSection()}
+        ${renderProjectsSection()}
+        ${renderProfiles()}
+        ${renderMail()}
+      </main>
+      ${renderCollection()}
       <footer class="foot home-foot">
         ${renderManagedBy(homeManagedBy)}
       </footer>
-    </main>
+    </div>
   </div>`;
 }
 
 function renderRow(seat: Seat): string {
-  return `<li class="row" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}"><img class="row-face" src="${escapeHtml(seat.face)}" alt="" width="36" height="36" decoding="async" /><span class="row-id"><span class="row-name">${escapeHtml(seat.name)}</span><span class="row-blurb">${escapeHtml(seat.blurb)}</span></span></li>`;
+  const tipId = `tip-${seat.id}`;
+  return `<li class="row" tabindex="0" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" aria-label="${escapeHtml(seat.name)}" aria-describedby="${escapeHtml(tipId)}"><img class="row-face" src="${escapeHtml(seat.face)}" alt="" width="36" height="36" decoding="async" /><span class="row-name">${escapeHtml(seat.name)}</span><span class="row-tip" id="${escapeHtml(tipId)}" role="tooltip">${escapeHtml(seat.blurb)}</span></li>`;
 }
 
-export function renderBot(): string {
-  const rows = seats.map(renderRow).join("");
-  return `<div class="page profile" id="holder">
-    <main class="stage">
-      <header class="mast">
-        <h1>${escapeHtml(collectionTitle)}</h1>
-      </header>
-      <ul class="roster">${rows}</ul>
-      <footer class="foot">
-        ${renderInbox(agentInbox.label, agentInbox.tip)}
-        ${renderManagedBy()}
-      </footer>
-    </main>
-  </div>`;
-}
-
-function renderMeshFigure(): string {
-  return `<svg class="thread-fig" viewBox="0 0 140 108" width="140" height="108" focusable="false" aria-hidden="true">
-          <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
-          <path d="M70 20v68" fill="none" stroke="rgba(250,250,247,0.22)" stroke-width="0.7"/>
-          <rect x="38" y="16" width="64" height="16" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.9"/>
-          <rect x="38" y="46" width="64" height="16" fill="none" stroke="rgba(250,250,247,0.36)" stroke-width="0.8"/>
-          <rect x="38" y="76" width="64" height="16" fill="none" stroke="rgba(250,250,247,0.26)" stroke-width="0.75"/>
-        </svg>`;
-}
-
-function renderProtocolFigure(): string {
-  return `<svg class="thread-fig" viewBox="0 0 140 108" width="140" height="108" focusable="false" aria-hidden="true">
-          <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
-          <path d="M16 18v72" fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.7"/>
-          <rect x="24" y="16" width="96" height="22" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.9"/>
-          <rect x="28" y="20" width="26" height="14" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.7"/>
-          <rect x="59" y="20" width="26" height="14" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.7"/>
-          <rect x="90" y="20" width="26" height="14" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.7"/>
-          <rect x="24" y="43" width="96" height="22" fill="none" stroke="rgba(250,250,247,0.34)" stroke-width="0.8"/>
-          <path d="M44 52.2l16 6.2M44 51.4l36-.2M84 52.2l16 6.2" fill="none" stroke="rgba(250,250,247,0.28)" stroke-width="0.7"/>
-          <rect x="24" y="70" width="96" height="22" fill="none" stroke="rgba(250,250,247,0.24)" stroke-width="0.75"/>
-        </svg>`;
-}
-
-function renderAxesFigure(): string {
-  return `<svg class="thread-fig" viewBox="0 0 140 108" width="140" height="108" focusable="false" aria-hidden="true">
-          <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
-          <path d="M26 86V22M26 86h96" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.8"/>
-          <circle cx="46" cy="72" r="2.3" fill="none" stroke="rgba(250,250,247,0.38)" stroke-width="0.75"/>
-          <circle cx="74" cy="48" r="2.3" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.75"/>
-          <circle cx="104" cy="60" r="2.3" fill="none" stroke="rgba(250,250,247,0.46)" stroke-width="0.75"/>
-        </svg>`;
-}
-
-function renderGapsFigure(): string {
-  return `<svg class="thread-fig" viewBox="0 0 140 108" width="140" height="108" focusable="false" aria-hidden="true">
-          <rect x="4.5" y="4.5" width="131" height="99" fill="none" stroke="rgba(250,250,247,0.12)" stroke-width="0.7"/>
-          <path d="M16 90h108" fill="none" stroke="rgba(250,250,247,0.2)" stroke-width="0.7"/>
-          <circle cx="30" cy="40" r="3.1" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
-          <circle cx="58" cy="40" r="3.1" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
-          <circle cx="114" cy="68" r="3.1" fill="none" stroke="rgba(250,250,247,0.5)" stroke-width="0.85"/>
-          <path d="M33.2 40h21.6" fill="none" stroke="rgba(250,250,247,0.42)" stroke-width="0.85"/>
-          <path d="M61.2 40h49.6" fill="none" stroke="rgba(250,250,247,0.3)" stroke-width="0.85" stroke-dasharray="2.4 2.2"/>
-        </svg>`;
-}
-
-function renderThreadFigure(figure: Thread["figure"]): string {
-  if (figure === "mesh") return renderMeshFigure();
-  if (figure === "protocol") return renderProtocolFigure();
-  if (figure === "axes") return renderAxesFigure();
-  return renderGapsFigure();
-}
-
-function threadOpensDocument(thread: Thread): boolean {
-  if (!thread.href) return false;
-  return (
-    thread.external === true ||
-    /\.pdf(?:$|[?#])/i.test(thread.href) ||
-    /^https?:\/\//i.test(thread.href)
-  );
-}
-
-function renderThreadSubLinks(thread: Thread): string {
-  const links = thread.links;
-  if (!links || links.length === 0) return "";
-  const anchors = links
-    .map((link) => {
-      const external = /^https?:\/\//i.test(link.href);
-      const rel = external ? ` rel="noopener noreferrer"` : "";
-      const icon = external ? renderLinkIcon() : "";
-      return `<a href="${escapeHtml(link.href)}"${rel}>${escapeHtml(link.label)}${icon}</a>`;
-    })
-    .join("");
-  return `<p class="thread-sub">${anchors}</p>`;
-}
-
-function renderThread(thread: Thread): string {
-  const title = escapeHtml(thread.title);
-  const heading = thread.href
-    ? `<h2><a href="${escapeHtml(thread.href)}"${thread.external ? ` rel="noopener noreferrer"` : ""}>${title}${threadOpensDocument(thread) ? renderLinkIcon() : ""}</a></h2>`
-    : `<h2>${title}</h2>`;
-  const sub = renderThreadSubLinks(thread);
-  return `<article class="thread" data-thread="${escapeHtml(thread.id)}">
-        ${renderThreadFigure(thread.figure)}
-        <div class="thread-copy">
-          ${heading}
-          <p>${escapeHtml(thread.abstract)}</p>${sub ? `\n          ${sub}` : ""}
-        </div>
-      </article>`;
-}
-
-export function renderResearch(): string {
-  return `<div class="page research" id="holder">
-    <main class="stage">
-      <header class="mast">
-        <h1>${escapeHtml(researchTitle)}</h1>
-      </header>
-      <div class="threads">${threads.map(renderThread).join("")}</div>
-      <footer class="foot">
-        ${renderManagedBy()}
-      </footer>
-    </main>
-  </div>`;
+export function sectionRedirectHtml(href: string, title: string, description: string): string {
+  const safeHref = escapeHtml(href);
+  const safeTitle = escapeHtml(title);
+  const safeDescription = escapeHtml(description);
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${safeTitle}</title>
+    <meta name="description" content="${safeDescription}" />
+    <link rel="canonical" href="https://akashnaren.github.io/" />
+    <meta http-equiv="refresh" content="0;url=${safeHref}" />
+    <script>location.replace(${JSON.stringify(href)})</script>
+    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "0470f893bb1740a88848e29324507551"}'></script><!-- End Cloudflare Web Analytics -->
+  </head>
+  <body>
+    <p><a href="${safeHref}">${safeTitle}</a></p>
+  </body>
+</html>
+`;
 }
 
 export function pdfRedirectHtml(href: string, title: string): string {
@@ -376,7 +322,7 @@ export function applyPageMeta(html: string, meta: PageMeta): string {
     .replace(/(<link rel="canonical" href=")[^"]*("\s*\/?>)/, `$1${href}$2`)
     .replace(
       /(<meta name="theme-color" content=")[^"]*("\s*\/?>)/,
-      `$1${escapeHtml(meta.themeColor ?? "#0a0a0a")}$2`,
+      `$1${escapeHtml(meta.themeColor ?? "#fffff8")}$2`,
     )
     .replace(
       /\s*<meta name="robots" content="[^"]*"\s*\/?>/,
@@ -399,7 +345,7 @@ export function applyDocumentMeta(meta: PageMeta): void {
     ['meta[property="og:url"]', meta.url],
     ['meta[name="twitter:title"]', meta.title],
     ['meta[name="twitter:description"]', meta.description],
-    ['meta[name="theme-color"]', meta.themeColor ?? "#0a0a0a"],
+    ['meta[name="theme-color"]', meta.themeColor ?? "#fffff8"],
   ];
   for (const [selector, value] of pairs) {
     document.querySelector(selector)?.setAttribute("content", value);
