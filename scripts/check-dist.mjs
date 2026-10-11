@@ -146,8 +146,8 @@ mustInclude(
     'src="/marks/cursor.svg"',
     "mailto:akashnaren@gmail.com",
     "akashnaren@gmail.com",
-    "mailto:apn@agentmail.to",
-    "apn@agentmail.to",
+    "mailto:akashnaren@mail.grokbot.com",
+    "akashnaren@mail.grokbot.com",
     "bots' inbox",
     "the agents' inbox — not his personal Gmail",
     'href="#bot"',
@@ -601,6 +601,7 @@ for (const [page, label] of [
   [spa, "404"],
 ]) {
   if (/<iframe/i.test(page)) fail(`${label} must not embed a paper in an iframe`);
+  if (/agentmail/i.test(page)) fail(`${label} still mentions agentmail`);
 }
 
 mustInclude(spa, ['<div id="holder"></div>'], "404");
@@ -638,7 +639,7 @@ mustExclude(
   ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes"],
   "css",
 );
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail"], "js");
 
 const pdfs = [
   "public/research/agent-native-ui/paper.pdf",
