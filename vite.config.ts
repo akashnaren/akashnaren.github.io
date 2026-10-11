@@ -5,6 +5,7 @@ import { piPaperHref, piPaperTitle } from "./src/content.ts";
 import {
   applyPageMeta,
   botMeta,
+  ensureCsp,
   essayRedirectHtml,
   homeMeta,
   pdfRedirectHtml,
@@ -25,6 +26,9 @@ function rewritePageIndex(req: { url?: string }): void {
 
 export default defineConfig({
   base: "/",
+  build: {
+    sourcemap: false,
+  },
   plugins: [
     {
       name: "rewrite-page-index",
@@ -47,14 +51,14 @@ export default defineConfig({
         if (!holderPattern.test(html)) {
           throw new Error("index.html is missing the #holder root");
         }
-        return applyPageMeta(html.replace(holderPattern, renderSite()), homeMeta);
+        return ensureCsp(applyPageMeta(html.replace(holderPattern, renderSite()), homeMeta));
       },
       closeBundle() {
         const distHtml = resolve("dist/index.html");
         if (!existsSync(distHtml)) {
           throw new Error("inject-site: dist/index.html was not written");
         }
-        const home = applyPageMeta(readFileSync(distHtml, "utf8"), homeMeta);
+        const home = ensureCsp(applyPageMeta(readFileSync(distHtml, "utf8"), homeMeta));
         writeFileSync(distHtml, home);
         mkdirSync(resolve("dist/bot"), { recursive: true });
         writeFileSync(

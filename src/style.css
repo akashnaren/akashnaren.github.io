@@ -273,8 +273,7 @@ h1 {
   flex-shrink: 0;
 }
 
-.mail-address,
-.inbox-address {
+.mail-address {
   font-family: inherit;
   font-size: 1rem;
   line-height: 1.45;
