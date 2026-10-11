@@ -109,13 +109,13 @@ export const fleetMarks = [
   "/fleet/14.png",
 ] as const;
 
-export const collectionTitle = "grok bot collection";
+export const collectionTitle = "personal agents collection";
 
-export const botTitle = "grok bot collection · Akash Premkumar";
+export const botTitle = "personal agents collection · Akash Premkumar";
 
 export const botUrl = "https://akashnaren.github.io/bot";
 
-export const botDescription = "The grok bot collection behind akashnaren.github.io.";
+export const botDescription = "The personal agents collection behind akashnaren.github.io.";
 
 export type Seat = {
   readonly id: string;

@@ -158,7 +158,7 @@ mustInclude(
     'class="roster"',
     'class="threads"',
     'id="bot"',
-    "<h2 id=\"bot\">grok bot collection</h2>",
+    "<h2 id=\"bot\">personal agents collection</h2>",
     "Raspberry Pi Inference Mesh",
     'href="/research/pi-0.2-high/paper.pdf"',
     "I am running local language-model chat on a Raspberry Pi mesh.",
@@ -229,6 +229,7 @@ mustExclude(
     "fire whirl",
     'class="managed byline"',
     "Independent work",
+    "grok bot collection",
     "more coming",
     'class="count"',
     'class="thread-fig"',
@@ -477,8 +478,8 @@ function mustBeSectionRedirect(page, href, title, description, label) {
 mustBeSectionRedirect(
   bot,
   "/#bot",
-  "grok bot collection · Akash Premkumar",
-  "The grok bot collection behind akashnaren.github.io.",
+  "personal agents collection · Akash Premkumar",
+  "The personal agents collection behind akashnaren.github.io.",
   "bot redirect",
 );
 mustExclude(
@@ -514,6 +515,7 @@ mustExclude(
     "Pi 0.2 High",
     "data-seat=",
     "profile lead",
+    "grok bot collection",
   ],
   "bot redirect",
 );

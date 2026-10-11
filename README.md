@@ -19,7 +19,7 @@ npm test
 
 ## Layout
 
-- `src/` holds the copy, the landing page, and the styles. Work, research, profiles, mail, and the Grok Bot collection render on that one page. `/research` and `/bot` redirect to `/#research` and `/#bot`.
+- `src/` holds the copy, the landing page, and the styles. Work, research, profiles, mail, and the personal agents collection render on that one page. `/research` and `/bot` redirect to `/#research` and `/#bot`.
 - `public/` holds the favicon, fleet faces, marks, and research PDFs. Vite copies it into the build.
 - `scripts/publish-pages.mjs` copies `dist/` onto the repo root (`index.html`, `/bot`, `/research`, hashed `/assets`) so Pages can serve the files.
 
