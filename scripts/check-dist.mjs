@@ -372,6 +372,8 @@ mustInclude(
     ">openpi<svg",
     'href="https://temporal-buddies5.vercel.app/"',
     ">Temporal<svg",
+    'href="https://meetlavalamp.com"',
+    ">Lavalamp<svg",
     'class="ext"',
     "rel=\"noopener noreferrer\"",
     "screenshots or a flat accessibility tree",
@@ -437,8 +439,8 @@ if (!entity.includes("I am looking at how to reason over fragmented records and 
 }
 if (/paper\.pdf/i.test(entity)) fail("entity investigation must not link a paper PDF");
 const entityAnchors = entity.match(/<a /g) ?? [];
-if (entityAnchors.length !== 1) {
-  fail(`entity investigation must show exactly one sub-link, found ${String(entityAnchors.length)}`);
+if (entityAnchors.length !== 2) {
+  fail(`entity investigation must show exactly two sub-links, found ${String(entityAnchors.length)}`);
 }
 mustIconInside(
   entity,
@@ -446,11 +448,19 @@ mustIconInside(
   "Temporal",
   "entity investigation",
 );
-if (/lavalamp|meetlavalamp/i.test(entity)) {
-  fail("entity investigation must not link Lavalamp");
+mustIconInside(
+  entity,
+  "https://meetlavalamp.com",
+  "Lavalamp",
+  "entity investigation",
+);
+const temporalAt = entity.indexOf(">Temporal<svg");
+const lavalampAt = entity.indexOf(">Lavalamp<svg");
+if (temporalAt === -1 || lavalampAt < temporalAt) {
+  fail("Lavalamp must follow Temporal under the entity investigation thread");
 }
-if (articles.some((article) => article !== entity && /temporal-buddies/i.test(article))) {
-  fail("Temporal must stay under the entity investigation thread");
+if (articles.some((article) => article !== entity && /lavalamp|meetlavalamp|temporal-buddies/i.test(article))) {
+  fail("Temporal and Lavalamp must stay under the entity investigation thread");
 }
 if (arc.includes('class="ext"')) fail("ARC-AGI thread must not show a link icon");
 for (const article of articles) {
@@ -488,8 +498,6 @@ mustExclude(
     "noindex",
     "/research/fishbowl/",
     "OpenAI-style route",
-    "meetlavalamp.com",
-    "Lavalamp",
   ],
   "research",
 );
@@ -571,7 +579,7 @@ mustExclude(
   ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes"],
   "css",
 );
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "meetlavalamp.com", "Lavalamp"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back"], "js");
 
 const pdfs = [
   "public/research/agent-native-ui/paper.pdf",
