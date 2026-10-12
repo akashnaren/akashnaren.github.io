@@ -412,12 +412,12 @@ if ((home.match(/<ul class="roster"/g) ?? []).length !== 1) {
 const researchSection = home.match(/aria-labelledby="research">[\s\S]*?<\/section>/)?.[0] ?? "";
 const projectsSection = home.match(/aria-labelledby="projects">[\s\S]*?<\/section>/)?.[0] ?? "";
 const researchItems = researchSection.match(/<li[\s>]/g) ?? [];
-if (researchItems.length !== 3) {
-  fail(`research must list the lab, OpenPi, and Agent-Native UI, found ${String(researchItems.length)}`);
+if (researchItems.length !== 2) {
+  fail(`research must list the lab and Agent-Native UI, found ${String(researchItems.length)}`);
 }
 const projectItems = projectsSection.match(/<li[\s>]/g) ?? [];
-if (projectItems.length !== 2) {
-  fail(`projects must list Temporal and Lavalamp, found ${String(projectItems.length)}`);
+if (projectItems.length !== 3) {
+  fail(`projects must list Lavalamp, Temporal, and OpenPi, found ${String(projectItems.length)}`);
 }
 if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
   fail("research and projects must not include blurbs");
@@ -435,7 +435,7 @@ mustIconInside(
 if (!lab.includes('rel="noopener noreferrer"') || lab.includes("reactive-flows") || !lab.includes('target="_blank"')) {
   fail("the lab link must open https://asanchez.ucsd.edu/ in a new tab");
 }
-const openPi = researchSection.match(/<li data-entry="openpi">[\s\S]*?<\/li>/)?.[0] ?? "";
+const openPi = projectsSection.match(/<li><a href="https:\/\/seller-hotels-stay-role\.trycloudflare\.com\/"[\s\S]*?<\/li>/)?.[0] ?? "";
 if ((openPi.match(/<a /g) ?? []).length !== 1) {
   fail("OpenPi must be a single link");
 }
@@ -451,8 +451,8 @@ mustIconInside(
 if (!openPi.includes('rel="noopener noreferrer"') || !openPi.includes('target="_blank"')) {
   fail("OpenPi must open in a new tab");
 }
-if (/trycloudflare/.test(projectsSection) || /trycloudflare/.test(researchSection.replace(openPi, ""))) {
-  fail("OpenPi must stay on its own entry");
+if (researchSection.includes("OpenPi") || researchSection.includes('data-entry="openpi"') || /trycloudflare/.test(researchSection) || /trycloudflare/.test(projectsSection.replace(openPi, ""))) {
+  fail("OpenPi must stay on its own Projects entry");
 }
 if (home.includes('href="/research/pi-0.2-high/paper.pdf"')) {
   fail("the home page must not link the Pi paper PDF");
@@ -468,11 +468,11 @@ mustIconInside(
   "home",
 );
 if (/Entity Resolution|entity-resolution/.test(projectsSection) || /<p[\s>]/.test(projectsSection) || /paper\.pdf/i.test(projectsSection)) {
-  fail("Projects must show only the Temporal and Lavalamp links");
+  fail("Projects must show only the Lavalamp, Temporal, and OpenPi links");
 }
 const projectAnchors = projectsSection.match(/<a /g) ?? [];
-if (projectAnchors.length !== 2) {
-  fail(`Projects must show exactly two links, found ${String(projectAnchors.length)}`);
+if (projectAnchors.length !== 3) {
+  fail(`Projects must show exactly three links, found ${String(projectAnchors.length)}`);
 }
 mustIconInside(
   projectsSection,
@@ -488,8 +488,9 @@ mustIconInside(
 );
 const temporalAt = projectsSection.indexOf(">Temporal<svg");
 const lavalampAt = projectsSection.indexOf(">Lavalamp<svg");
-if (lavalampAt === -1 || temporalAt === -1 || lavalampAt > temporalAt) {
-  fail("Lavalamp must come before Temporal");
+const openPiAt = projectsSection.indexOf(">OpenPi<svg");
+if (lavalampAt === -1 || temporalAt === -1 || openPiAt === -1 || lavalampAt > temporalAt || temporalAt > openPiAt) {
+  fail("Projects must run Lavalamp, Temporal, then OpenPi");
 }
 if (/lavalamp|meetlavalamp|temporal-buddies/i.test(researchSection)) {
   fail("Temporal and Lavalamp must stay in Projects");
