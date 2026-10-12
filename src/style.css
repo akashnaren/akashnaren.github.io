@@ -180,9 +180,9 @@ h1 {
 
 .page.home .profiles {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.35rem 1.25rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
   margin-top: 0;
   list-style: none;
   min-width: 0;
