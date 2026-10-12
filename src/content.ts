@@ -241,7 +241,7 @@ export const projectLinks: readonly Link[] = [
     label: "Lavalamp",
   },
   {
-    href: "https://seller-hotels-stay-role.trycloudflare.com/",
+    href: "https://waters-join-und-kick.trycloudflare.com/",
     label: "OpenPi",
   },
   {
