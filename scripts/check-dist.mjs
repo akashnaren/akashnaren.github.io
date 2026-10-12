@@ -169,8 +169,6 @@ mustInclude(
     'href="https://seller-hotels-stay-role.trycloudflare.com/"',
     'tabindex="0"',
     'role="tooltip"',
-    'href="https://temporal-buddies5.vercel.app/"',
-    ">Temporal<svg",
     'href="https://meetlavalamp.com"',
     ">Lavalamp<svg",
     'class="ext"',
@@ -252,6 +250,8 @@ mustExclude(
     "I am looking at how to reason over fragmented records",
     "fragmented records",
     "hallucination",
+    "temporal-buddies5.vercel.app",
+    ">Temporal",
     "more coming",
     'class="count"',
     'class="thread-fig"',
@@ -416,8 +416,8 @@ if (researchItems.length !== 2) {
   fail(`research must list the lab and Agent-Native UI, found ${String(researchItems.length)}`);
 }
 const projectItems = projectsSection.match(/<li[\s>]/g) ?? [];
-if (projectItems.length !== 3) {
-  fail(`projects must list Lavalamp, Temporal, and OpenPi, found ${String(projectItems.length)}`);
+if (projectItems.length !== 2) {
+  fail(`projects must list Lavalamp and OpenPi, found ${String(projectItems.length)}`);
 }
 if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
   fail("research and projects must not include blurbs");
@@ -468,32 +468,25 @@ mustIconInside(
   "home",
 );
 if (/Entity Resolution|entity-resolution/.test(projectsSection) || /<p[\s>]/.test(projectsSection) || /paper\.pdf/i.test(projectsSection)) {
-  fail("Projects must show only the Lavalamp, Temporal, and OpenPi links");
+  fail("Projects must show only the Lavalamp and OpenPi links");
 }
 const projectAnchors = projectsSection.match(/<a /g) ?? [];
-if (projectAnchors.length !== 3) {
-  fail(`Projects must show exactly three links, found ${String(projectAnchors.length)}`);
+if (projectAnchors.length !== 2) {
+  fail(`Projects must show exactly two links, found ${String(projectAnchors.length)}`);
 }
-mustIconInside(
-  projectsSection,
-  "https://temporal-buddies5.vercel.app/",
-  "Temporal",
-  "Projects",
-);
 mustIconInside(
   projectsSection,
   "https://meetlavalamp.com",
   "Lavalamp",
   "Projects",
 );
-const temporalAt = projectsSection.indexOf(">Temporal<svg");
 const lavalampAt = projectsSection.indexOf(">Lavalamp<svg");
 const openPiAt = projectsSection.indexOf(">OpenPi<svg");
-if (lavalampAt === -1 || temporalAt === -1 || openPiAt === -1 || lavalampAt > temporalAt || temporalAt > openPiAt) {
-  fail("Projects must run Lavalamp, Temporal, then OpenPi");
+if (lavalampAt === -1 || openPiAt === -1 || lavalampAt > openPiAt) {
+  fail("Projects must run Lavalamp, then OpenPi");
 }
 if (/lavalamp|meetlavalamp|temporal-buddies/i.test(researchSection)) {
-  fail("Temporal and Lavalamp must stay in Projects");
+  fail("Lavalamp must stay in Projects");
 }
 
 mustExclude(
@@ -751,7 +744,7 @@ mustExclude(
 if (readdirSync("dist/assets").some((name) => name.endsWith(".map"))) {
   fail("dist must not ship source maps");
 }
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "sourceMappingURL", "cloudflareinsights"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights"], "js");
 
 const manifest = read("dist/site.webmanifest");
 mustInclude(
