@@ -36,7 +36,7 @@ export const workLines: readonly Paragraph[] = [
   ],
   [
     { href: "https://www.lspace.asu.edu/", label: "NASA L’SPACE" },
-    " — Workforce Program",
+    " — Proposals, Preliminary Design Review",
   ],
 ];
 
