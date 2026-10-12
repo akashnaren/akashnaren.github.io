@@ -235,11 +235,6 @@ export type ListedWork = {
 
 export const researchEntries: readonly ListedWork[] = [
   {
-    id: "openpi",
-    title: "OpenPi",
-    href: "https://seller-hotels-stay-role.trycloudflare.com/",
-  },
-  {
     id: "agent-native-ui",
     title: "Agent-Native UI",
     href: "/research/agent-native-ui/paper.pdf",
@@ -254,6 +249,10 @@ export const projectLinks: readonly Link[] = [
   {
     href: "https://temporal-buddies5.vercel.app/",
     label: "Temporal",
+  },
+  {
+    href: "https://seller-hotels-stay-role.trycloudflare.com/",
+    label: "OpenPi",
   },
 ];
 
