@@ -412,12 +412,15 @@ if ((home.match(/<ul class="roster"/g) ?? []).length !== 1) {
 const researchSection = home.match(/aria-labelledby="research">[\s\S]*?<\/section>/)?.[0] ?? "";
 const projectsSection = home.match(/aria-labelledby="projects">[\s\S]*?<\/section>/)?.[0] ?? "";
 const researchItems = researchSection.match(/<li[\s>]/g) ?? [];
-if (researchItems.length !== 2) {
-  fail(`research must list the lab and Agent-Native UI, found ${String(researchItems.length)}`);
+if (researchItems.length !== 1) {
+  fail(`research must list only the lab, found ${String(researchItems.length)}`);
+}
+if (researchSection.includes("Agent-Native UI") || researchSection.includes("agent-native-ui")) {
+  fail("Agent-Native UI must not be listed under Research");
 }
 const projectItems = projectsSection.match(/<li[\s>]/g) ?? [];
-if (projectItems.length !== 2) {
-  fail(`projects must list Lavalamp and OpenPi, found ${String(projectItems.length)}`);
+if (projectItems.length !== 3) {
+  fail(`projects must list Lavalamp, OpenPi, and Agent-Native UI, found ${String(projectItems.length)}`);
 }
 if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
   fail("research and projects must not include blurbs");
@@ -457,22 +460,29 @@ if (researchSection.includes("OpenPi") || researchSection.includes('data-entry="
 if (home.includes('href="/research/pi-0.2-high/paper.pdf"')) {
   fail("the home page must not link the Pi paper PDF");
 }
-const views = researchSection.match(/<li data-entry="agent-native-ui">[\s\S]*?<\/li>/)?.[0] ?? "";
+const views = projectsSection.match(/<li><a href="\/research\/agent-native-ui\/paper\.pdf"[\s\S]*?<\/li>/)?.[0] ?? "";
 if ((views.match(/<a /g) ?? []).length !== 1 || !views.includes("Agent-Native UI") || views.includes("Structured Views")) {
   fail("Agent-Native UI must be a single PDF link with no blurb");
 }
 mustIconInside(
-  home,
+  projectsSection,
   "/research/agent-native-ui/paper.pdf",
   "Agent-Native UI",
-  "home",
+  "Projects",
 );
-if (/Entity Resolution|entity-resolution/.test(projectsSection) || /<p[\s>]/.test(projectsSection) || /paper\.pdf/i.test(projectsSection)) {
-  fail("Projects must show only the Lavalamp and OpenPi links");
+if (!views.includes('rel="noopener noreferrer"') || !views.includes('target="_blank"')) {
+  fail("Agent-Native UI must open its PDF in a new tab");
+}
+if (/Entity Resolution|entity-resolution/.test(projectsSection) || /<p[\s>]/.test(projectsSection)) {
+  fail("Projects must not include blurbs");
+}
+const projectPdfs = projectsSection.match(/paper\.pdf/gi) ?? [];
+if (projectPdfs.length !== 1) {
+  fail("Projects must link only the Agent-Native UI PDF");
 }
 const projectAnchors = projectsSection.match(/<a /g) ?? [];
-if (projectAnchors.length !== 2) {
-  fail(`Projects must show exactly two links, found ${String(projectAnchors.length)}`);
+if (projectAnchors.length !== 3) {
+  fail(`Projects must show exactly three links, found ${String(projectAnchors.length)}`);
 }
 mustIconInside(
   projectsSection,
@@ -482,8 +492,9 @@ mustIconInside(
 );
 const lavalampAt = projectsSection.indexOf(">Lavalamp<svg");
 const openPiAt = projectsSection.indexOf(">OpenPi<svg");
-if (lavalampAt === -1 || openPiAt === -1 || lavalampAt > openPiAt) {
-  fail("Projects must run Lavalamp, then OpenPi");
+const agentAt = projectsSection.indexOf(">Agent-Native UI<svg");
+if (lavalampAt === -1 || openPiAt === -1 || agentAt === -1 || lavalampAt > openPiAt || openPiAt > agentAt) {
+  fail("Projects must run Lavalamp, OpenPi, then Agent-Native UI");
 }
 if (/lavalamp|meetlavalamp|temporal-buddies/i.test(researchSection)) {
   fail("Lavalamp must stay in Projects");
@@ -741,6 +752,15 @@ mustExclude(
   ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes", "Geist", "color-scheme:dark", "#0a0a0a", ".inbox-address"],
   "css",
 );
+const profilesRule = css.match(/\.page\.home \.profiles\{[^}]*\}/)?.[0] ?? "";
+if (!profilesRule.includes("flex-direction:column") || profilesRule.includes("flex-wrap")) {
+  fail(`profiles must stack one link per row: ${profilesRule}`);
+}
+const profilesList = home.match(/<ul class="profiles">[\s\S]*?<\/ul>/)?.[0] ?? "";
+const profileRows = profilesList.match(/<li>/g) ?? [];
+if (profileRows.length !== 6 || (profilesList.match(/class="contact-mark"/g) ?? []).length !== 6) {
+  fail("profiles must keep six icon links, one list item each");
+}
 if (readdirSync("dist/assets").some((name) => name.endsWith(".map"))) {
   fail("dist must not ship source maps");
 }

@@ -233,13 +233,7 @@ export type ListedWork = {
   readonly links?: readonly Link[];
 };
 
-export const researchEntries: readonly ListedWork[] = [
-  {
-    id: "agent-native-ui",
-    title: "Agent-Native UI",
-    href: "/research/agent-native-ui/paper.pdf",
-  },
-];
+export const researchEntries: readonly ListedWork[] = [];
 
 export const projectLinks: readonly Link[] = [
   {
@@ -249,6 +243,10 @@ export const projectLinks: readonly Link[] = [
   {
     href: "https://seller-hotels-stay-role.trycloudflare.com/",
     label: "OpenPi",
+  },
+  {
+    href: "/research/agent-native-ui/paper.pdf",
+    label: "Agent-Native UI",
   },
 ];
 
