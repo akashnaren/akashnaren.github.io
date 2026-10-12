@@ -247,10 +247,6 @@ export const projectLinks: readonly Link[] = [
     label: "Lavalamp",
   },
   {
-    href: "https://temporal-buddies5.vercel.app/",
-    label: "Temporal",
-  },
-  {
     href: "https://seller-hotels-stay-role.trycloudflare.com/",
     label: "OpenPi",
   },
