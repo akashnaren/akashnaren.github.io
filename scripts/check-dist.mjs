@@ -166,7 +166,7 @@ mustInclude(
     ">OpenPi<svg",
     "Agent-Native UI",
     'href="/research/agent-native-ui/paper.pdf"',
-    'href="https://seller-hotels-stay-role.trycloudflare.com/"',
+    'href="https://waters-join-und-kick.trycloudflare.com/"',
     'tabindex="0"',
     'role="tooltip"',
     'href="https://meetlavalamp.com"',
@@ -438,7 +438,7 @@ mustIconInside(
 if (!lab.includes('rel="noopener noreferrer"') || lab.includes("reactive-flows") || !lab.includes('target="_blank"')) {
   fail("the lab link must open https://asanchez.ucsd.edu/ in a new tab");
 }
-const openPi = projectsSection.match(/<li><a href="https:\/\/seller-hotels-stay-role\.trycloudflare\.com\/"[\s\S]*?<\/li>/)?.[0] ?? "";
+const openPi = projectsSection.match(/<li><a href="https:\/\/waters-join-und-kick\.trycloudflare\.com\/"[\s\S]*?<\/li>/)?.[0] ?? "";
 if ((openPi.match(/<a /g) ?? []).length !== 1) {
   fail("OpenPi must be a single link");
 }
@@ -447,7 +447,7 @@ if (/paper\.pdf|>openpi</.test(openPi)) {
 }
 mustIconInside(
   openPi,
-  "https://seller-hotels-stay-role.trycloudflare.com/",
+  "https://waters-join-und-kick.trycloudflare.com/",
   "OpenPi",
   "OpenPi",
 );
