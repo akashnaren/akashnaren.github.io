@@ -120,8 +120,8 @@ mustInclude(
     '<span class="entry-detail"> — Avionics Networking Test Suite</span>',
     "https://www.lspace.asu.edu/",
     ">NASA L’SPACE</a>",
-    'title="NASA L’SPACE — Workforce Program"',
-    '<span class="entry-detail"> — Workforce Program</span>',
+    'title="NASA L’SPACE — Proposals, Preliminary Design Review"',
+    '<span class="entry-detail"> — Proposals, Preliminary Design Review</span>',
     '<h2 id="research">Research</h2>',
     "Multiscale Flow Physics Lab, UC San Diego",
     'href="https://asanchez.ucsd.edu/"',
@@ -284,7 +284,7 @@ const expectedWork = [
   `<li title="Tesla — Vehicle Service"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — <a href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Vehicle Service${roleIcon}</a></span></li>`,
   `<li title="Tesla — Vehicle Engineering"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — <a href="https://www.tesla.com/AI" target="_blank" rel="noopener noreferrer">Vehicle Engineering${roleIcon}</a></span></li>`,
   '<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — Avionics Networking Test Suite</span></li>',
-  '<li title="NASA L’SPACE — Workforce Program"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — Workforce Program</span></li>',
+  '<li title="NASA L’SPACE — Proposals, Preliminary Design Review"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — Proposals, Preliminary Design Review</span></li>',
 ];
 for (const [index, row] of expectedWork.entries()) {
   if (workRows[index] !== row) fail(`work row ${String(index + 1)} must keep the dash layout: ${row}`);
