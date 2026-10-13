@@ -32,11 +32,19 @@ export const workLines: readonly Paragraph[] = [
   ],
   [
     { href: "https://www.rtx.com/raytheon", label: "Raytheon" },
-    " — Avionics Networking Test Suite",
+    " — ",
+    {
+      href: "https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/",
+      label: "Avionics Networking Test Suite",
+    },
   ],
   [
     { href: "https://www.lspace.asu.edu/", label: "NASA L’SPACE" },
-    " — Proposals, Preliminary Design Review",
+    " — ",
+    {
+      href: "https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing",
+      label: "Proposals, Preliminary Design Review",
+    },
   ],
 ];
 

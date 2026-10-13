@@ -115,11 +115,13 @@ mustInclude(
     "https://www.rtx.com/raytheon",
     ">Raytheon</a>",
     'title="Raytheon — Avionics Networking Test Suite"',
-    '<span class="entry-detail"> — Avionics Networking Test Suite</span>',
+    '<span class="entry-detail"> — <a href="https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/" target="_blank" rel="noopener noreferrer">Avionics Networking Test Suite<svg class="ext"',
+    "https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/",
     "https://www.lspace.asu.edu/",
     ">NASA L’SPACE</a>",
     'title="NASA L’SPACE — Proposals, Preliminary Design Review"',
-    '<span class="entry-detail"> — Proposals, Preliminary Design Review</span>',
+    '<span class="entry-detail"> — <a href="https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing" target="_blank" rel="noopener noreferrer">Proposals, Preliminary Design Review<svg class="ext"',
+    "https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing",
     '<h2 id="research">Research</h2>',
     "Multiscale Flow Physics Lab, UC San Diego",
     'href="https://asanchez.ucsd.edu/"',
@@ -283,17 +285,29 @@ const roleIcon = `<svg class="ext" viewBox="0 0 12 12" width="12" height="12" ar
 const expectedWork = [
   `<li title="Tesla — Vehicle Service"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — <a href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Vehicle Service${roleIcon}</a></span></li>`,
   `<li title="Tesla — Vehicle Engineering"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — <a href="https://www.tesla.com/AI" target="_blank" rel="noopener noreferrer">Vehicle Engineering${roleIcon}</a></span></li>`,
-  '<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — Avionics Networking Test Suite</span></li>',
-  '<li title="NASA L’SPACE — Proposals, Preliminary Design Review"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — Proposals, Preliminary Design Review</span></li>',
+  `<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — <a href="https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/" target="_blank" rel="noopener noreferrer">Avionics Networking Test Suite${roleIcon}</a></span></li>`,
+  `<li title="NASA L’SPACE — Proposals, Preliminary Design Review"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — <a href="https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing" target="_blank" rel="noopener noreferrer">Proposals, Preliminary Design Review${roleIcon}</a></span></li>`,
 ];
 for (const [index, row] of expectedWork.entries()) {
   if (workRows[index] !== row) fail(`work row ${String(index + 1)} must keep the dash layout: ${row}`);
 }
-if ((workSection.match(/<a /g) ?? []).length !== 6) {
-  fail("work rows must link Tesla, Vehicle Service, Tesla, Vehicle Engineering, Raytheon, and NASA L’SPACE");
+if ((workSection.match(/<a /g) ?? []).length !== 8) {
+  fail("work rows must link Tesla, Vehicle Service, Tesla, Vehicle Engineering, Raytheon, Avionics Networking Test Suite, NASA L’SPACE, and Proposals, Preliminary Design Review");
 }
 mustIconInside(workSection, "https://service.tesla.com/en-US/", "Vehicle Service", "Vehicle Service");
 mustIconInside(workSection, "https://www.tesla.com/AI", "Vehicle Engineering", "Vehicle Engineering");
+mustIconInside(
+  workSection,
+  "https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/",
+  "Avionics Networking Test Suite",
+  "Avionics Networking Test Suite",
+);
+mustIconInside(
+  workSection,
+  "https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing",
+  "Proposals, Preliminary Design Review",
+  "Proposals, Preliminary Design Review",
+);
 if (workSection.includes("Project Engineer")) fail("NASA L’SPACE work row must not use the title");
 function sameTabHref(href) {
   if (href.startsWith("#")) return true;
