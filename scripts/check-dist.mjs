@@ -74,6 +74,13 @@ const researchLeakNeedles = leakNeedles.filter(
   (needle) => !(needle instanceof RegExp && needle.source === "raspberry pi"),
 );
 
+/** Home may name the OpenPi detail, and no other Raspberry Pi copy. */
+const homeLeakNeedles = leakNeedles.map((needle) =>
+  needle instanceof RegExp && needle.source === "raspberry pi"
+    ? /raspberry pi(?! distributed inference)/i
+    : needle,
+);
+
 const home = read("dist/index.html");
 const research = read("dist/research/index.html");
 const essay = read("dist/research/agent-native-ui/index.html");
@@ -127,7 +134,7 @@ mustInclude(
     '<h2 id="research">Research</h2>',
     "Multiscale Flow Physics Lab, UC San Diego",
     'href="https://asanchez.ucsd.edu/"',
-    ">Multiscale Flow Physics Lab, UC San Diego<svg",
+    ">Multiscale Flow Physics Lab, UC San Diego</a>",
     '<span class="entry-detail"> — <a href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Research<svg class="ext"',
     'href="/fire-whirls-poster.jpg"',
     '<h2 id="profiles">Profiles</h2>',
@@ -162,12 +169,15 @@ mustInclude(
     'class="foot home-foot"',
     'class="layout"',
     "<h2 id=\"projects\">Projects</h2>",
-    ">OpenPi<svg",
+    ">OpenPi</a>",
     "Agent-Native UI",
     'href="/research/agent-native-ui/paper.pdf"',
     'href="https://waters-join-und-kick.trycloudflare.com/"',
     'href="https://meetlavalamp.com"',
-    ">Lavalamp<svg",
+    ">Lavalamp</a>",
+    "Network Intelligence Platform",
+    "Raspberry Pi Distributed Inference",
+    "Interfaces for Computer-Use Agents",
     'class="ext"',
     'rel="noopener noreferrer"',
     'name="color-scheme" content="light"',
@@ -179,7 +189,7 @@ mustInclude(
 mustExclude(
   home,
   [
-    ...leakNeedles,
+    ...homeLeakNeedles,
     'class="sky"',
     'class="system"',
     "orbit-spin",
@@ -279,8 +289,8 @@ if (!/<a href="https:\/\/x\.ai\/bot" target="_blank" rel="noopener noreferrer">G
 if (home.includes('href="/bot"') || home.includes('href="/research"') || home.includes('href="#bot"')) {
   fail("home must link the footer to https://x.ai/bot and inline research, not the old routes");
 }
-if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE)<svg class="ext"/.test(home)) {
-  fail("biography links must stay unmarked");
+if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego|Lavalamp|OpenPi|Agent-Native UI)<svg class="ext"/.test(home)) {
+  fail("name links must stay unmarked");
 }
 const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
 const workRows = [...workSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => match[0]);
@@ -383,36 +393,33 @@ if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
   fail("research and projects must not include blurbs");
 }
 const lab = researchSection.match(/<li>[\s\S]*?<\/li>/)?.[0] ?? "";
-const expectedLab = `<li><a href="https://asanchez.ucsd.edu/" target="_blank" rel="noopener noreferrer">Multiscale Flow Physics Lab, UC San Diego${roleIcon}</a><span class="entry-detail"> — <a href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Research${roleIcon}</a></span></li>`;
+const expectedLab = `<li><a href="https://asanchez.ucsd.edu/" target="_blank" rel="noopener noreferrer">Multiscale Flow Physics Lab, UC San Diego</a><span class="entry-detail"> — <a href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Research${roleIcon}</a></span></li>`;
 if (lab !== expectedLab) {
   fail(`research lab row must keep the lab link and add a Research detail: ${expectedLab}`);
 }
 if ((lab.match(/<a /g) ?? []).length !== 2) {
   fail("the lab line must link the lab and Research");
 }
-mustIconInside(
-  lab,
-  "https://asanchez.ucsd.edu/",
-  "Multiscale Flow Physics Lab, UC San Diego",
-  "lab",
-);
 mustIconInside(lab, "/fire-whirls-poster.jpg", "Research", "lab poster");
 if (!lab.includes('rel="noopener noreferrer"') || lab.includes("reactive-flows") || !lab.includes('target="_blank"')) {
   fail("the lab link must open https://asanchez.ucsd.edu/ in a new tab");
 }
-const openPi = projectsSection.match(/<li><a href="https:\/\/waters-join-und-kick\.trycloudflare\.com\/"[\s\S]*?<\/li>/)?.[0] ?? "";
+const projectRows = [...projectsSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => match[0]);
+const expectedProjects = [
+  `<li title="Lavalamp — Network Intelligence Platform"><span class="entry-name"><a href="https://meetlavalamp.com" target="_blank" rel="noopener noreferrer">Lavalamp</a></span><span class="entry-detail"> — Network Intelligence Platform</span></li>`,
+  `<li title="OpenPi — Raspberry Pi Distributed Inference"><span class="entry-name"><a href="https://waters-join-und-kick.trycloudflare.com/" target="_blank" rel="noopener noreferrer">OpenPi</a></span><span class="entry-detail"> — Raspberry Pi Distributed Inference</span></li>`,
+  `<li title="Agent-Native UI — Interfaces for Computer-Use Agents"><span class="entry-name"><a href="/research/agent-native-ui/paper.pdf" target="_blank" rel="noopener noreferrer">Agent-Native UI</a></span><span class="entry-detail"> — Interfaces for Computer-Use Agents</span></li>`,
+];
+for (const [index, row] of expectedProjects.entries()) {
+  if (projectRows[index] !== row) fail(`project row ${String(index + 1)} must keep the dash layout: ${row}`);
+}
+const openPi = projectRows[1] ?? "";
 if ((openPi.match(/<a /g) ?? []).length !== 1) {
   fail("OpenPi must be a single link");
 }
 if (/paper\.pdf|>openpi</.test(openPi)) {
   fail("OpenPi must not keep a PDF link or a separate openpi link");
 }
-mustIconInside(
-  openPi,
-  "https://waters-join-und-kick.trycloudflare.com/",
-  "OpenPi",
-  "OpenPi",
-);
 if (!openPi.includes('rel="noopener noreferrer"') || !openPi.includes('target="_blank"')) {
   fail("OpenPi must open in a new tab");
 }
@@ -422,16 +429,10 @@ if (researchSection.includes("OpenPi") || researchSection.includes('data-entry="
 if (home.includes('href="/research/pi-0.2-high/paper.pdf"')) {
   fail("the home page must not link the Pi paper PDF");
 }
-const views = projectsSection.match(/<li><a href="\/research\/agent-native-ui\/paper\.pdf"[\s\S]*?<\/li>/)?.[0] ?? "";
+const views = projectRows[2] ?? "";
 if ((views.match(/<a /g) ?? []).length !== 1 || !views.includes("Agent-Native UI") || views.includes("Structured Views")) {
   fail("Agent-Native UI must be a single PDF link with no blurb");
 }
-mustIconInside(
-  projectsSection,
-  "/research/agent-native-ui/paper.pdf",
-  "Agent-Native UI",
-  "Projects",
-);
 if (!views.includes('rel="noopener noreferrer"') || !views.includes('target="_blank"')) {
   fail("Agent-Native UI must open its PDF in a new tab");
 }
@@ -446,15 +447,9 @@ const projectAnchors = projectsSection.match(/<a /g) ?? [];
 if (projectAnchors.length !== 3) {
   fail(`Projects must show exactly three links, found ${String(projectAnchors.length)}`);
 }
-mustIconInside(
-  projectsSection,
-  "https://meetlavalamp.com",
-  "Lavalamp",
-  "Projects",
-);
-const lavalampAt = projectsSection.indexOf(">Lavalamp<svg");
-const openPiAt = projectsSection.indexOf(">OpenPi<svg");
-const agentAt = projectsSection.indexOf(">Agent-Native UI<svg");
+const lavalampAt = projectsSection.indexOf(">Lavalamp</a>");
+const openPiAt = projectsSection.indexOf(">OpenPi</a>");
+const agentAt = projectsSection.indexOf(">Agent-Native UI</a>");
 if (lavalampAt === -1 || openPiAt === -1 || agentAt === -1 || lavalampAt > openPiAt || openPiAt > agentAt) {
   fail("Projects must run Lavalamp, OpenPi, then Agent-Native UI");
 }

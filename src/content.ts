@@ -124,19 +124,19 @@ export type ListedWork = {
 
 export const researchEntries: readonly ListedWork[] = [];
 
-export const projectLinks: readonly Link[] = [
-  {
-    href: "https://meetlavalamp.com",
-    label: "Lavalamp",
-  },
-  {
-    href: "https://waters-join-und-kick.trycloudflare.com/",
-    label: "OpenPi",
-  },
-  {
-    href: "/research/agent-native-ui/paper.pdf",
-    label: "Agent-Native UI",
-  },
+export const projectLinks: readonly Paragraph[] = [
+  [
+    { href: "https://meetlavalamp.com", label: "Lavalamp" },
+    " — Network Intelligence Platform",
+  ],
+  [
+    { href: "https://waters-join-und-kick.trycloudflare.com/", label: "OpenPi" },
+    " — Raspberry Pi Distributed Inference",
+  ],
+  [
+    { href: "/research/agent-native-ui/paper.pdf", label: "Agent-Native UI" },
+    " — Interfaces for Computer-Use Agents",
+  ],
 ];
 
 /** Small footer cue on the landing page. */
