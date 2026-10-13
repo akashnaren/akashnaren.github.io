@@ -4,7 +4,6 @@ import { defineConfig } from "vite";
 import { piPaperHref, piPaperTitle } from "./src/content.ts";
 import {
   applyPageMeta,
-  botMeta,
   ensureCsp,
   essayRedirectHtml,
   homeMeta,
@@ -18,7 +17,6 @@ import {
 const holderPattern = /<div id="holder"><\/div>/;
 
 function rewritePageIndex(req: { url?: string }): void {
-  if (req.url === "/bot") req.url = "/bot/";
   if (req.url === "/research") req.url = "/research/";
   if (req.url === "/research/agent-native-ui") req.url = "/research/agent-native-ui/";
   if (req.url === "/research/pi-0.2-high") req.url = "/research/pi-0.2-high/";
@@ -60,11 +58,6 @@ export default defineConfig({
         }
         const home = ensureCsp(applyPageMeta(readFileSync(distHtml, "utf8"), homeMeta));
         writeFileSync(distHtml, home);
-        mkdirSync(resolve("dist/bot"), { recursive: true });
-        writeFileSync(
-          resolve("dist/bot/index.html"),
-          sectionRedirectHtml("/#bot", botMeta.title, botMeta.description),
-        );
         mkdirSync(resolve("dist/research"), { recursive: true });
         writeFileSync(
           resolve("dist/research/index.html"),

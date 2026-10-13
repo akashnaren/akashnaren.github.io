@@ -19,8 +19,8 @@ npm test
 
 ## Layout
 
-- `src/` holds the copy, the landing page, and the styles. Work, research, profiles, mail, and the personal agents collection render on that one page. `/research` and `/bot` redirect to `/#research` and `/#bot`.
-- `public/` holds the favicon, fleet faces, marks, and research PDFs. Vite copies it into the build.
-- `scripts/publish-pages.mjs` copies `dist/` onto the repo root (`index.html`, `/bot`, `/research`, hashed `/assets`) so Pages can serve the files.
+- `src/` holds the copy, the landing page, and the styles. Work, research, projects, profiles, and mail render on that one page. `/research` redirects to `/#research`.
+- `public/` holds the favicon, marks, and research PDFs. Vite copies it into the build.
+- `scripts/publish-pages.mjs` copies `dist/` onto the repo root (`index.html`, `/research`, hashed `/assets`) so Pages can serve the files.
 
 GitHub Actions builds on push to `main` and deploys `dist/`.

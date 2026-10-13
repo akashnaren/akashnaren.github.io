@@ -75,7 +75,6 @@ const researchLeakNeedles = leakNeedles.filter(
 );
 
 const home = read("dist/index.html");
-const bot = read("dist/bot/index.html");
 const research = read("dist/research/index.html");
 const essay = read("dist/research/agent-native-ui/index.html");
 const piPaperPage = read("dist/research/pi-0.2-high/index.html");
@@ -83,7 +82,6 @@ const spa = read("dist/404.html");
 
 for (const [dist, root] of [
   ["dist/index.html", "index.html"],
-  ["dist/bot/index.html", "bot/index.html"],
   ["dist/research/index.html", "research/index.html"],
   ["dist/research/agent-native-ui/index.html", "research/agent-native-ui/index.html"],
   ["dist/research/pi-0.2-high/index.html", "research/pi-0.2-high/index.html"],
@@ -135,7 +133,7 @@ mustInclude(
     ">Kaggle</span>",
     '<h2 id="mail">Mail</h2>',
     "Managed by ",
-    'href="#bot">Grok Bot</a>',
+    'href="https://x.ai/bot" target="_blank" rel="noopener noreferrer">Grok Bot</a>',
     '<meta name="description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
     '<meta property="og:description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
     '<meta name="twitter:description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
@@ -154,21 +152,14 @@ mustInclude(
     "akashnaren@mail.grokbot.com",
     "bots' inbox",
     "the agents' inbox — not his personal Gmail",
-    'href="#bot"',
     'class="managed-copy"',
     'class="foot home-foot"',
     'class="layout"',
-    'class="collection"',
-    'class="roster"',
-    'id="bot"',
-    "<h2 id=\"bot\">personal agents collection</h2>",
     "<h2 id=\"projects\">Projects</h2>",
     ">OpenPi<svg",
     "Agent-Native UI",
     'href="/research/agent-native-ui/paper.pdf"',
     'href="https://waters-join-und-kick.trycloudflare.com/"',
-    'tabindex="0"',
-    'role="tooltip"',
     'href="https://meetlavalamp.com"',
     ">Lavalamp<svg",
     'class="ext"',
@@ -260,6 +251,15 @@ mustExclude(
     "exploring",
     "drafting",
     /\b(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|\d+)\s+grok bots\b/i,
+    'class="collection"',
+    'class="roster"',
+    'class="row"',
+    'id="bot"',
+    'href="#bot"',
+    "personal agents collection",
+    "data-seat=",
+    "/fleet/",
+    'role="tooltip"',
   ],
   "home",
 );
@@ -267,11 +267,11 @@ mustExclude(
 if (!home.includes("by grok") && !home.includes("by <a")) {
   fail("home must keep a real space before grok bot");
 }
-if (!/<a href="#bot">Grok Bot<\/a>/.test(home)) {
-  fail("home footer must link Grok Bot to #bot");
+if (!/<a href="https:\/\/x\.ai\/bot" target="_blank" rel="noopener noreferrer">Grok Bot<\/a>/.test(home)) {
+  fail("home footer must link Grok Bot to https://x.ai/bot in a new tab");
 }
-if (home.includes('href="/bot"') || home.includes('href="/research"')) {
-  fail("home must link the footer to #bot and inline research, not the old routes");
+if (home.includes('href="/bot"') || home.includes('href="/research"') || home.includes('href="#bot"')) {
+  fail("home must link the footer to https://x.ai/bot and inline research, not the old routes");
 }
 if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE)<svg class="ext"/.test(home)) {
   fail("biography links must stay unmarked");
@@ -298,7 +298,7 @@ if (workSection.includes("Project Engineer")) fail("NASA L’SPACE work row must
 function sameTabHref(href) {
   if (href.startsWith("#")) return true;
   const path = href.split(/[?#]/, 1)[0] ?? "";
-  return path === "/bot" || path === "/bot/" || path === "/research" || path === "/research/";
+  return path === "/research" || path === "/research/";
 }
 
 const homeAnchors = [...home.matchAll(/<a\b([^>]*)>/g)];
@@ -322,22 +322,18 @@ const homeSections = home.match(/<section class="section"/g) ?? [];
 if (homeSections.length !== 5) {
   fail(`home must have Work, Research, Projects, Profiles, and Mail sections, found ${String(homeSections.length)}`);
 }
-const sectionOrder = ["work", "research", "projects", "profiles", "mail", "bot"].map((id) => home.indexOf(`id="${id}"`));
+const sectionOrder = ["work", "research", "projects", "profiles", "mail"].map((id) => home.indexOf(`id="${id}"`));
 if (sectionOrder.some((at) => at < 0) || sectionOrder.some((at, i) => i > 0 && at < sectionOrder[i - 1])) {
-  fail("home sections must run Work, Research, Projects, Profiles, Mail, then the bot collection");
+  fail("home sections must run Work, Research, Projects, Profiles, then Mail");
 }
 const mainEnd = home.indexOf("</main>");
-const botAt = home.indexOf('id="bot"');
 const footAt = home.indexOf('class="foot home-foot"');
-if (mainEnd < 0 || botAt < mainEnd) {
-  fail("the bot collection must follow the main column");
+if (mainEnd < 0 || footAt < mainEnd) {
+  fail("the Managed by line must follow the main column");
 }
 const mainHtml = home.slice(home.indexOf("<main"), mainEnd);
-if (mainHtml.includes('class="foot home-foot"') || mainHtml.includes("Managed by ")) {
-  fail("the Managed by line must sit after the roster in source order");
-}
-if (footAt < botAt) {
-  fail("the Managed by line must follow the personal agents collection");
+if (mainHtml.includes('class="foot home-foot"') || mainHtml.includes("Managed by ") || mainHtml.includes('class="collection"')) {
+  fail("the Managed by line must sit in the footer after the main column");
 }
 const homeHeader = home.match(/<header>[\s\S]*?<\/header>/)?.[0] ?? "";
 if (/managed|Grok Bot|grok bot/i.test(homeHeader)) {
@@ -351,63 +347,6 @@ if (!home.includes('class="foot home-foot"') || !/class="foot home-foot"[\s\S]*M
 }
 if (!/\/assets\/index-[^"]+\.js/.test(home)) fail("home must reference hashed /assets/index-*.js");
 if (home.includes("/src/main.ts")) fail("built home must not be the Vite shell");
-
-const seats = [
-  ["profile-lead", "profile lead", "i keep his profiles and ship this site."],
-  ["software-engineer", "software engineer", "i ship quiet diffs that compile clean."],
-  ["research-engineer", "research engineer", "i read the papers that matter."],
-  ["chief-executive-officer", "chief executive officer", "i keep the work moving."],
-  ["executive-secretary", "executive secretary", "i keep the notes in order."],
-  ["chief-financial-officer", "chief financial officer", "i stay even."],
-  ["finance-engineer", "finance engineer", "i check the math twice."],
-  ["product-engineer", "product engineer", "i file what ships."],
-  ["chief-technical-officer", "chief technical officer", "i build grok bots like these."],
-  ["integration-engineer", "integration engineer", "i wrap apis into quiet plugins."],
-  ["imagine-engineer", "imagine engineer", "i turn big ideas into something you can build."],
-  ["social-lead", "social lead", "i find the events worth showing up for."],
-  ["storage-engineer", "storage engineer", "i keep the disk honest."],
-  ["triage-engineer", "triage engineer", "i sort what lands first."],
-];
-
-mustInclude(
-  home,
-  [
-    ...seats.flatMap(([id, name, blurb]) => [
-      `data-seat="${id}"`,
-      `data-name="${name}"`,
-      `aria-label="${name}"`,
-      `aria-describedby="tip-${id}"`,
-      `id="tip-${id}" role="tooltip">${blurb}</span>`,
-      `>${name}</span>`,
-    ]),
-    ...Array.from({ length: 14 }, (_, i) => `src="/fleet/${String(i + 1).padStart(2, "0")}.png"`),
-  ],
-  "home roster",
-);
-
-const roster = home.match(/<ul class="roster">[\s\S]*?<\/ul>/)?.[0] ?? "";
-const rowCount = (roster.match(/<li class="row"/g) ?? []).length;
-if (rowCount !== 14) fail(`home roster must list fourteen seats, found ${String(rowCount)}`);
-if ((roster.match(/tabindex="0"/g) ?? []).length !== 14) {
-  fail("every seat must be keyboard focusable");
-}
-if ((roster.match(/role="tooltip"/g) ?? []).length !== 14) {
-  fail("every seat blurb must live in a tooltip");
-}
-if (roster.includes('class="row-blurb"')) {
-  fail("seat blurbs must not render as a visible sub-line");
-}
-const firstRow = roster.match(/<li class="row"[\s\S]*?<\/li>/)?.[0] ?? "";
-if (!firstRow.includes('data-seat="profile-lead"') || !firstRow.includes(">profile lead</span>")) {
-  fail("the host seat must be profile lead");
-}
-if (!firstRow.includes('role="tooltip">i keep his profiles and ship this site.</span>')) {
-  fail("the host seat tooltip must keep its blurb");
-}
-if (/>secretary</.test(home)) fail("the notes seat is executive secretary");
-if ((home.match(/<ul class="roster"/g) ?? []).length !== 1) {
-  fail("home must have one bot roster");
-}
 
 const researchSection = home.match(/aria-labelledby="research">[\s\S]*?<\/section>/)?.[0] ?? "";
 const projectsSection = home.match(/aria-labelledby="projects">[\s\S]*?<\/section>/)?.[0] ?? "";
@@ -550,51 +489,6 @@ function mustBeSectionRedirect(page, href, title, description, label) {
 }
 
 mustBeSectionRedirect(
-  bot,
-  "/#bot",
-  "personal agents collection · Akash Premkumar",
-  "The personal agents collection behind akashnaren.github.io.",
-  "bot redirect",
-);
-mustExclude(
-  bot,
-  [
-    ...leakNeedles,
-    "Tesla",
-    "tesla.com",
-    "Redwood City",
-    "Raytheon",
-    "Ten grok bots. A quiet collection.",
-    "ten grok bots",
-    "fourteen grok bots",
-    "Fourteen grok bots",
-    "more coming",
-    'class="count"',
-    /\b(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|\d+)\s+grok bots\b/i,
-    "Job Assistant",
-    "New Bot",
-    "All Hands",
-    "Application Team",
-    "Finance Team",
-    "Executive Team",
-    "Operations Team",
-    "Social Team",
-    "desk",
-    "glass",
-    "models",
-    'class="sky"',
-    "akashnaren@gmail.com",
-    "noindex",
-    'class="rack"',
-    "Pi 0.2 High",
-    "data-seat=",
-    "profile lead",
-    "grok bot collection",
-  ],
-  "bot redirect",
-);
-
-mustBeSectionRedirect(
   research,
   "/#research",
   "Research · Akash Premkumar",
@@ -677,7 +571,6 @@ mustExclude(piPaperPage, researchLeakNeedles, "pi paper redirect");
 
 for (const [page, label] of [
   [home, "home"],
-  [bot, "bot"],
   [research, "research"],
   [essay, "essay redirect"],
   [piPaperPage, "pi paper redirect"],
@@ -704,7 +597,6 @@ function assertNoInlineScripts(page, label) {
 
 for (const [page, label] of [
   [home, "home"],
-  [bot, "bot"],
   [research, "research"],
   [essay, "essay redirect"],
   [piPaperPage, "pi paper redirect"],
@@ -738,18 +630,36 @@ mustInclude(
     "color-scheme:light",
     "overflow-x:hidden",
     "Charter",
-    "position:sticky",
-    ".home-foot{grid-column:1}",
-    ".row-tip",
-    ".row:hover .row-tip",
-    ".row:focus .row-tip",
-    ".row.is-open .row-tip",
+    ".page.home .layout{width:100%;max-width:calc(var(--text-col) + 2 * var(--pad-x))",
   ],
   "css",
 );
 mustExclude(
   css,
-  ["orbit-spin", ".sky", "grok-glance", "fleet-idle", "scope-sweep", "essay-pdf", "essay-back", ".page.essay", ".rack", "live-pulse", "@keyframes", "Geist", "color-scheme:dark", "#0a0a0a", ".inbox-address"],
+  [
+    "orbit-spin",
+    ".sky",
+    "grok-glance",
+    "fleet-idle",
+    "scope-sweep",
+    "essay-pdf",
+    "essay-back",
+    ".page.essay",
+    ".rack",
+    "live-pulse",
+    "@keyframes",
+    "Geist",
+    "color-scheme:dark",
+    "#0a0a0a",
+    ".inbox-address",
+    ".collection",
+    ".roster",
+    ".row-tip",
+    "position:sticky",
+    "--side-col",
+    "--page-max",
+    ".home-foot{grid-column:1}",
+  ],
   "css",
 );
 const profilesRule = css.match(/\.page\.home \.profiles\{[^}]*\}/)?.[0] ?? "";
@@ -764,7 +674,7 @@ if (profileRows.length !== 6 || (profilesList.match(/class="contact-mark"/g) ?? 
 if (readdirSync("dist/assets").some((name) => name.endsWith(".map"))) {
   fail("dist must not ship source maps");
 }
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights", "personal agents collection", "profile lead", "/fleet/", 'class="collection"', "data-seat"], "js");
 
 const manifest = read("dist/site.webmanifest");
 mustInclude(
@@ -805,6 +715,11 @@ for (const path of [
   "research/fishbowl",
   "scripts/build-fishbowl-paper.py",
   "scripts/fishbowl-manuscript.pdf",
+  "bot/index.html",
+  "dist/bot",
+  "public/fleet",
+  "fleet",
+  "dist/fleet",
 ]) {
   if (existsSync(path)) fail(`removed path still present: ${path}`);
 }
@@ -872,14 +787,13 @@ mustInclude(
   robots,
   [
     "Allow: /",
-    "Allow: /bot/",
     "Allow: /research/",
     "Allow: /assets/",
     "Sitemap: https://akashnaren.github.io/sitemap.xml",
   ],
   "robots.txt",
 );
-mustExclude(robots, [/fishbowl/i, "Disallow: /research/fishbowl"], "robots.txt");
+mustExclude(robots, [/fishbowl/i, "Disallow: /research/fishbowl", "Allow: /bot/", "Allow: /fleet/"], "robots.txt");
 
 const sitemap = read("dist/sitemap.xml");
 if (!sitemap.startsWith("<?xml")) fail("sitemap.xml must be XML");
@@ -891,7 +805,6 @@ mustInclude(
   [
     'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
     "<loc>https://akashnaren.github.io/</loc>",
-    "<loc>https://akashnaren.github.io/bot/</loc>",
     "<loc>https://akashnaren.github.io/research/</loc>",
     "<loc>https://akashnaren.github.io/research/pi-0.2-high/paper.pdf</loc>",
     "<loc>https://akashnaren.github.io/research/agent-native-ui/paper.pdf</loc>",
@@ -900,7 +813,7 @@ mustInclude(
 );
 mustExclude(
   sitemap,
-  ["fishbowl", "status.json", "/research/rack", "ARC-AGI", "fragmented records", "hallucination", "Raspberry Pi Inference Mesh", "Structured Views for Agent-Native UIs", "Entity Resolution", "reactive-flows"],
+  ["fishbowl", "status.json", "/research/rack", "ARC-AGI", "fragmented records", "hallucination", "Raspberry Pi Inference Mesh", "Structured Views for Agent-Native UIs", "Entity Resolution", "reactive-flows", "https://akashnaren.github.io/bot/"],
   "sitemap.xml",
 );
 
