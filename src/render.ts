@@ -1,9 +1,5 @@
 import {
   agentInbox,
-  botDescription,
-  botTitle,
-  botUrl,
-  collectionTitle,
   contact,
   description,
   homeManagedBy,
@@ -24,13 +20,11 @@ import {
   themeColor,
   workHeading,
   workLines,
-  seats,
   url,
   type Contact,
   type ListedWork,
   type Paragraph,
   type Phrase,
-  type Seat,
 } from "./content.ts";
 import { paperHref, paperTitle } from "./article.ts";
 
@@ -48,12 +42,6 @@ export const homeMeta: PageMeta = {
   description,
   url,
   themeColor,
-};
-
-export const botMeta: PageMeta = {
-  title: botTitle,
-  description: botDescription,
-  url: botUrl,
 };
 
 export const researchMeta: PageMeta = {
@@ -99,10 +87,10 @@ function renderLinkIcon(): string {
 
 function isSitePageHref(href: string): boolean {
   const path = href.split(/[?#]/, 1)[0] ?? "";
-  return path === "/bot" || path === "/bot/" || path === researchPath || path === `${researchPath}/`;
+  return path === researchPath || path === `${researchPath}/`;
 }
 
-/** In-page anchors and the old /bot and /research redirects stay in this tab. */
+/** In-page anchors and the /research redirect stay in this tab. */
 function keepsSameTab(href: string): boolean {
   return href.startsWith("#") || isSitePageHref(href);
 }
@@ -243,14 +231,6 @@ function renderProjectsSection(): string {
   return renderNamedList("projects", projectsHeading, items);
 }
 
-function renderCollection(): string {
-  const rows = seats.map(renderRow).join("");
-  return `<aside class="collection" aria-labelledby="bot">
-        <h2 id="bot">${escapeHtml(collectionTitle)}</h2>
-        <ul class="roster">${rows}</ul>
-      </aside>`;
-}
-
 export function renderSite(): string {
   return `<div class="page home" id="holder">
     <div class="layout">
@@ -264,17 +244,11 @@ export function renderSite(): string {
         ${renderProfiles()}
         ${renderMail()}
       </main>
-      ${renderCollection()}
       <footer class="foot home-foot">
         ${renderManagedBy(homeManagedBy)}
       </footer>
     </div>
   </div>`;
-}
-
-function renderRow(seat: Seat): string {
-  const tipId = `tip-${seat.id}`;
-  return `<li class="row" tabindex="0" data-seat="${escapeHtml(seat.id)}" data-name="${escapeHtml(seat.name)}" aria-label="${escapeHtml(seat.name)}" aria-describedby="${escapeHtml(tipId)}"><img class="row-face" src="${escapeHtml(seat.face)}" alt="" width="36" height="36" decoding="async" /><span class="row-name">${escapeHtml(seat.name)}</span><span class="row-tip" id="${escapeHtml(tipId)}" role="tooltip">${escapeHtml(seat.blurb)}</span></li>`;
 }
 
 export function sectionRedirectHtml(href: string, title: string, description: string): string {

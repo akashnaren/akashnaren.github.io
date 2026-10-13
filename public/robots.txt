@@ -1,9 +1,7 @@
 User-agent: *
 Allow: /
-Allow: /bot/
 Allow: /research/
 Allow: /assets/
 Allow: /marks/
-Allow: /fleet/
 
 Sitemap: https://akashnaren.github.io/sitemap.xml

@@ -14,7 +14,7 @@ function findHtml(dir) {
   for (const name of readdirSync(dir)) {
     const path = join(dir, name);
     if (statSync(path).isDirectory()) {
-      if (name === "assets" || name === "fleet" || name === "marks") continue;
+      if (name === "assets" || name === "marks") continue;
       const nested = findHtml(path);
       if (nested) return nested;
     } else if (name.endsWith(".html")) {
@@ -47,10 +47,10 @@ function syncDir(from, to) {
 }
 
 syncDir("dist/assets", "assets");
-syncDir("dist/fleet", "fleet");
 syncDir("dist/marks", "marks");
-syncDir("dist/bot", "bot");
 syncDir("dist/research", "research");
+rmSync("bot", { recursive: true, force: true });
+rmSync("fleet", { recursive: true, force: true });
 
 for (const file of [
   "favicon.svg",
@@ -81,7 +81,8 @@ if (html.includes("/src/main.ts")) {
 }
 
 if (
-  !existsSync("bot/index.html") ||
+  existsSync("bot/index.html") ||
+  existsSync("fleet") ||
   !existsSync("research/index.html") ||
   !existsSync("research/agent-native-ui/index.html") ||
   !existsSync("research/pi-0.2-high/index.html") ||
@@ -91,11 +92,11 @@ if (
   !existsSync("sitemap.xml")
 ) {
   console.error(
-    "publish-pages: bot/index.html, research/index.html, research/agent-native-ui/index.html, research/pi-0.2-high/index.html, research/pi-0.2-high/paper.pdf, 404.html, robots.txt, or sitemap.xml missing at repo root",
+    "publish-pages: research/index.html, research/agent-native-ui/index.html, research/pi-0.2-high/index.html, research/pi-0.2-high/paper.pdf, 404.html, robots.txt, or sitemap.xml missing at repo root, or a removed /bot or /fleet path is still present",
   );
   process.exit(1);
 }
 
 console.log(
-  "published dist to repo root for Files Pages (hashed assets, /bot roster, /research list, agent-native PDF redirect, Pi 0.2 High PDF, 404 fallback).",
+  "published dist to repo root for Files Pages (hashed assets, /research list, agent-native PDF redirect, Pi 0.2 High PDF, 404 fallback).",
 );
