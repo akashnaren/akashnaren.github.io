@@ -196,7 +196,7 @@ function renderMail(): string {
 function renderDocLink(href: string, label: string): string {
   const external = /^https?:\/\//i.test(href);
   const existingRel = external ? "noopener noreferrer" : "";
-  const icon = external || /\.pdf(?:$|[?#])/i.test(href) ? renderLinkIcon() : "";
+  const icon = external || /\.(?:pdf|jpe?g)(?:$|[?#])/i.test(href) ? renderLinkIcon() : "";
   return `<a href="${escapeHtml(href)}"${linkAttrs(href, existingRel)}>${escapeHtml(label)}${icon}</a>`;
 }
 
@@ -219,8 +219,15 @@ function renderNamedList(id: string, heading: string, items: string): string {
 
 function renderResearchSection(): string {
   const lab = researchLines.map((line) => {
-    const link = line.find(isLink);
-    return link ? `<li>${renderDocLink(link.href, link.label)}</li>` : renderEntry(line, false);
+    const linkIndex = line.findIndex(isLink);
+    if (linkIndex < 0) return renderEntry(line, false);
+    const link = line[linkIndex];
+    if (!isLink(link)) return renderEntry(line, false);
+    const detail = line.slice(linkIndex + 1);
+    const detailHtml = detail.length
+      ? `<span class="entry-detail">${detail.map(renderDetailPhrase).join("")}</span>`
+      : "";
+    return `<li>${renderDocLink(link.href, link.label)}${detailHtml}</li>`;
   });
   const items = [...lab, ...researchEntries.map(renderListedWork)].join("\n          ");
   return renderNamedList("research", researchHeading, items);

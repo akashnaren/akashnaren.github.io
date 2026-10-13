@@ -94,6 +94,8 @@ for (const [dist, root] of [
   ["public/sitemap.xml", "dist/sitemap.xml"],
   ["dist/site.webmanifest", "site.webmanifest"],
   ["public/site.webmanifest", "dist/site.webmanifest"],
+  ["public/fire-whirls-poster.jpg", "dist/fire-whirls-poster.jpg"],
+  ["dist/fire-whirls-poster.jpg", "fire-whirls-poster.jpg"],
 ]) {
   same(dist, root);
 }
@@ -126,6 +128,8 @@ mustInclude(
     "Multiscale Flow Physics Lab, UC San Diego",
     'href="https://asanchez.ucsd.edu/"',
     ">Multiscale Flow Physics Lab, UC San Diego<svg",
+    '<span class="entry-detail"> — <a href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Research<svg class="ext"',
+    'href="/fire-whirls-poster.jpg"',
     '<h2 id="profiles">Profiles</h2>',
     ">GitHub</span>",
     ">LinkedIn</span>",
@@ -209,7 +213,7 @@ mustExclude(
     "Academia",
     "CS and Math",
     "Collins",
-    "fire-whirl",
+    /fire-whirl(?!s)/,
     'class="bio"',
     'class="page-link"',
     "Optimus",
@@ -379,8 +383,12 @@ if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
   fail("research and projects must not include blurbs");
 }
 const lab = researchSection.match(/<li>[\s\S]*?<\/li>/)?.[0] ?? "";
-if ((lab.match(/<a /g) ?? []).length !== 1) {
-  fail("the lab line must be a single link");
+const expectedLab = `<li><a href="https://asanchez.ucsd.edu/" target="_blank" rel="noopener noreferrer">Multiscale Flow Physics Lab, UC San Diego${roleIcon}</a><span class="entry-detail"> — <a href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Research${roleIcon}</a></span></li>`;
+if (lab !== expectedLab) {
+  fail(`research lab row must keep the lab link and add a Research detail: ${expectedLab}`);
+}
+if ((lab.match(/<a /g) ?? []).length !== 2) {
+  fail("the lab line must link the lab and Research");
 }
 mustIconInside(
   lab,
@@ -388,6 +396,7 @@ mustIconInside(
   "Multiscale Flow Physics Lab, UC San Diego",
   "lab",
 );
+mustIconInside(lab, "/fire-whirls-poster.jpg", "Research", "lab poster");
 if (!lab.includes('rel="noopener noreferrer"') || lab.includes("reactive-flows") || !lab.includes('target="_blank"')) {
   fail("the lab link must open https://asanchez.ucsd.edu/ in a new tab");
 }
@@ -704,6 +713,40 @@ mustExclude(
   "manifest",
 );
 
+function assertPoster(path) {
+  if (!existsSync(path)) fail(`missing ${path}`);
+  const bytes = readFileSync(path);
+  if (bytes[0] !== 0xff || bytes[1] !== 0xd8 || bytes[2] !== 0xff) fail(`${path} is not a JPEG`);
+  let i = 2;
+  let width = 0;
+  let height = 0;
+  while (i < bytes.length - 8) {
+    if (bytes[i] !== 0xff) {
+      i += 1;
+      continue;
+    }
+    const marker = bytes[i + 1];
+    if (marker === 0xd8 || marker === 0x01 || (marker >= 0xd0 && marker <= 0xd9)) {
+      i += 2;
+      continue;
+    }
+    if (marker === 0xda) break;
+    const seglen = bytes.readUInt16BE(i + 2);
+    if (marker === 0xe1 && bytes.subarray(i + 4, i + 8).toString("latin1") === "Exif") {
+      fail(`${path} still has EXIF`);
+    }
+    if (marker === 0xc0 || marker === 0xc1 || marker === 0xc2) {
+      height = bytes.readUInt16BE(i + 5);
+      width = bytes.readUInt16BE(i + 7);
+    }
+    i += 2 + seglen;
+  }
+  const longEdge = Math.max(width, height);
+  if (longEdge < 2000) fail(`${path} long edge must be at least 2000px, found ${String(longEdge)}`);
+}
+
+assertPoster("public/fire-whirls-poster.jpg");
+
 const pdfs = [
   "public/research/agent-native-ui/paper.pdf",
   "dist/research/agent-native-ui/paper.pdf",
@@ -831,4 +874,4 @@ mustExclude(
   "sitemap.xml",
 );
 
-console.log("dist matches the public pages, favicon, research PDF, robots.txt, and sitemap.xml.");
+console.log("dist matches the public pages, favicon, research PDF, fire-whirls poster, robots.txt, and sitemap.xml.");
