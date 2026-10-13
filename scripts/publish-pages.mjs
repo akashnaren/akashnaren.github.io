@@ -61,6 +61,7 @@ for (const file of [
   "sitemap.xml",
   ".nojekyll",
   "404.html",
+  "fire-whirls-poster.jpg",
 ]) {
   const src = join("dist", file);
   if (existsSync(src)) copyFileSync(src, file);
@@ -89,10 +90,11 @@ if (
   !existsSync("research/pi-0.2-high/paper.pdf") ||
   !existsSync("404.html") ||
   !existsSync("robots.txt") ||
-  !existsSync("sitemap.xml")
+  !existsSync("sitemap.xml") ||
+  !existsSync("fire-whirls-poster.jpg")
 ) {
   console.error(
-    "publish-pages: research/index.html, research/agent-native-ui/index.html, research/pi-0.2-high/index.html, research/pi-0.2-high/paper.pdf, 404.html, robots.txt, or sitemap.xml missing at repo root, or a removed /bot or /fleet path is still present",
+    "publish-pages: research/index.html, research/agent-native-ui/index.html, research/pi-0.2-high/index.html, research/pi-0.2-high/paper.pdf, 404.html, robots.txt, sitemap.xml, or fire-whirls-poster.jpg missing at repo root, or a removed /bot or /fleet path is still present",
   );
   process.exit(1);
 }
