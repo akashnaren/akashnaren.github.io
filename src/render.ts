@@ -227,15 +227,14 @@ function renderResearchSection(): string {
     const detailHtml = detail.length
       ? `<span class="entry-detail">${detail.map(renderDetailPhrase).join("")}</span>`
       : "";
-    return `<li>${renderDocLink(link.href, link.label)}${detailHtml}</li>`;
+    return `<li>${renderPhrase(link)}${detailHtml}</li>`;
   });
   const items = [...lab, ...researchEntries.map(renderListedWork)].join("\n          ");
   return renderNamedList("research", researchHeading, items);
 }
 
 function renderProjectsSection(): string {
-  const items = projectLinks.map((link) => `<li>${renderDocLink(link.href, link.label)}</li>`).join("\n          ");
-  return renderNamedList("projects", projectsHeading, items);
+  return renderBand("projects", projectsHeading, projectLinks, true);
 }
 
 export function renderSite(): string {
