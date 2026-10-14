@@ -155,7 +155,7 @@ export const agentInbox = {
   address: "akashnaren@mail.grokbot.com",
   href: "mailto:akashnaren@mail.grokbot.com",
   label: "bots' inbox",
-  tip: "the agents' inbox — not his personal Gmail",
+  tip: "the agents' inbox, not my personal Gmail",
 } as const;
 
 export function isLink(part: Phrase): part is Link {

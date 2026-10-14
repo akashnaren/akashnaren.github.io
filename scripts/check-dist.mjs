@@ -164,7 +164,7 @@ mustInclude(
     "mailto:akashnaren@mail.grokbot.com",
     "akashnaren@mail.grokbot.com",
     "bots' inbox",
-    "the agents' inbox — not his personal Gmail",
+    "the agents' inbox, not my personal Gmail",
     'class="managed-copy"',
     'class="foot home-foot"',
     'class="layout"',
