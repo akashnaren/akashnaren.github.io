@@ -172,7 +172,7 @@ mustInclude(
     ">OpenPi</a>",
     "Agent-Native UI",
     'href="/research/agent-native-ui/paper.pdf"',
-    'href="https://glenn-night-reasoning-subsection.trycloudflare.com/"',
+    'href="https://rpi-pi4.taild6c87d.ts.net/"',
     'href="https://meetlavalamp.com"',
     ">Lavalamp</a>",
     "Network Intelligence Platform",
@@ -186,8 +186,9 @@ mustInclude(
   "home",
 );
 
+/** Homepage OpenPi may use this exact Funnel URL. Any other .ts.net host stays banned. */
 mustExclude(
-  home,
+  home.replaceAll("https://rpi-pi4.taild6c87d.ts.net/", ""),
   [
     ...homeLeakNeedles,
     'class="sky"',
@@ -407,7 +408,7 @@ if (!lab.includes('rel="noopener noreferrer"') || lab.includes("reactive-flows")
 const projectRows = [...projectsSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => match[0]);
 const expectedProjects = [
   `<li title="Lavalamp — Network Intelligence Platform"><span class="entry-name"><a href="https://meetlavalamp.com" target="_blank" rel="noopener noreferrer">Lavalamp</a></span><span class="entry-detail"> — Network Intelligence Platform</span></li>`,
-  `<li title="OpenPi — Raspberry Pi Distributed Inference"><span class="entry-name"><a href="https://glenn-night-reasoning-subsection.trycloudflare.com/" target="_blank" rel="noopener noreferrer">OpenPi</a></span><span class="entry-detail"> — Raspberry Pi Distributed Inference</span></li>`,
+  `<li title="OpenPi — Raspberry Pi Distributed Inference"><span class="entry-name"><a href="https://rpi-pi4.taild6c87d.ts.net/" target="_blank" rel="noopener noreferrer">OpenPi</a></span><span class="entry-detail"> — Raspberry Pi Distributed Inference</span></li>`,
   `<li title="Agent-Native UI — Interfaces for Computer-Use Agents"><span class="entry-name"><a href="/research/agent-native-ui/paper.pdf" target="_blank" rel="noopener noreferrer">Agent-Native UI</a></span><span class="entry-detail"> — Interfaces for Computer-Use Agents</span></li>`,
 ];
 for (const [index, row] of expectedProjects.entries()) {
