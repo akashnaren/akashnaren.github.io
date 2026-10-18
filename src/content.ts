@@ -130,7 +130,7 @@ export const projectLinks: readonly Paragraph[] = [
     " — Network Intelligence Platform",
   ],
   [
-    { href: "https://glenn-night-reasoning-subsection.trycloudflare.com/", label: "OpenPi" },
+    { href: "https://rpi-pi4.taild6c87d.ts.net/", label: "OpenPi" },
     " — Raspberry Pi Distributed Inference",
   ],
   [
