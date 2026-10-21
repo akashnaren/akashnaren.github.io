@@ -241,14 +241,18 @@ export function renderSite(): string {
   return `<div class="page home" id="holder">
     <div class="layout">
       <main class="stage">
-        <header>
-          <h1>${escapeHtml(name)}</h1>
-        </header>
-        ${renderBand("work", workHeading, workLines, true)}
-        ${renderResearchSection()}
-        ${renderProjectsSection()}
-        ${renderProfiles()}
-        ${renderMail()}
+        <div class="lead">
+          <header>
+            <h1>${escapeHtml(name)}</h1>
+          </header>
+          ${renderBand("work", workHeading, workLines, true)}
+          ${renderResearchSection()}
+          ${renderProjectsSection()}
+        </div>
+        <div class="contacts">
+          ${renderProfiles()}
+          ${renderMail()}
+        </div>
       </main>
       <footer class="foot home-foot">
         ${renderManagedBy(homeManagedBy)}
