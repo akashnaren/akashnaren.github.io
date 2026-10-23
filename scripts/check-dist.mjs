@@ -116,9 +116,9 @@ mustInclude(
     'title="Tesla — Vehicle Service"',
     '<span class="entry-detail"> — <a href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Vehicle Service<svg class="ext"',
     'title="Tesla — Vehicle Engineering"',
-    '<span class="entry-detail"> — <a href="https://www.tesla.com/AI" target="_blank" rel="noopener noreferrer">Vehicle Engineering<svg class="ext"',
+    '<span class="entry-detail"> — <a href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">Vehicle Engineering<svg class="ext"',
     "https://service.tesla.com/en-US/",
-    "https://www.tesla.com/AI",
+    "https://www.tesla.com/SI",
     "https://www.tesla.com/",
     ">Tesla</a>",
     "https://www.rtx.com/raytheon",
@@ -299,7 +299,7 @@ if (workRows.length !== 4) fail(`work must list four rows, found ${String(workRo
 const roleIcon = `<svg class="ext" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.4 2.4h6.2v6.2M9.3 2.7 2.7 9.3" fill="none" stroke="currentColor" stroke-width="1.15"/></svg>`;
 const expectedWork = [
   `<li title="Tesla — Vehicle Service"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — <a href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Vehicle Service${roleIcon}</a></span></li>`,
-  `<li title="Tesla — Vehicle Engineering"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — <a href="https://www.tesla.com/AI" target="_blank" rel="noopener noreferrer">Vehicle Engineering${roleIcon}</a></span></li>`,
+  `<li title="Tesla — Vehicle Engineering"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — <a href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">Vehicle Engineering${roleIcon}</a></span></li>`,
   `<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — <a href="https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/" target="_blank" rel="noopener noreferrer">Avionics Networking Test Suite${roleIcon}</a></span></li>`,
   `<li title="NASA L’SPACE — Proposals, Preliminary Design Review"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — <a href="https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing" target="_blank" rel="noopener noreferrer">Proposals, Preliminary Design Review${roleIcon}</a></span></li>`,
 ];
@@ -310,7 +310,7 @@ if ((workSection.match(/<a /g) ?? []).length !== 8) {
   fail("work rows must link Tesla, Vehicle Service, Tesla, Vehicle Engineering, Raytheon, Avionics Networking Test Suite, NASA L’SPACE, and Proposals, Preliminary Design Review");
 }
 mustIconInside(workSection, "https://service.tesla.com/en-US/", "Vehicle Service", "Vehicle Service");
-mustIconInside(workSection, "https://www.tesla.com/AI", "Vehicle Engineering", "Vehicle Engineering");
+mustIconInside(workSection, "https://www.tesla.com/SI", "Vehicle Engineering", "Vehicle Engineering");
 mustIconInside(
   workSection,
   "https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/",
