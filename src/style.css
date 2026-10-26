@@ -20,6 +20,12 @@
   --label-gap: 0.6rem;
   --row-gap: 0.35rem;
   --pad-x: 1.25rem;
+  --pad-top: 2.5rem;
+  --pad-bottom: 3rem;
+  --header-gap: 2rem;
+  --foot-gap: 3rem;
+  --profile-gap: 0.35rem;
+  --profile-pad: 0.1rem;
 }
 
 * {
@@ -72,7 +78,7 @@ body {
   width: 100%;
   max-width: calc(var(--text-col) + 2 * var(--pad-x));
   margin: 0 auto;
-  padding: 2.5rem var(--pad-x) 3rem;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
   min-width: 0;
 }
 
@@ -97,7 +103,12 @@ h1 {
 }
 
 .page.home header {
-  margin-bottom: 2rem;
+  margin-bottom: var(--header-gap);
+}
+
+.page.home .lead,
+.page.home .contacts {
+  min-width: 0;
 }
 
 .page.home .section {
@@ -168,7 +179,7 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.35rem;
+  gap: var(--profile-gap);
   margin-top: 0;
   list-style: none;
   min-width: 0;
@@ -177,7 +188,7 @@ h1 {
 .page.home .profiles .contact-link {
   min-height: 0;
   gap: 0.4rem;
-  padding: 0.1rem 0;
+  padding: var(--profile-pad) 0;
   color: var(--muted);
   font-family: var(--sans);
   font-size: var(--fs-base);
@@ -214,7 +225,10 @@ h1 {
 .page.home .mail-row li {
   display: inline-flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 0.55rem;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .mail-kind {
@@ -226,7 +240,7 @@ h1 {
 
 .page.home .home-foot {
   max-width: var(--text-col);
-  margin-top: 3rem;
+  margin-top: var(--foot-gap);
   padding-top: 0;
   border-top: 0;
   justify-content: flex-start;
@@ -264,6 +278,7 @@ h1 {
   font-size: 1rem;
   line-height: 1.45;
   overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 .managed {
@@ -331,9 +346,32 @@ a:focus-visible {
 }
 
 @media (max-width: 44rem) {
+  :root {
+    --fs-base: clamp(12px, 3.45vw, 15.5px);
+    --fs-name: clamp(22px, 6.2vw, 1.7rem);
+    --fs-label: 12px;
+    --fs-small: 12px;
+    --lh: 1.32;
+    --section-gap: clamp(0.4rem, 1.8svh, 1rem);
+    --label-gap: clamp(0.12rem, 0.5svh, 0.32rem);
+    --row-gap: clamp(0.06rem, 0.32svh, 0.2rem);
+    --pad-x: clamp(0.75rem, 3.2vw, 1.05rem);
+    --pad-top: clamp(0.45rem, 1.6svh, 1.05rem);
+    --pad-bottom: clamp(0.4rem, 1.45svh, 0.95rem);
+    --header-gap: clamp(0.35rem, 1.25svh, 0.85rem);
+    --foot-gap: clamp(0.45rem, 1.55svh, 0.95rem);
+    --profile-gap: clamp(0.08rem, 0.42svh, 0.24rem);
+    --profile-pad: 0px;
+  }
+
   .page.home h1,
   h1 {
-    font-size: 1.7rem;
+    font-size: var(--fs-name);
+  }
+
+  .mail-address {
+    font-size: 1em;
+    line-height: var(--lh);
   }
 
   .page.home .entries.ledger,
@@ -348,6 +386,51 @@ a:focus-visible {
   .page.home .entry-name,
   .page.home .entry-detail {
     display: inline;
+  }
+}
+
+/* Short laptops keep one column, with spacing that tracks the viewport height. */
+@media (min-width: 45rem) and (max-height: 60rem) {
+  :root {
+    --section-gap: clamp(0.85rem, 2.5dvh, 1.65rem);
+    --label-gap: clamp(0.2rem, 0.65dvh, 0.42rem);
+    --row-gap: clamp(0.12rem, 0.4dvh, 0.26rem);
+    --pad-top: clamp(0.75rem, 2.6dvh, 1.75rem);
+    --pad-bottom: clamp(0.65rem, 2.2dvh, 1.5rem);
+    --header-gap: clamp(0.5rem, 1.8dvh, 1.25rem);
+    --foot-gap: clamp(0.65rem, 2.3dvh, 1.5rem);
+    --lh: 1.42;
+  }
+}
+
+/* Wide, short viewports put profiles and mail in a right column so type can stay put. */
+@media (min-width: 60rem) and (max-height: 50rem) {
+  :root {
+    --section-gap: 2rem;
+    --label-gap: 0.55rem;
+    --row-gap: 0.32rem;
+    --pad-top: 2rem;
+    --pad-bottom: 1.75rem;
+    --header-gap: 1.5rem;
+    --foot-gap: 1.75rem;
+    --profile-gap: 0.32rem;
+    --lh: 1.52;
+  }
+
+  .page.home .layout {
+    max-width: 64rem;
+  }
+
+  .page.home .stage {
+    max-width: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.85fr);
+    column-gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+  }
+
+  .page.home .contacts .section:first-child {
+    margin-top: 0;
   }
 }
 
