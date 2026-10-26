@@ -22,18 +22,14 @@
           `))}function K(){return I(`projects`,u,g,!0)}function q(){return`<div class="page home" id="holder">
     <div class="layout">
       <main class="stage">
-        <div class="lead">
-          <header>
-            <h1>${T(t)}</h1>
-          </header>
-          ${I(`work`,a,o,!0)}
-          ${G()}
-          ${K()}
-        </div>
-        <div class="contacts">
-          ${B()}
-          ${V()}
-        </div>
+        <header>
+          <h1>${T(t)}</h1>
+        </header>
+        ${I(`work`,a,o,!0)}
+        ${G()}
+        ${K()}
+        ${B()}
+        ${V()}
       </main>
       <footer class="foot home-foot">
         ${R(_)}
