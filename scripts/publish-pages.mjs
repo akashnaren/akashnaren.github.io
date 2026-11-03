@@ -48,7 +48,8 @@ function syncDir(from, to) {
 
 syncDir("dist/assets", "assets");
 syncDir("dist/marks", "marks");
-syncDir("dist/research", "research");
+rmSync("research", { recursive: true, force: true });
+rmSync("papers", { recursive: true, force: true });
 rmSync("bot", { recursive: true, force: true });
 rmSync("fleet", { recursive: true, force: true });
 
@@ -84,21 +85,19 @@ if (html.includes("/src/main.ts")) {
 if (
   existsSync("bot/index.html") ||
   existsSync("fleet") ||
-  existsSync("research/agent-native-ui") ||
-  !existsSync("research/index.html") ||
-  !existsSync("research/pi-0.2-high/index.html") ||
-  !existsSync("research/pi-0.2-high/paper.pdf") ||
+  existsSync("research") ||
+  existsSync("papers") ||
   !existsSync("404.html") ||
   !existsSync("robots.txt") ||
   !existsSync("sitemap.xml") ||
   !existsSync("fire-whirls-poster.jpg")
 ) {
   console.error(
-    "publish-pages: research/index.html, research/pi-0.2-high/index.html, research/pi-0.2-high/paper.pdf, 404.html, robots.txt, sitemap.xml, or fire-whirls-poster.jpg missing at repo root, or a removed /bot, /fleet, or agent-native path is still present",
+    "publish-pages: 404.html, robots.txt, sitemap.xml, or fire-whirls-poster.jpg missing at repo root, or a removed /bot, /fleet, /research, or papers path is still present",
   );
   process.exit(1);
 }
 
 console.log(
-  "published dist to repo root for Files Pages (hashed assets, /research list, Pi 0.2 High PDF, 404 fallback).",
+  "published dist to repo root for Files Pages (hashed assets, 404 fallback).",
 );

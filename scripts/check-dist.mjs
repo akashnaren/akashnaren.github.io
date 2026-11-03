@@ -69,29 +69,11 @@ const leakNeedles = [
   /raspberry pi/i,
 ];
 
-/** Research titles name the Raspberry Pi mesh. That phrase stays off the other pages. */
-const researchLeakNeedles = leakNeedles.filter(
-  (needle) => !(needle instanceof RegExp && needle.source === "raspberry pi"),
-);
-
-/** Home may name the OpenPi detail, and no other Raspberry Pi copy. */
-const homeLeakNeedles = leakNeedles.map((needle) =>
-  needle instanceof RegExp && needle.source === "raspberry pi"
-    ? /raspberry pi(?! distributed inference)/i
-    : needle,
-);
-
 const home = read("dist/index.html");
-const research = read("dist/research/index.html");
-const piPaperPage = read("dist/research/pi-0.2-high/index.html");
 const spa = read("dist/404.html");
 
 for (const [dist, root] of [
   ["dist/index.html", "index.html"],
-  ["dist/research/index.html", "research/index.html"],
-  ["dist/research/pi-0.2-high/index.html", "research/pi-0.2-high/index.html"],
-  ["dist/research/pi-0.2-high/paper.pdf", "research/pi-0.2-high/paper.pdf"],
-  ["public/research/pi-0.2-high/paper.pdf", "dist/research/pi-0.2-high/paper.pdf"],
   ["dist/404.html", "404.html"],
   ["dist/robots.txt", "robots.txt"],
   ["dist/sitemap.xml", "sitemap.xml"],
@@ -173,9 +155,6 @@ mustInclude(
     'href="https://rpi-pi4.taild6c87d.ts.net/"',
     'href="https://meetlavalamp.com"',
     ">Lavalamp</a>",
-    "Network Intelligence Platform",
-    "Raspberry Pi Distributed Inference",
-    "Agent-native views of websites",
     'class="ext"',
     'rel="noopener noreferrer"',
     'name="color-scheme" content="light"',
@@ -188,7 +167,10 @@ mustInclude(
 mustExclude(
   home.replaceAll("https://rpi-pi4.taild6c87d.ts.net/", ""),
   [
-    ...homeLeakNeedles,
+    ...leakNeedles,
+    "Network Intelligence Platform",
+    "Raspberry Pi Distributed Inference",
+    "Agent-native views of websites",
     'class="sky"',
     'class="system"',
     "orbit-spin",
@@ -409,12 +391,12 @@ if (!lab.includes('rel="noopener noreferrer"') || lab.includes("reactive-flows")
 }
 const projectRows = [...projectsSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => match[0]);
 const expectedProjects = [
-  `<li title="Lavalamp — Network Intelligence Platform"><span class="entry-name"><a href="https://meetlavalamp.com" target="_blank" rel="noopener noreferrer">Lavalamp</a></span><span class="entry-detail"> — Network Intelligence Platform</span></li>`,
-  `<li title="OpenPi — Raspberry Pi Distributed Inference"><span class="entry-name"><a href="https://rpi-pi4.taild6c87d.ts.net/" target="_blank" rel="noopener noreferrer">OpenPi</a></span><span class="entry-detail"> — Raspberry Pi Distributed Inference</span></li>`,
-  `<li title="Interface Compiler — Agent-native views of websites"><span class="entry-name"><a href="https://github.com/akashnaren/interface-compiler" target="_blank" rel="noopener noreferrer">Interface Compiler</a></span><span class="entry-detail"> — Agent-native views of websites</span></li>`,
+  `<li title="Lavalamp"><span class="entry-name"><a href="https://meetlavalamp.com" target="_blank" rel="noopener noreferrer">Lavalamp</a></span></li>`,
+  `<li title="OpenPi"><span class="entry-name"><a href="https://rpi-pi4.taild6c87d.ts.net/" target="_blank" rel="noopener noreferrer">OpenPi</a></span></li>`,
+  `<li title="Interface Compiler"><span class="entry-name"><a href="https://github.com/akashnaren/interface-compiler" target="_blank" rel="noopener noreferrer">Interface Compiler</a></span></li>`,
 ];
 for (const [index, row] of expectedProjects.entries()) {
-  if (projectRows[index] !== row) fail(`project row ${String(index + 1)} must keep the dash layout: ${row}`);
+  if (projectRows[index] !== row) fail(`project row ${String(index + 1)} must be the name only: ${row}`);
 }
 const openPi = projectRows[1] ?? "";
 if ((openPi.match(/<a /g) ?? []).length !== 1) {
@@ -433,8 +415,8 @@ if (home.includes('href="/research/pi-0.2-high/paper.pdf"')) {
   fail("the home page must not link the Pi paper PDF");
 }
 const compiler = projectRows[2] ?? "";
-if ((compiler.match(/<a /g) ?? []).length !== 1 || !compiler.includes(">Interface Compiler</a>") || compiler.includes("use-it-from-an-agent-mcp") || compiler.includes("Structured Views")) {
-  fail("Interface Compiler must be a single repo link with a plain description");
+if ((compiler.match(/<a /g) ?? []).length !== 1 || !compiler.includes(">Interface Compiler</a>") || compiler.includes("use-it-from-an-agent-mcp") || compiler.includes("Structured Views") || compiler.includes("Agent-native views")) {
+  fail("Interface Compiler must be a single repo link with no description");
 }
 if (!compiler.includes('rel="noopener noreferrer"') || !compiler.includes('target="_blank"')) {
   fail("Interface Compiler must open in a new tab");
@@ -485,108 +467,8 @@ mustExclude(
   "home research",
 );
 
-function mustBeSectionRedirect(page, href, title, description, label) {
-  mustInclude(
-    page,
-    [
-      `<title>${title}</title>`,
-      `<meta name="description" content="${description}" />`,
-      'http-equiv="refresh"',
-      `content="0;url=${href}"`,
-      `<a href="${href}">${title}</a>`,
-      'rel="canonical" href="https://akashnaren.github.io/"',
-      'http-equiv="Content-Security-Policy"',
-      "script-src 'self'",
-    ],
-    label,
-  );
-  if (
-    page.includes('class="roster"') ||
-    page.includes('class="thread"') ||
-    page.includes('class="page home"') ||
-    page.includes("/assets/index-") ||
-    page.includes("<iframe") ||
-    page.includes("<script")
-  ) {
-    fail(`${label} must stay a tiny redirect to the home section`);
-  }
-}
-
-mustBeSectionRedirect(
-  research,
-  "/#research",
-  "Research · Akash Premkumar",
-  "Multiscale Flow Physics Lab, UC San Diego, and OpenPi.",
-  "research redirect",
-);
-mustExclude(
-  research,
-  [
-    ...researchLeakNeedles,
-    "still researching",
-    "exploring",
-    "drafting",
-    "three-node",
-    "Three-Node",
-    "pi rack",
-    "Pi PAIR",
-    'class="rack"',
-    "data-bay",
-    "status.json",
-    "/research/rack",
-    "new today",
-    "data-posted",
-    'class="status"',
-    'class="thread-link"',
-    'class="thread"',
-    ">read</a>",
-    ">flow</a>",
-    ">mesh</a>",
-    ">code</a>",
-    ">demo</a>",
-    "ten grok bots",
-    "fourteen grok bots",
-    "noindex",
-    "/research/fishbowl/",
-    "OpenAI-style route",
-    "paper.pdf",
-    "Raspberry Pi Inference Mesh",
-    "Structured Views for Agent-Native UIs",
-    "Agent-Native UI",
-    "agent-native-ui",
-    "Interfaces for Computer-Use Agents",
-    "The Interface Is a Variable",
-    "Entity Resolution",
-    "reactive-flows",
-    "ARC-AGI",
-    "Entity Resolution Across Fragmented Records",
-    "I am running local language-model chat on a Raspberry Pi mesh.",
-    "screenshots or a flat accessibility tree",
-    "fragmented records",
-    "hallucination",
-  ],
-  "research redirect",
-);
-
-mustInclude(
-  piPaperPage,
-  [
-    'http-equiv="refresh"',
-    "/research/pi-0.2-high/paper.pdf",
-    'http-equiv="Content-Security-Policy"',
-    "Raspberry Pi Inference Mesh",
-  ],
-  "pi paper redirect",
-);
-if (piPaperPage.includes('class="essay-pdf"') || piPaperPage.includes('class="rack"') || piPaperPage.includes("<iframe") || piPaperPage.includes("<script")) {
-  fail("pi paper route must redirect to the PDF, not a viewer or a rack");
-}
-mustExclude(piPaperPage, researchLeakNeedles, "pi paper redirect");
-
 for (const [page, label] of [
   [home, "home"],
-  [research, "research"],
-  [piPaperPage, "pi paper redirect"],
   [spa, "404"],
 ]) {
   if (/<iframe/i.test(page)) fail(`${label} must not embed a paper in an iframe`);
@@ -610,8 +492,6 @@ function assertNoInlineScripts(page, label) {
 
 for (const [page, label] of [
   [home, "home"],
-  [research, "research"],
-  [piPaperPage, "pi paper redirect"],
   [spa, "404"],
 ]) {
   assertNoInlineScripts(page, label);
@@ -750,7 +630,14 @@ for (const path of [
   "scripts/ingest-research-article.mjs",
   "research/fishbowl",
   "scripts/build-fishbowl-paper.py",
+  "scripts/build-pi-paper.mjs",
+  "scripts/make-favicon.py",
   "scripts/fishbowl-manuscript.pdf",
+  "src/shell.html",
+  "papers",
+  "public/research",
+  "research",
+  "dist/research",
   "bot/index.html",
   "dist/bot",
   "public/fleet",
@@ -759,60 +646,6 @@ for (const path of [
 ]) {
   if (existsSync(path)) fail(`removed path still present: ${path}`);
 }
-
-const piPdfPath = "public/research/pi-0.2-high/paper.pdf";
-if (!existsSync(piPdfPath)) fail(`missing ${piPdfPath}`);
-const piPdf = readFileSync(piPdfPath);
-if (piPdf.subarray(0, 5).toString("latin1") !== "%PDF-") fail(`${piPdfPath} is not a PDF`);
-let piJpegs = 0;
-for (let at = 0; (at = piPdf.indexOf(Buffer.from([0xff, 0xd8, 0xff]), at)) !== -1; at += 3) {
-  piJpegs += 1;
-}
-if (piJpegs < 3) fail(`pi paper should embed three photos, found ${String(piJpegs)}`);
-const piPages = piPdf.toString("latin1").match(/\/Type\s*\/Page(?!s)/g) ?? [];
-if (piPages.length < 6 || piPages.length > 10) {
-  fail(`pi paper should be 6–10 pages, found ${String(piPages.length)}`);
-}
-const piSource = read("papers/pi-0.2-high/paper.html");
-mustInclude(
-  piPdf.toString("latin1"),
-  ["Raspberry Pi Inference Mesh"],
-  "pi paper title",
-);
-mustExclude(
-  piPdf.toString("latin1"),
-  ["Three-Node Raspberry Pi Mesh"],
-  "pi paper title",
-);
-mustInclude(
-  piSource,
-  [
-    "Akash Premkumar",
-    "qwen2.5:0.5b",
-    "X-Pi-Target",
-    "X-Pi-Mesh",
-    "rpi-pi2",
-    "rpi-pi3",
-    "rpi-pi4",
-    "Tailscale",
-    "llama.cpp",
-    "11434",
-    "18080",
-    "Figure 1",
-    "Figure 2",
-    "Figure 3",
-    "figures/rack-hero.jpg",
-    "figures/rack-front.jpg",
-    "figures/rack-top.jpg",
-    "does not fall through",
-  ],
-  "pi paper source",
-);
-mustExclude(
-  piSource,
-  ["Pi PAIR", "Fishbowl", "MiniShop", "Meridian", "harness", "10.0.0.", "192.168.", "AI Office", "OpenAI-style route", "OpenAI-style"],
-  "pi paper source",
-);
 
 const robots = read("dist/robots.txt");
 if (!robots.startsWith("User-agent:")) fail("robots.txt must start with User-agent");
@@ -823,13 +656,12 @@ mustInclude(
   robots,
   [
     "Allow: /",
-    "Allow: /research/",
     "Allow: /assets/",
     "Sitemap: https://akashnaren.github.io/sitemap.xml",
   ],
   "robots.txt",
 );
-mustExclude(robots, [/fishbowl/i, "Disallow: /research/fishbowl", "Allow: /bot/", "Allow: /fleet/"], "robots.txt");
+mustExclude(robots, [/fishbowl/i, "Allow: /research/", "Disallow: /research/fishbowl", "Allow: /bot/", "Allow: /fleet/"], "robots.txt");
 
 const sitemap = read("dist/sitemap.xml");
 if (!sitemap.startsWith("<?xml")) fail("sitemap.xml must be XML");
@@ -841,15 +673,13 @@ mustInclude(
   [
     'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
     "<loc>https://akashnaren.github.io/</loc>",
-    "<loc>https://akashnaren.github.io/research/</loc>",
-    "<loc>https://akashnaren.github.io/research/pi-0.2-high/paper.pdf</loc>",
   ],
   "sitemap.xml",
 );
 mustExclude(
   sitemap,
-  ["fishbowl", "status.json", "/research/rack", "ARC-AGI", "fragmented records", "hallucination", "Raspberry Pi Inference Mesh", "Structured Views for Agent-Native UIs", "Entity Resolution", "reactive-flows", "https://akashnaren.github.io/bot/", "agent-native-ui"],
+  ["fishbowl", "status.json", "/research/", "ARC-AGI", "fragmented records", "hallucination", "Raspberry Pi Inference Mesh", "Structured Views for Agent-Native UIs", "Entity Resolution", "reactive-flows", "https://akashnaren.github.io/bot/", "agent-native-ui"],
   "sitemap.xml",
 );
 
-console.log("dist matches the public pages, favicon, research PDF, fire-whirls poster, robots.txt, and sitemap.xml.");
+console.log("dist matches the public pages, favicon, fire-whirls poster, robots.txt, and sitemap.xml.");

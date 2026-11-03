@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/restore-shell.mjs && vite",
-    "build": "node scripts/restore-shell.mjs && tsc && vite build && node scripts/publish-pages.mjs",
+    "dev": "node scripts/restore-shell.ts && vite",
+    "build": "node scripts/restore-shell.ts && tsc && vite build && node scripts/publish-pages.mjs",
     "preview": "vite preview",
     "test": "node scripts/check-dist.mjs"
   },

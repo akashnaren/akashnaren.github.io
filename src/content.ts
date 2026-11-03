@@ -101,42 +101,10 @@ export const contact: readonly Contact[] = [
   },
 ];
 
-export const researchPath = "/research";
-
-export const researchTitle = "Research";
-
-export const researchUrl = "https://akashnaren.github.io/research";
-
-export const researchDescription =
-  "Multiscale Flow Physics Lab, UC San Diego, and OpenPi.";
-
-export const piPaperHref = "/research/pi-0.2-high/paper.pdf";
-
-export const piPaperTitle = "Raspberry Pi Inference Mesh";
-
-export type ListedWork = {
-  readonly id: string;
-  readonly title: string;
-  readonly href?: string;
-  /** Extra links after the title. */
-  readonly links?: readonly Link[];
-};
-
-export const researchEntries: readonly ListedWork[] = [];
-
 export const projectLinks: readonly Paragraph[] = [
-  [
-    { href: "https://meetlavalamp.com", label: "Lavalamp" },
-    " — Network Intelligence Platform",
-  ],
-  [
-    { href: "https://rpi-pi4.taild6c87d.ts.net/", label: "OpenPi" },
-    " — Raspberry Pi Distributed Inference",
-  ],
-  [
-    { href: "https://github.com/akashnaren/interface-compiler", label: "Interface Compiler" },
-    " — Agent-native views of websites",
-  ],
+  [{ href: "https://meetlavalamp.com", label: "Lavalamp" }],
+  [{ href: "https://rpi-pi4.taild6c87d.ts.net/", label: "OpenPi" }],
+  [{ href: "https://github.com/akashnaren/interface-compiler", label: "Interface Compiler" }],
 ];
 
 /** Small footer cue on the landing page. */
@@ -148,7 +116,6 @@ export const homeManagedBy: Paragraph = [
 export const personalMail = {
   address: "akashnaren@gmail.com",
   href: "mailto:akashnaren@gmail.com",
-  label: "email",
 } as const;
 
 export const agentInbox = {
@@ -160,18 +127,5 @@ export const agentInbox = {
 
 export function isLink(part: Phrase): part is Link {
   return typeof part === "object";
-}
-
-export function isResearchPath(pathname: string): boolean {
-  const path = pathname.split(/[?#]/, 1)[0] ?? "";
-  return /\/research\/?$/.test(path) || /\/research\/index\.html$/.test(path);
-}
-
-export function isPiPaperPath(pathname: string): boolean {
-  const path = pathname.split(/[?#]/, 1)[0] ?? "";
-  return (
-    /\/research\/pi-0\.2-high\/?$/.test(path) ||
-    /\/research\/pi-0\.2-high\/index\.html$/.test(path)
-  );
 }
 
