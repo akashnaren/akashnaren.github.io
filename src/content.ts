@@ -135,12 +135,7 @@ export const projectLinks: readonly Paragraph[] = [
   ],
   [
     { href: "https://github.com/akashnaren/interface-compiler", label: "Interface Compiler" },
-    " — Websites as ",
-    {
-      href: "https://github.com/akashnaren/interface-compiler#use-it-from-an-agent-mcp",
-      label: "MCP",
-    },
-    " tools",
+    " — Agent-native views of websites",
   ],
 ];
 
