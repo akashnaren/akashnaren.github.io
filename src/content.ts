@@ -107,22 +107,9 @@ export const projectLinks: readonly Paragraph[] = [
   [{ href: "https://github.com/akashnaren/interface-compiler", label: "Interface Compiler" }],
 ];
 
-/** Small footer cue on the landing page. */
-export const homeManagedBy: Paragraph = [
-  "Managed by ",
-  { href: "https://x.ai/bot", label: "Grok Bot" },
-];
-
 export const personalMail = {
   address: "akashnaren@gmail.com",
   href: "mailto:akashnaren@gmail.com",
-} as const;
-
-export const agentInbox = {
-  address: "akashnaren@mail.grokbot.com",
-  href: "mailto:akashnaren@mail.grokbot.com",
-  label: "bots' inbox",
-  tip: "the agents' inbox, not my personal Gmail",
 } as const;
 
 export function isLink(part: Phrase): part is Link {

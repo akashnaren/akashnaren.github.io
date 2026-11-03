@@ -1,8 +1,6 @@
 import {
-  agentInbox,
   contact,
   description,
-  homeManagedBy,
   isLink,
   mailHeading,
   name,
@@ -177,14 +175,6 @@ function renderBand(id: string, heading: string, lines: readonly Paragraph[], le
       </section>`;
 }
 
-function renderGrokBotMark(): string {
-  return `<svg class="grok-bot-mark" viewBox="0 0 32 32" width="15" height="15" aria-hidden="true" focusable="false"><circle cx="16" cy="16" r="14.5" fill="#ff6b00"/><rect x="8.1" y="15.7" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 9.3 18.7)"/><rect x="12.5" y="17" width="2.4" height="6" rx="1.2" fill="#fff" transform="rotate(-26 13.7 20)"/></svg>`;
-}
-
-function renderManagedBy(line: Paragraph): string {
-  return `<p class="managed">${renderGrokBotMark()}<span class="managed-copy">${line.map(renderPhrase).join("")}</span></p>`;
-}
-
 function renderContactLink(item: Contact): string {
   const mark = `<img class="contact-mark" src="${escapeHtml(item.mark)}" alt="" width="14" height="14" decoding="async" />`;
   return `<a class="contact-link" href="${escapeHtml(item.href)}"${linkAttrs(item.href)}>${mark}<span>${escapeHtml(item.label)}</span></a>`;
@@ -203,7 +193,6 @@ function renderMail(): string {
         <h2 id="mail">${escapeHtml(mailHeading)}</h2>
         <ul class="mail-row">
           <li><a class="mail-address" href="${escapeHtml(personalMail.href)}"${linkAttrs(personalMail.href)}>${escapeHtml(personalMail.address)}</a></li>
-          <li><span class="mail-kind">${escapeHtml(agentInbox.label)}</span><a class="mail-address" href="${escapeHtml(agentInbox.href)}"${linkAttrs(agentInbox.href)} title="${escapeHtml(agentInbox.tip)}">${escapeHtml(agentInbox.address)}</a></li>
         </ul>
       </section>`;
 }
@@ -256,9 +245,6 @@ export function renderSite(): string {
         ${renderProfiles()}
         ${renderMail()}
       </main>
-      <footer class="foot home-foot">
-        ${renderManagedBy(homeManagedBy)}
-      </footer>
     </div>
   </div>`;
 }

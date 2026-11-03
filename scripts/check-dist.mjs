@@ -125,8 +125,6 @@ mustInclude(
     ">Hugging Face</span>",
     ">Kaggle</span>",
     '<h2 id="mail">Mail</h2>',
-    "Managed by ",
-    'href="https://x.ai/bot" target="_blank" rel="noopener noreferrer">Grok Bot</a>',
     '<meta name="description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
     '<meta property="og:description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
     '<meta name="twitter:description" content="Akash Premkumar. Tesla vehicle service and vehicle engineering, Raytheon avionics networking, NASA L’SPACE, and the Multiscale Flow Physics Lab at UC San Diego." />',
@@ -141,12 +139,6 @@ mustInclude(
     'src="/marks/cursor.svg"',
     "mailto:akashnaren@gmail.com",
     "akashnaren@gmail.com",
-    "mailto:akashnaren@mail.grokbot.com",
-    "akashnaren@mail.grokbot.com",
-    "bots' inbox",
-    "the agents' inbox, not my personal Gmail",
-    'class="managed-copy"',
-    'class="foot home-foot"',
     'class="layout"',
     "<h2 id=\"projects\">Projects</h2>",
     ">OpenPi</a>",
@@ -221,6 +213,17 @@ mustExclude(
     "asteroid preliminary design review",
     "terrain mapping",
     "this site is managed by",
+    "Managed by ",
+    "mailto:akashnaren@mail.grokbot.com",
+    "akashnaren@mail.grokbot.com",
+    "bots' inbox",
+    "the agents' inbox, not my personal Gmail",
+    'class="managed-copy"',
+    'class="foot home-foot"',
+    'class="mail-kind"',
+    "grok-bot-mark",
+    'href="https://x.ai/bot"',
+    ">Grok Bot</a>",
     "Fire whirl",
     "fire whirl",
     'class="managed byline"',
@@ -265,14 +268,8 @@ mustExclude(
   "home",
 );
 
-if (!home.includes("by grok") && !home.includes("by <a")) {
-  fail("home must keep a real space before grok bot");
-}
-if (!/<a href="https:\/\/x\.ai\/bot" target="_blank" rel="noopener noreferrer">Grok Bot<\/a>/.test(home)) {
-  fail("home footer must link Grok Bot to https://x.ai/bot in a new tab");
-}
-if (home.includes('href="/bot"') || home.includes('href="/research"') || home.includes('href="#bot"')) {
-  fail("home must link the footer to https://x.ai/bot and inline research, not the old routes");
+if (home.includes('href="/bot"') || home.includes('href="/research"') || home.includes('href="#bot"') || home.includes("https://x.ai/bot")) {
+  fail("home must inline research and must not link /bot, /research, #bot, or x.ai/bot");
 }
 if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego|Lavalamp|OpenPi|Interface Compiler)<svg class="ext"/.test(home)) {
   fail("name links must stay unmarked");
@@ -340,23 +337,16 @@ if (sectionOrder.some((at) => at < 0) || sectionOrder.some((at, i) => i > 0 && a
   fail("home sections must run Work, Research, Projects, Profiles, then Mail");
 }
 const mainEnd = home.indexOf("</main>");
-const footAt = home.indexOf('class="foot home-foot"');
-if (mainEnd < 0 || footAt < mainEnd) {
-  fail("the Managed by line must follow the main column");
-}
+if (mainEnd < 0) fail("home is missing </main>");
 const mainHtml = home.slice(home.indexOf("<main"), mainEnd);
-if (mainHtml.includes('class="foot home-foot"') || mainHtml.includes("Managed by ") || mainHtml.includes('class="collection"')) {
-  fail("the Managed by line must sit in the footer after the main column");
+if (mainHtml.includes('class="collection"')) {
+  fail("home main must not include a collection");
 }
-const homeHeader = home.match(/<header>[\s\S]*?<\/header>/)?.[0] ?? "";
-if (/managed|Grok Bot|grok bot/i.test(homeHeader)) {
-  fail("home header must not include the Grok Bot line");
-}
-if ((home.match(/>Grok Bot</g) ?? []).length !== 1) {
-  fail("home keeps a single Managed by Grok Bot cue in the footer");
-}
-if (!home.includes('class="foot home-foot"') || !/class="foot home-foot"[\s\S]*Managed by /.test(home)) {
-  fail("home footer must keep Managed by Grok Bot");
+if (/<footer\b/i.test(home)) fail("home must not include a footer");
+const mailSection = home.match(/aria-labelledby="mail">[\s\S]*?<\/section>/)?.[0] ?? "";
+const mailLinks = mailSection.match(/<a /g) ?? [];
+if (mailLinks.length !== 1 || !mailSection.includes("mailto:akashnaren@gmail.com")) {
+  fail("mail must list only akashnaren@gmail.com");
 }
 if (!/\/assets\/index-[^"]+\.js/.test(home)) fail("home must reference hashed /assets/index-*.js");
 if (home.includes("/src/main.ts")) fail("built home must not be the Vite shell");
@@ -544,6 +534,11 @@ mustExclude(
     "color-scheme:dark",
     "#0a0a0a",
     ".inbox-address",
+    ".mail-kind",
+    ".grok-bot-mark",
+    ".managed",
+    ".home-foot",
+    ".foot{",
     ".collection",
     ".roster",
     ".row-tip",
@@ -566,7 +561,7 @@ if (profileRows.length !== 6 || (profilesList.match(/class="contact-mark"/g) ?? 
 if (readdirSync("dist/assets").some((name) => name.endsWith(".map"))) {
   fail("dist must not ship source maps");
 }
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "Agent-Native UI", "agent-native-ui", "Interfaces for Computer-Use Agents", "The Interface Is a Variable", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights", "personal agents collection", "profile lead", "/fleet/", 'class="collection"', "data-seat"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "mail.grokbot.com", "bots' inbox", "Managed by ", "https://x.ai/bot", "grok-bot-mark", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "Agent-Native UI", "agent-native-ui", "Interfaces for Computer-Use Agents", "The Interface Is a Variable", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights", "personal agents collection", "profile lead", "/fleet/", 'class="collection"', "data-seat"], "js");
 
 const manifest = read("dist/site.webmanifest");
 mustInclude(
