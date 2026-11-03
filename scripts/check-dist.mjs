@@ -175,7 +175,8 @@ mustInclude(
     ">Lavalamp</a>",
     "Network Intelligence Platform",
     "Raspberry Pi Distributed Inference",
-    "Turns any web page into typed, safety-checked actions an AI agent can use, served over MCP.",
+    "Websites as MCP tools",
+    'href="https://github.com/akashnaren/interface-compiler#use-it-from-an-agent-mcp"',
     'class="ext"',
     'rel="noopener noreferrer"',
     'name="color-scheme" content="light"',
@@ -411,7 +412,7 @@ const projectRows = [...projectsSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((mat
 const expectedProjects = [
   `<li title="Lavalamp — Network Intelligence Platform"><span class="entry-name"><a href="https://meetlavalamp.com" target="_blank" rel="noopener noreferrer">Lavalamp</a></span><span class="entry-detail"> — Network Intelligence Platform</span></li>`,
   `<li title="OpenPi — Raspberry Pi Distributed Inference"><span class="entry-name"><a href="https://rpi-pi4.taild6c87d.ts.net/" target="_blank" rel="noopener noreferrer">OpenPi</a></span><span class="entry-detail"> — Raspberry Pi Distributed Inference</span></li>`,
-  `<li title="Interface Compiler — Turns any web page into typed, safety-checked actions an AI agent can use, served over MCP."><span class="entry-name"><a href="https://github.com/akashnaren/interface-compiler" target="_blank" rel="noopener noreferrer">Interface Compiler</a></span><span class="entry-detail"> — Turns any web page into typed, safety-checked actions an AI agent can use, served over MCP.</span></li>`,
+  `<li title="Interface Compiler — Websites as MCP tools"><span class="entry-name"><a href="https://github.com/akashnaren/interface-compiler" target="_blank" rel="noopener noreferrer">Interface Compiler</a></span><span class="entry-detail"> — Websites as <a href="https://github.com/akashnaren/interface-compiler#use-it-from-an-agent-mcp" target="_blank" rel="noopener noreferrer">MCP${roleIcon}</a> tools</span></li>`,
 ];
 for (const [index, row] of expectedProjects.entries()) {
   if (projectRows[index] !== row) fail(`project row ${String(index + 1)} must keep the dash layout: ${row}`);
@@ -433,8 +434,8 @@ if (home.includes('href="/research/pi-0.2-high/paper.pdf"')) {
   fail("the home page must not link the Pi paper PDF");
 }
 const compiler = projectRows[2] ?? "";
-if ((compiler.match(/<a /g) ?? []).length !== 1 || !compiler.includes(">Interface Compiler</a>") || compiler.includes("Structured Views")) {
-  fail("Interface Compiler must be a single link with no blurb");
+if ((compiler.match(/<a /g) ?? []).length !== 2 || !compiler.includes(">Interface Compiler</a>") || !compiler.includes(">MCP") || compiler.includes("Structured Views")) {
+  fail("Interface Compiler must link the repo and MCP, with no blurb");
 }
 if (!compiler.includes('rel="noopener noreferrer"') || !compiler.includes('target="_blank"')) {
   fail("Interface Compiler must open in a new tab");
@@ -450,8 +451,8 @@ if (projectPdfs.length !== 0) {
   fail("Projects must not link a paper PDF");
 }
 const projectAnchors = projectsSection.match(/<a /g) ?? [];
-if (projectAnchors.length !== 3) {
-  fail(`Projects must show exactly three links, found ${String(projectAnchors.length)}`);
+if (projectAnchors.length !== 4) {
+  fail(`Projects must show exactly four links, found ${String(projectAnchors.length)}`);
 }
 const lavalampAt = projectsSection.indexOf(">Lavalamp</a>");
 const openPiAt = projectsSection.indexOf(">OpenPi</a>");
