@@ -135,7 +135,12 @@ export const projectLinks: readonly Paragraph[] = [
   ],
   [
     { href: "https://github.com/akashnaren/interface-compiler", label: "Interface Compiler" },
-    " — Turns any web page into typed, safety-checked actions an AI agent can use, served over MCP.",
+    " — Websites as ",
+    {
+      href: "https://github.com/akashnaren/interface-compiler#use-it-from-an-agent-mcp",
+      label: "MCP",
+    },
+    " tools",
   ],
 ];
 
