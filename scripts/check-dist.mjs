@@ -83,14 +83,12 @@ const homeLeakNeedles = leakNeedles.map((needle) =>
 
 const home = read("dist/index.html");
 const research = read("dist/research/index.html");
-const essay = read("dist/research/agent-native-ui/index.html");
 const piPaperPage = read("dist/research/pi-0.2-high/index.html");
 const spa = read("dist/404.html");
 
 for (const [dist, root] of [
   ["dist/index.html", "index.html"],
   ["dist/research/index.html", "research/index.html"],
-  ["dist/research/agent-native-ui/index.html", "research/agent-native-ui/index.html"],
   ["dist/research/pi-0.2-high/index.html", "research/pi-0.2-high/index.html"],
   ["dist/research/pi-0.2-high/paper.pdf", "research/pi-0.2-high/paper.pdf"],
   ["public/research/pi-0.2-high/paper.pdf", "dist/research/pi-0.2-high/paper.pdf"],
@@ -170,14 +168,14 @@ mustInclude(
     'class="layout"',
     "<h2 id=\"projects\">Projects</h2>",
     ">OpenPi</a>",
-    "Agent-Native UI",
-    'href="/research/agent-native-ui/paper.pdf"',
+    ">Interface Compiler</a>",
+    'href="https://github.com/akashnaren/interface-compiler"',
     'href="https://rpi-pi4.taild6c87d.ts.net/"',
     'href="https://meetlavalamp.com"',
     ">Lavalamp</a>",
     "Network Intelligence Platform",
     "Raspberry Pi Distributed Inference",
-    "Interfaces for Computer-Use Agents",
+    "Turns any web page into typed, safety-checked actions an AI agent can use, served over MCP.",
     'class="ext"',
     'rel="noopener noreferrer"',
     'name="color-scheme" content="light"',
@@ -248,6 +246,10 @@ mustExclude(
     "grok bot collection",
     "Raspberry Pi Inference Mesh",
     "Structured Views for Agent-Native UIs",
+    "Agent-Native UI",
+    "agent-native-ui",
+    "Interfaces for Computer-Use Agents",
+    "The Interface Is a Variable",
     "Entity Resolution",
     "reactive-flows",
     ">openpi<",
@@ -290,7 +292,7 @@ if (!/<a href="https:\/\/x\.ai\/bot" target="_blank" rel="noopener noreferrer">G
 if (home.includes('href="/bot"') || home.includes('href="/research"') || home.includes('href="#bot"')) {
   fail("home must link the footer to https://x.ai/bot and inline research, not the old routes");
 }
-if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego|Lavalamp|OpenPi|Agent-Native UI)<svg class="ext"/.test(home)) {
+if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego|Lavalamp|OpenPi|Interface Compiler)<svg class="ext"/.test(home)) {
   fail("name links must stay unmarked");
 }
 const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
@@ -383,12 +385,12 @@ const researchItems = researchSection.match(/<li[\s>]/g) ?? [];
 if (researchItems.length !== 1) {
   fail(`research must list only the lab, found ${String(researchItems.length)}`);
 }
-if (researchSection.includes("Agent-Native UI") || researchSection.includes("agent-native-ui")) {
-  fail("Agent-Native UI must not be listed under Research");
+if (researchSection.includes("Agent-Native UI") || researchSection.includes("agent-native-ui") || researchSection.includes("interface-compiler")) {
+  fail("Agent-Native UI and interface-compiler must not be listed under Research");
 }
 const projectItems = projectsSection.match(/<li[\s>]/g) ?? [];
 if (projectItems.length !== 3) {
-  fail(`projects must list Lavalamp, OpenPi, and Agent-Native UI, found ${String(projectItems.length)}`);
+  fail(`projects must list Lavalamp, OpenPi, and Interface Compiler, found ${String(projectItems.length)}`);
 }
 if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
   fail("research and projects must not include blurbs");
@@ -409,7 +411,7 @@ const projectRows = [...projectsSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((mat
 const expectedProjects = [
   `<li title="Lavalamp — Network Intelligence Platform"><span class="entry-name"><a href="https://meetlavalamp.com" target="_blank" rel="noopener noreferrer">Lavalamp</a></span><span class="entry-detail"> — Network Intelligence Platform</span></li>`,
   `<li title="OpenPi — Raspberry Pi Distributed Inference"><span class="entry-name"><a href="https://rpi-pi4.taild6c87d.ts.net/" target="_blank" rel="noopener noreferrer">OpenPi</a></span><span class="entry-detail"> — Raspberry Pi Distributed Inference</span></li>`,
-  `<li title="Agent-Native UI — Interfaces for Computer-Use Agents"><span class="entry-name"><a href="/research/agent-native-ui/paper.pdf" target="_blank" rel="noopener noreferrer">Agent-Native UI</a></span><span class="entry-detail"> — Interfaces for Computer-Use Agents</span></li>`,
+  `<li title="Interface Compiler — Turns any web page into typed, safety-checked actions an AI agent can use, served over MCP."><span class="entry-name"><a href="https://github.com/akashnaren/interface-compiler" target="_blank" rel="noopener noreferrer">Interface Compiler</a></span><span class="entry-detail"> — Turns any web page into typed, safety-checked actions an AI agent can use, served over MCP.</span></li>`,
 ];
 for (const [index, row] of expectedProjects.entries()) {
   if (projectRows[index] !== row) fail(`project row ${String(index + 1)} must keep the dash layout: ${row}`);
@@ -430,19 +432,22 @@ if (researchSection.includes("OpenPi") || researchSection.includes('data-entry="
 if (home.includes('href="/research/pi-0.2-high/paper.pdf"')) {
   fail("the home page must not link the Pi paper PDF");
 }
-const views = projectRows[2] ?? "";
-if ((views.match(/<a /g) ?? []).length !== 1 || !views.includes("Agent-Native UI") || views.includes("Structured Views")) {
-  fail("Agent-Native UI must be a single PDF link with no blurb");
+const compiler = projectRows[2] ?? "";
+if ((compiler.match(/<a /g) ?? []).length !== 1 || !compiler.includes(">Interface Compiler</a>") || compiler.includes("Structured Views")) {
+  fail("Interface Compiler must be a single link with no blurb");
 }
-if (!views.includes('rel="noopener noreferrer"') || !views.includes('target="_blank"')) {
-  fail("Agent-Native UI must open its PDF in a new tab");
+if (!compiler.includes('rel="noopener noreferrer"') || !compiler.includes('target="_blank"')) {
+  fail("Interface Compiler must open in a new tab");
+}
+if (/paper\.pdf/.test(compiler)) {
+  fail("Interface Compiler must not link a PDF");
 }
 if (/Entity Resolution|entity-resolution/.test(projectsSection) || /<p[\s>]/.test(projectsSection)) {
   fail("Projects must not include blurbs");
 }
 const projectPdfs = projectsSection.match(/paper\.pdf/gi) ?? [];
-if (projectPdfs.length !== 1) {
-  fail("Projects must link only the Agent-Native UI PDF");
+if (projectPdfs.length !== 0) {
+  fail("Projects must not link a paper PDF");
 }
 const projectAnchors = projectsSection.match(/<a /g) ?? [];
 if (projectAnchors.length !== 3) {
@@ -450,9 +455,9 @@ if (projectAnchors.length !== 3) {
 }
 const lavalampAt = projectsSection.indexOf(">Lavalamp</a>");
 const openPiAt = projectsSection.indexOf(">OpenPi</a>");
-const agentAt = projectsSection.indexOf(">Agent-Native UI</a>");
-if (lavalampAt === -1 || openPiAt === -1 || agentAt === -1 || lavalampAt > openPiAt || openPiAt > agentAt) {
-  fail("Projects must run Lavalamp, OpenPi, then Agent-Native UI");
+const compilerAt = projectsSection.indexOf(">Interface Compiler</a>");
+if (lavalampAt === -1 || openPiAt === -1 || compilerAt === -1 || lavalampAt > openPiAt || openPiAt > compilerAt) {
+  fail("Projects must run Lavalamp, OpenPi, then Interface Compiler");
 }
 if (/lavalamp|meetlavalamp|temporal-buddies/i.test(researchSection)) {
   fail("Lavalamp must stay in Projects");
@@ -511,7 +516,7 @@ mustBeSectionRedirect(
   research,
   "/#research",
   "Research · Akash Premkumar",
-  "Multiscale Flow Physics Lab, UC San Diego, OpenPi, and Agent-Native UI.",
+  "Multiscale Flow Physics Lab, UC San Diego, and OpenPi.",
   "research redirect",
 );
 mustExclude(
@@ -547,6 +552,10 @@ mustExclude(
     "paper.pdf",
     "Raspberry Pi Inference Mesh",
     "Structured Views for Agent-Native UIs",
+    "Agent-Native UI",
+    "agent-native-ui",
+    "Interfaces for Computer-Use Agents",
+    "The Interface Is a Variable",
     "Entity Resolution",
     "reactive-flows",
     "ARC-AGI",
@@ -558,20 +567,6 @@ mustExclude(
   ],
   "research redirect",
 );
-
-mustInclude(
-  essay,
-  [
-    'http-equiv="refresh"',
-    "/research/agent-native-ui/paper.pdf",
-    'http-equiv="Content-Security-Policy"',
-  ],
-  "essay redirect",
-);
-if (essay.includes('class="essay-pdf"') || essay.includes("<iframe") || essay.includes("<script") || essay.includes("still researching")) {
-  fail("agent-native route must redirect to the PDF, not an HTML reader");
-}
-mustExclude(essay, leakNeedles, "essay redirect");
 
 mustInclude(
   piPaperPage,
@@ -591,7 +586,6 @@ mustExclude(piPaperPage, researchLeakNeedles, "pi paper redirect");
 for (const [page, label] of [
   [home, "home"],
   [research, "research"],
-  [essay, "essay redirect"],
   [piPaperPage, "pi paper redirect"],
   [spa, "404"],
 ]) {
@@ -617,7 +611,6 @@ function assertNoInlineScripts(page, label) {
 for (const [page, label] of [
   [home, "home"],
   [research, "research"],
-  [essay, "essay redirect"],
   [piPaperPage, "pi paper redirect"],
   [spa, "404"],
 ]) {
@@ -693,7 +686,7 @@ if (profileRows.length !== 6 || (profilesList.match(/class="contact-mark"/g) ?? 
 if (readdirSync("dist/assets").some((name) => name.endsWith(".map"))) {
   fail("dist must not ship source maps");
 }
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights", "personal agents collection", "profile lead", "/fleet/", 'class="collection"', "data-seat"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "Agent-Native UI", "agent-native-ui", "Interfaces for Computer-Use Agents", "The Interface Is a Variable", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights", "personal agents collection", "profile lead", "/fleet/", 'class="collection"', "data-seat"], "js");
 
 const manifest = read("dist/site.webmanifest");
 mustInclude(
@@ -743,21 +736,6 @@ function assertPoster(path) {
 
 assertPoster("public/fire-whirls-poster.jpg");
 
-const pdfs = [
-  "public/research/agent-native-ui/paper.pdf",
-  "dist/research/agent-native-ui/paper.pdf",
-  "research/agent-native-ui/paper.pdf",
-];
-for (const path of pdfs) {
-  if (!existsSync(path)) fail(`missing ${path}`);
-  const bytes = readFileSync(path);
-  if (bytes.subarray(0, 5).toString("latin1") !== "%PDF-") fail(`${path} is not a PDF`);
-  const text = bytes.toString("latin1");
-  if (/tailscale|192\.168\.|10\.0\.0\.|\.local\b|P2S/i.test(text)) {
-    fail(`${path} must not carry LAN, Tailscale, or P2S`);
-  }
-}
-
 for (const path of [
   "public/research/rack",
   "research/rack",
@@ -765,6 +743,11 @@ for (const path of [
   "src/rack.ts",
   "dist/research/fishbowl",
   "public/research/fishbowl",
+  "public/research/agent-native-ui",
+  "research/agent-native-ui",
+  "dist/research/agent-native-ui",
+  "src/article.ts",
+  "scripts/ingest-research-article.mjs",
   "research/fishbowl",
   "scripts/build-fishbowl-paper.py",
   "scripts/fishbowl-manuscript.pdf",
@@ -860,13 +843,12 @@ mustInclude(
     "<loc>https://akashnaren.github.io/</loc>",
     "<loc>https://akashnaren.github.io/research/</loc>",
     "<loc>https://akashnaren.github.io/research/pi-0.2-high/paper.pdf</loc>",
-    "<loc>https://akashnaren.github.io/research/agent-native-ui/paper.pdf</loc>",
   ],
   "sitemap.xml",
 );
 mustExclude(
   sitemap,
-  ["fishbowl", "status.json", "/research/rack", "ARC-AGI", "fragmented records", "hallucination", "Raspberry Pi Inference Mesh", "Structured Views for Agent-Native UIs", "Entity Resolution", "reactive-flows", "https://akashnaren.github.io/bot/"],
+  ["fishbowl", "status.json", "/research/rack", "ARC-AGI", "fragmented records", "hallucination", "Raspberry Pi Inference Mesh", "Structured Views for Agent-Native UIs", "Entity Resolution", "reactive-flows", "https://akashnaren.github.io/bot/", "agent-native-ui"],
   "sitemap.xml",
 );
 

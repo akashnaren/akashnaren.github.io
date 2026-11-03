@@ -1,6 +1,4 @@
-import { paperHref } from "./article.ts";
 import {
-  isEssayPath,
   isPiPaperPath,
   isResearchPath,
   piPaperHref,
@@ -8,10 +6,6 @@ import {
 import { applyDocumentMeta, homeMeta, renderSite } from "./render.ts";
 
 function mount(): void {
-  if (isEssayPath(location.pathname)) {
-    location.replace(paperHref);
-    return;
-  }
   if (isPiPaperPath(location.pathname)) {
     location.replace(piPaperHref);
     return;

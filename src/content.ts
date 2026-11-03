@@ -108,7 +108,7 @@ export const researchTitle = "Research";
 export const researchUrl = "https://akashnaren.github.io/research";
 
 export const researchDescription =
-  "Multiscale Flow Physics Lab, UC San Diego, OpenPi, and Agent-Native UI.";
+  "Multiscale Flow Physics Lab, UC San Diego, and OpenPi.";
 
 export const piPaperHref = "/research/pi-0.2-high/paper.pdf";
 
@@ -134,8 +134,8 @@ export const projectLinks: readonly Paragraph[] = [
     " — Raspberry Pi Distributed Inference",
   ],
   [
-    { href: "/research/agent-native-ui/paper.pdf", label: "Agent-Native UI" },
-    " — Interfaces for Computer-Use Agents",
+    { href: "https://github.com/akashnaren/interface-compiler", label: "Interface Compiler" },
+    " — Turns any web page into typed, safety-checked actions an AI agent can use, served over MCP.",
   ],
 ];
 
@@ -172,14 +172,6 @@ export function isPiPaperPath(pathname: string): boolean {
   return (
     /\/research\/pi-0\.2-high\/?$/.test(path) ||
     /\/research\/pi-0\.2-high\/index\.html$/.test(path)
-  );
-}
-
-export function isEssayPath(pathname: string): boolean {
-  const path = pathname.split(/[?#]/, 1)[0] ?? "";
-  return (
-    /\/research\/agent-native-ui\/?$/.test(path) ||
-    /\/research\/agent-native-ui\/index\.html$/.test(path)
   );
 }
 
