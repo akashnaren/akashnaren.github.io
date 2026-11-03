@@ -84,8 +84,8 @@ if (html.includes("/src/main.ts")) {
 if (
   existsSync("bot/index.html") ||
   existsSync("fleet") ||
+  existsSync("research/agent-native-ui") ||
   !existsSync("research/index.html") ||
-  !existsSync("research/agent-native-ui/index.html") ||
   !existsSync("research/pi-0.2-high/index.html") ||
   !existsSync("research/pi-0.2-high/paper.pdf") ||
   !existsSync("404.html") ||
@@ -94,11 +94,11 @@ if (
   !existsSync("fire-whirls-poster.jpg")
 ) {
   console.error(
-    "publish-pages: research/index.html, research/agent-native-ui/index.html, research/pi-0.2-high/index.html, research/pi-0.2-high/paper.pdf, 404.html, robots.txt, sitemap.xml, or fire-whirls-poster.jpg missing at repo root, or a removed /bot or /fleet path is still present",
+    "publish-pages: research/index.html, research/pi-0.2-high/index.html, research/pi-0.2-high/paper.pdf, 404.html, robots.txt, sitemap.xml, or fire-whirls-poster.jpg missing at repo root, or a removed /bot, /fleet, or agent-native path is still present",
   );
   process.exit(1);
 }
 
 console.log(
-  "published dist to repo root for Files Pages (hashed assets, /research list, agent-native PDF redirect, Pi 0.2 High PDF, 404 fallback).",
+  "published dist to repo root for Files Pages (hashed assets, /research list, Pi 0.2 High PDF, 404 fallback).",
 );

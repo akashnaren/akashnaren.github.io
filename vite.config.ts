@@ -5,7 +5,6 @@ import { piPaperHref, piPaperTitle } from "./src/content.ts";
 import {
   applyPageMeta,
   ensureCsp,
-  essayRedirectHtml,
   homeMeta,
   pdfRedirectHtml,
   renderSite,
@@ -18,7 +17,6 @@ const holderPattern = /<div id="holder"><\/div>/;
 
 function rewritePageIndex(req: { url?: string }): void {
   if (req.url === "/research") req.url = "/research/";
-  if (req.url === "/research/agent-native-ui") req.url = "/research/agent-native-ui/";
   if (req.url === "/research/pi-0.2-high") req.url = "/research/pi-0.2-high/";
 }
 
@@ -62,11 +60,6 @@ export default defineConfig({
         writeFileSync(
           resolve("dist/research/index.html"),
           sectionRedirectHtml("/#research", researchMeta.title, researchMeta.description),
-        );
-        mkdirSync(resolve("dist/research/agent-native-ui"), { recursive: true });
-        writeFileSync(
-          resolve("dist/research/agent-native-ui/index.html"),
-          essayRedirectHtml(),
         );
         mkdirSync(resolve("dist/research/pi-0.2-high"), { recursive: true });
         writeFileSync(

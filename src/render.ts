@@ -26,7 +26,6 @@ import {
   type Paragraph,
   type Phrase,
 } from "./content.ts";
-import { paperHref, paperTitle } from "./article.ts";
 
 export type PageMeta = {
   readonly title: string;
@@ -298,10 +297,6 @@ export function pdfRedirectHtml(href: string, title: string): string {
   </body>
 </html>
 `;
-}
-
-export function essayRedirectHtml(): string {
-  return pdfRedirectHtml(paperHref, paperTitle);
 }
 
 export function replaceHolder(html: string, next: string): string {
