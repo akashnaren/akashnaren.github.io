@@ -93,14 +93,15 @@ mustInclude(
     "Akash Premkumar",
     'class="page home"',
     '<h2 id="work">Work</h2>',
-    'title="Tesla — Vehicle Service (Software, Service)"',
-    '<span class="entry-detail"> — Vehicle Service <span class="aspects">(<a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a>, <a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>)</span>',
+    'title="Tesla — Vehicle Service (Software, Service, Parts)"',
+    '<span class="entry-detail"> — Vehicle Service <span class="aspects">(<a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a>, <a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>, <a class="aspect" href="https://parts.tesla.com/en-US/landingpage" target="_blank" rel="noopener noreferrer">Parts</a>)</span>',
     'title="Tesla — Vehicle Engineering (SI, Manufacturing, Robotaxi)"',
     '<span class="entry-detail"> — Vehicle Engineering <span class="aspects">(<a class="aspect" href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a>',
     '<a class="aspect" href="https://www.tesla.com/manufacturing" target="_blank" rel="noopener noreferrer">Manufacturing</a>',
     '<a class="aspect" href="https://www.tesla.com/robotaxi" target="_blank" rel="noopener noreferrer">Robotaxi</a>',
     "https://www.tesla.com/careers/vehicle-software",
     "https://service.tesla.com/en-US/",
+    "https://parts.tesla.com/en-US/landingpage",
     "https://www.tesla.com/SI",
     "https://www.tesla.com/manufacturing",
     "https://www.tesla.com/robotaxi",
@@ -294,7 +295,7 @@ const workRows = [...workSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => 
 if (workRows.length !== 4) fail(`work must list four rows, found ${String(workRows.length)}`);
 const roleIcon = `<svg class="ext" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.4 2.4h6.2v6.2M9.3 2.7 2.7 9.3" fill="none" stroke="currentColor" stroke-width="1.15"/></svg>`;
 const expectedWork = [
-  `<li title="Tesla — Vehicle Service (Software, Service)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Service <span class="aspects">(<a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a>, <a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>)</span></span></li>`,
+  `<li title="Tesla — Vehicle Service (Software, Service, Parts)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Service <span class="aspects">(<a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a>, <a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>, <a class="aspect" href="https://parts.tesla.com/en-US/landingpage" target="_blank" rel="noopener noreferrer">Parts</a>)</span></span></li>`,
   `<li title="Tesla — Vehicle Engineering (SI, Manufacturing, Robotaxi)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering <span class="aspects">(<a class="aspect" href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a>, <a class="aspect" href="https://www.tesla.com/manufacturing" target="_blank" rel="noopener noreferrer">Manufacturing</a>, <a class="aspect" href="https://www.tesla.com/robotaxi" target="_blank" rel="noopener noreferrer">Robotaxi</a>)</span></span></li>`,
   `<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — <a href="https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/" target="_blank" rel="noopener noreferrer">Avionics Networking Test Suite${roleIcon}</a></span></li>`,
   `<li title="NASA L’SPACE — Proposals, Preliminary Design Review"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — <a href="https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing" target="_blank" rel="noopener noreferrer">Proposals, Preliminary Design Review${roleIcon}</a></span></li>`,
@@ -302,8 +303,8 @@ const expectedWork = [
 for (const [index, row] of expectedWork.entries()) {
   if (workRows[index] !== row) fail(`work row ${String(index + 1)} must keep the dash layout: ${row}`);
 }
-if ((workSection.match(/<a /g) ?? []).length !== 11) {
-  fail("work rows must link Tesla, Software, Service, Tesla, SI, Manufacturing, Robotaxi, Raytheon, Avionics Networking Test Suite, NASA L’SPACE, and Proposals, Preliminary Design Review");
+if ((workSection.match(/<a /g) ?? []).length !== 12) {
+  fail("work rows must link Tesla, Software, Service, Parts, Tesla, SI, Manufacturing, Robotaxi, Raytheon, Avionics Networking Test Suite, NASA L’SPACE, and Proposals, Preliminary Design Review");
 }
 mustIconInside(
   workSection,
@@ -526,8 +527,15 @@ if (
 ) {
   fail(`aspect group must be small, muted, and roman: ${aspectGroup || "missing"}`);
 }
+const aspectLink = css.match(/\.page\.home a\.aspect\{[^}]*\}/)?.[0] ?? "";
+if (
+  !aspectLink.includes("text-decoration:underline") ||
+  !aspectLink.includes("color-mix(in srgb, currentColor 32%, transparent)")
+) {
+  fail(`aspect links must keep a light resting underline: ${aspectLink || "missing"}`);
+}
 const aspectHover = css.match(/\.page\.home a\.aspect:hover[^{]*\{[^}]*\}/)?.[0] ?? "";
-if (!aspectHover.includes("text-decoration:underline")) {
+if (!aspectHover.includes("text-decoration:underline") || !aspectHover.includes("text-decoration-color:var(--hover)")) {
   fail(`aspect links must underline on hover: ${aspectHover || "missing"}`);
 }
 mustExclude(

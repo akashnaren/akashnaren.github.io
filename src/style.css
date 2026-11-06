@@ -176,14 +176,19 @@ h1 {
   font-size: inherit;
   font-style: inherit;
   font-weight: inherit;
-  text-decoration: none;
+  letter-spacing: 0.015em;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: color-mix(in srgb, currentColor 32%, transparent);
 }
 
 .page.home a.aspect:hover,
 .page.home a.aspect:focus-visible {
   color: var(--hover);
   text-decoration: underline;
-  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--hover);
 }
 
 .page.home .profiles {

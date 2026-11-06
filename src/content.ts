@@ -35,6 +35,7 @@ export const workLines: readonly Paragraph[] = [
       aspects: [
         { href: "https://www.tesla.com/careers/vehicle-software", label: "Software" },
         { href: "https://service.tesla.com/en-US/", label: "Service" },
+        { href: "https://parts.tesla.com/en-US/landingpage", label: "Parts" },
       ],
     },
   ],
