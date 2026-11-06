@@ -142,8 +142,6 @@ mustInclude(
     'class="layout"',
     "<h2 id=\"projects\">Projects</h2>",
     ">OpenPi</a>",
-    ">Interface Compiler</a>",
-    'href="https://github.com/akashnaren/interface-compiler"',
     'href="https://rpi-pi4.taild6c87d.ts.net/"',
     'href="https://meetlavalamp.com"',
     ">LavaLamp</a>",
@@ -163,6 +161,8 @@ mustExclude(
     "Network Intelligence Platform",
     "Raspberry Pi Distributed Inference",
     "Agent-native views of websites",
+    "Interface Compiler",
+    "interface-compiler",
     'class="sky"',
     'class="system"',
     "orbit-spin",
@@ -271,7 +271,7 @@ mustExclude(
 if (home.includes('href="/bot"') || home.includes('href="/research"') || home.includes('href="#bot"') || home.includes("https://x.ai/bot")) {
   fail("home must inline research and must not link /bot, /research, #bot, or x.ai/bot");
 }
-if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego|LavaLamp|OpenPi|Interface Compiler)<svg class="ext"/.test(home)) {
+if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego|LavaLamp|OpenPi)<svg class="ext"/.test(home)) {
   fail("name links must stay unmarked");
 }
 const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
@@ -357,12 +357,12 @@ const researchItems = researchSection.match(/<li[\s>]/g) ?? [];
 if (researchItems.length !== 1) {
   fail(`research must list only the lab, found ${String(researchItems.length)}`);
 }
-if (researchSection.includes("Agent-Native UI") || researchSection.includes("agent-native-ui") || researchSection.includes("interface-compiler")) {
-  fail("Agent-Native UI and interface-compiler must not be listed under Research");
+if (researchSection.includes("Agent-Native UI") || researchSection.includes("agent-native-ui")) {
+  fail("Agent-Native UI must not be listed under Research");
 }
 const projectItems = projectsSection.match(/<li[\s>]/g) ?? [];
-if (projectItems.length !== 3) {
-  fail(`projects must list LavaLamp, OpenPi, and Interface Compiler, found ${String(projectItems.length)}`);
+if (projectItems.length !== 2) {
+  fail(`projects must list LavaLamp and OpenPi, found ${String(projectItems.length)}`);
 }
 if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
   fail("research and projects must not include blurbs");
@@ -383,7 +383,6 @@ const projectRows = [...projectsSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((mat
 const expectedProjects = [
   `<li title="LavaLamp"><span class="entry-name"><a href="https://meetlavalamp.com" target="_blank" rel="noopener noreferrer">LavaLamp</a></span></li>`,
   `<li title="OpenPi"><span class="entry-name"><a href="https://rpi-pi4.taild6c87d.ts.net/" target="_blank" rel="noopener noreferrer">OpenPi</a></span></li>`,
-  `<li title="Interface Compiler"><span class="entry-name"><a href="https://github.com/akashnaren/interface-compiler" target="_blank" rel="noopener noreferrer">Interface Compiler</a></span></li>`,
 ];
 for (const [index, row] of expectedProjects.entries()) {
   if (projectRows[index] !== row) fail(`project row ${String(index + 1)} must be the name only: ${row}`);
@@ -404,16 +403,6 @@ if (researchSection.includes("OpenPi") || researchSection.includes('data-entry="
 if (home.includes('href="/research/pi-0.2-high/paper.pdf"')) {
   fail("the home page must not link the Pi paper PDF");
 }
-const compiler = projectRows[2] ?? "";
-if ((compiler.match(/<a /g) ?? []).length !== 1 || !compiler.includes(">Interface Compiler</a>") || compiler.includes("use-it-from-an-agent-mcp") || compiler.includes("Structured Views") || compiler.includes("Agent-native views")) {
-  fail("Interface Compiler must be a single repo link with no description");
-}
-if (!compiler.includes('rel="noopener noreferrer"') || !compiler.includes('target="_blank"')) {
-  fail("Interface Compiler must open in a new tab");
-}
-if (/paper\.pdf/.test(compiler)) {
-  fail("Interface Compiler must not link a PDF");
-}
 if (/Entity Resolution|entity-resolution/.test(projectsSection) || /<p[\s>]/.test(projectsSection)) {
   fail("Projects must not include blurbs");
 }
@@ -422,14 +411,13 @@ if (projectPdfs.length !== 0) {
   fail("Projects must not link a paper PDF");
 }
 const projectAnchors = projectsSection.match(/<a /g) ?? [];
-if (projectAnchors.length !== 3) {
-  fail(`Projects must show exactly three links, found ${String(projectAnchors.length)}`);
+if (projectAnchors.length !== 2) {
+  fail(`Projects must show exactly two links, found ${String(projectAnchors.length)}`);
 }
 const lavalampAt = projectsSection.indexOf(">LavaLamp</a>");
 const openPiAt = projectsSection.indexOf(">OpenPi</a>");
-const compilerAt = projectsSection.indexOf(">Interface Compiler</a>");
-if (lavalampAt === -1 || openPiAt === -1 || compilerAt === -1 || lavalampAt > openPiAt || openPiAt > compilerAt) {
-  fail("Projects must run LavaLamp, OpenPi, then Interface Compiler");
+if (lavalampAt === -1 || openPiAt === -1 || lavalampAt > openPiAt) {
+  fail("Projects must run LavaLamp, then OpenPi");
 }
 if (/lavalamp|meetlavalamp|temporal-buddies/i.test(researchSection)) {
   fail("LavaLamp must stay in Projects");
