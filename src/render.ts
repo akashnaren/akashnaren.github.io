@@ -14,6 +14,7 @@ import {
   workHeading,
   workLines,
   url,
+  type AspectGroup,
   type Contact,
   type Paragraph,
   type Phrase,
@@ -131,16 +132,47 @@ function linkAttrs(href: string, existingRel = ""): string {
   return ` target="_blank" rel="${escapeHtml(mergeRel(existingRel))}"`;
 }
 
+function renderAspectGroup(group: AspectGroup): string {
+  const links = group.aspects
+    .map(
+      (aspect) =>
+        `<a class="aspect" href="${escapeHtml(aspect.href)}"${linkAttrs(aspect.href)}>${escapeHtml(aspect.label)}</a>`,
+    )
+    .join(", ");
+  return `${escapeHtml(group.role)} <span class="aspects">(${links})</span>`;
+}
+
 function renderPhrase(part: Phrase): string {
+  if (typeof part === "string") return escapeHtml(part);
   if (isLink(part)) {
     const icon = isSitePageHref(part.href) ? renderLinkIcon() : "";
     return `<a href="${escapeHtml(part.href)}"${linkAttrs(part.href)}>${escapeHtml(part.label)}${icon}</a>`;
   }
-  return escapeHtml(part);
+  switch (part.kind) {
+    case "aspects":
+      return renderAspectGroup(part);
+    default: {
+      const unexpected: never = part.kind;
+      return unexpected;
+    }
+  }
+}
+
+function phraseText(part: Phrase): string {
+  if (typeof part === "string") return part;
+  if (isLink(part)) return part.label;
+  switch (part.kind) {
+    case "aspects":
+      return `${part.role} (${part.aspects.map((aspect) => aspect.label).join(", ")})`;
+    default: {
+      const unexpected: never = part.kind;
+      return unexpected;
+    }
+  }
 }
 
 function lineText(line: readonly Phrase[]): string {
-  return line.map((part) => (isLink(part) ? part.label : part)).join("");
+  return line.map(phraseText).join("");
 }
 
 function splitLedger(line: readonly Phrase[]): { label: readonly Phrase[]; detail: readonly Phrase[] } {
@@ -150,17 +182,13 @@ function splitLedger(line: readonly Phrase[]): { label: readonly Phrase[]; detai
 }
 
 function renderDetailPhrase(part: Phrase): string {
-  if (!isLink(part)) {
-    if (part.trim() === "·") return `<span class="aspect-gap">${escapeHtml(part)}</span>`;
-    return escapeHtml(part);
-  }
-  switch (part.className) {
-    case "aspect":
-      return `<a class="aspect" href="${escapeHtml(part.href)}"${linkAttrs(part.href)}>${escapeHtml(part.label)}</a>`;
-    case undefined:
-      return renderDocLink(part.href, part.label);
+  if (typeof part === "string") return escapeHtml(part);
+  if (isLink(part)) return renderDocLink(part.href, part.label);
+  switch (part.kind) {
+    case "aspects":
+      return renderAspectGroup(part);
     default: {
-      const unexpected: never = part.className;
+      const unexpected: never = part.kind;
       return unexpected;
     }
   }

@@ -164,15 +164,26 @@ h1 {
   min-width: 0;
 }
 
-.page.home a.aspect,
-.page.home .aspect-gap {
-  font-style: italic;
+.page.home .aspects {
+  color: var(--muted);
   font-size: var(--fs-small);
-  letter-spacing: 0.02em;
+  font-style: normal;
+  font-weight: 400;
 }
 
-.page.home .aspect-gap {
-  color: var(--label);
+.page.home a.aspect {
+  color: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+.page.home a.aspect:hover,
+.page.home a.aspect:focus-visible {
+  color: var(--hover);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
 }
 
 .page.home .profiles {

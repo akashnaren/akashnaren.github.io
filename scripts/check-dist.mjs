@@ -93,10 +93,10 @@ mustInclude(
     "Akash Premkumar",
     'class="page home"',
     '<h2 id="work">Work</h2>',
-    'title="Tesla — Vehicle Service Software · Service"',
-    '<span class="entry-detail"> — Vehicle Service <a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a><span class="aspect-gap"> · </span><a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>',
-    'title="Tesla — Vehicle Engineering SI · Manufacturing · Robotaxi"',
-    '<span class="entry-detail"> — Vehicle Engineering <a class="aspect" href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a>',
+    'title="Tesla — Vehicle Service (Software, Service)"',
+    '<span class="entry-detail"> — Vehicle Service <span class="aspects">(<a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a>, <a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>)</span>',
+    'title="Tesla — Vehicle Engineering (SI, Manufacturing, Robotaxi)"',
+    '<span class="entry-detail"> — Vehicle Engineering <span class="aspects">(<a class="aspect" href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a>',
     '<a class="aspect" href="https://www.tesla.com/manufacturing" target="_blank" rel="noopener noreferrer">Manufacturing</a>',
     '<a class="aspect" href="https://www.tesla.com/robotaxi" target="_blank" rel="noopener noreferrer">Robotaxi</a>',
     "https://www.tesla.com/careers/vehicle-software",
@@ -219,6 +219,8 @@ mustExclude(
     "this site is managed by",
     "https://x.ai/bot",
     'class="site-credit"',
+    "aspect-gap",
+    "·",
     "mailto:akashnaren@mail.grokbot.com",
     "akashnaren@mail.grokbot.com",
     "bots' inbox",
@@ -292,8 +294,8 @@ const workRows = [...workSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => 
 if (workRows.length !== 4) fail(`work must list four rows, found ${String(workRows.length)}`);
 const roleIcon = `<svg class="ext" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.4 2.4h6.2v6.2M9.3 2.7 2.7 9.3" fill="none" stroke="currentColor" stroke-width="1.15"/></svg>`;
 const expectedWork = [
-  `<li title="Tesla — Vehicle Service Software · Service"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Service <a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a><span class="aspect-gap"> · </span><a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a></span></li>`,
-  `<li title="Tesla — Vehicle Engineering SI · Manufacturing · Robotaxi"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering <a class="aspect" href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a><span class="aspect-gap"> · </span><a class="aspect" href="https://www.tesla.com/manufacturing" target="_blank" rel="noopener noreferrer">Manufacturing</a><span class="aspect-gap"> · </span><a class="aspect" href="https://www.tesla.com/robotaxi" target="_blank" rel="noopener noreferrer">Robotaxi</a></span></li>`,
+  `<li title="Tesla — Vehicle Service (Software, Service)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Service <span class="aspects">(<a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a>, <a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>)</span></span></li>`,
+  `<li title="Tesla — Vehicle Engineering (SI, Manufacturing, Robotaxi)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering <span class="aspects">(<a class="aspect" href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a>, <a class="aspect" href="https://www.tesla.com/manufacturing" target="_blank" rel="noopener noreferrer">Manufacturing</a>, <a class="aspect" href="https://www.tesla.com/robotaxi" target="_blank" rel="noopener noreferrer">Robotaxi</a>)</span></span></li>`,
   `<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — <a href="https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/" target="_blank" rel="noopener noreferrer">Avionics Networking Test Suite${roleIcon}</a></span></li>`,
   `<li title="NASA L’SPACE — Proposals, Preliminary Design Review"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — <a href="https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing" target="_blank" rel="noopener noreferrer">Proposals, Preliminary Design Review${roleIcon}</a></span></li>`,
 ];
@@ -515,9 +517,18 @@ mustInclude(
   ],
   "css",
 );
-const aspectRule = css.match(/\.page\.home a\.aspect,[^{]*\{[^}]*\}/)?.[0] ?? "";
-if (!aspectRule.includes("font-style:italic") || !aspectRule.includes("font-size:var(--fs-small)")) {
-  fail(`aspect links must stay small and italic: ${aspectRule || "missing"}`);
+const aspectGroup = css.match(/\.page\.home \.aspects\{[^}]*\}/)?.[0] ?? "";
+if (
+  !aspectGroup.includes("font-size:var(--fs-small)") ||
+  !aspectGroup.includes("color:var(--muted)") ||
+  !aspectGroup.includes("font-weight:400") ||
+  aspectGroup.includes("italic")
+) {
+  fail(`aspect group must be small, muted, and roman: ${aspectGroup || "missing"}`);
+}
+const aspectHover = css.match(/\.page\.home a\.aspect:hover[^{]*\{[^}]*\}/)?.[0] ?? "";
+if (!aspectHover.includes("text-decoration:underline")) {
+  fail(`aspect links must underline on hover: ${aspectHover || "missing"}`);
 }
 mustExclude(
   css,
@@ -541,6 +552,8 @@ mustExclude(
     ".grok-bot-mark",
     ".managed",
     ".site-credit",
+    ".aspect-gap",
+    "font-style:italic",
     ".home-foot",
     ".foot{",
     ".collection",
@@ -565,7 +578,7 @@ if (profileRows.length !== 6 || (profilesList.match(/class="contact-mark"/g) ?? 
 if (readdirSync("dist/assets").some((name) => name.endsWith(".map"))) {
   fail("dist must not ship source maps");
 }
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "mail.grokbot.com", "bots' inbox", "Managed by ", "this site is managed by", "https://x.ai/bot", "site-credit", "grok-bot-mark", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "Agent-Native UI", "agent-native-ui", "Interfaces for Computer-Use Agents", "The Interface Is a Variable", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Grok Integrations", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights", "personal agents collection", "profile lead", "/fleet/", 'class="collection"', "data-seat"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "mail.grokbot.com", "bots' inbox", "Managed by ", "this site is managed by", "https://x.ai/bot", "site-credit", "aspect-gap", "·", "grok-bot-mark", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "Agent-Native UI", "agent-native-ui", "Interfaces for Computer-Use Agents", "The Interface Is a Variable", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Grok Integrations", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights", "personal agents collection", "profile lead", "/fleet/", 'class="collection"', "data-seat"], "js");
 
 const manifest = read("dist/site.webmanifest");
 mustInclude(
