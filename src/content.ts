@@ -23,7 +23,7 @@ export const workLines: readonly Paragraph[] = [
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
     " — ",
-    { href: "https://service.tesla.com/en-US/", label: "Vehicle Service" },
+    { href: "https://www.tesla.com/careers/vehicle-software", label: "Vehicle Service" },
   ],
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
