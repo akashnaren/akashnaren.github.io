@@ -98,17 +98,17 @@ mustInclude(
     "https://www.rtx.com/raytheon",
     ">Raytheon</a>",
     'title="Raytheon — Avionics Networking Test Suite (Avionics)"',
-    "https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/",
+    "https://www.rtx.com/collinsaerospace/what-we-do/industries/military-and-defense/avionics#gdpr",
     "https://www.lspace.asu.edu/",
     ">NASA L’SPACE</a>",
     'title="NASA L’SPACE — Terrain Identification, Asteroid Mapping (PDR, Proposal)"',
     "https://drive.google.com/file/d/1_4rUkE6szP9zwGZnvw2Pxn4_UPHdr7fI/view?usp=sharing",
     "https://drive.google.com/file/d/1ggGNBfAx8vliZn4ClRC5ZWsN55CeIcLg/view?usp=sharing",
     '<h2 id="research">Research</h2>',
-    "Multiscale Flow Physics Lab, UC San Diego",
+    "Multiscale Lab",
     'href="https://asanchez.ucsd.edu/"',
-    ">Multiscale Flow Physics Lab, UC San Diego</a>",
-    'title="Multiscale Flow Physics Lab, UC San Diego — Fire Whirls (Poster)"',
+    ">Multiscale Lab</a>",
+    'title="Multiscale Lab — Fire Whirls (Poster)"',
     'href="/fire-whirls-poster.jpg"',
     '<h2 id="profiles">Profiles</h2>',
     ">GitHub</span>",
@@ -187,7 +187,7 @@ mustExclude(
     "Academia",
     "CS and Math",
     "Collins",
-    "collinsaerospace",
+    "aim-online.com",
     /fire-whirl(?!s)/,
     'class="bio"',
     'class="page-link"',
@@ -273,7 +273,7 @@ for (const [label, source] of [
   const hit = managedNeedles.find((needle) => source.includes(needle));
   if (hit) fail(`${label} still includes managed-by markup: ${hit}`);
 }
-if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego|LavaLamp|OpenPi)<svg class="ext"/.test(home)) {
+if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Lab|LavaLamp|OpenPi)<svg class="ext"/.test(home)) {
   fail("name links must stay unmarked");
 }
 const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
@@ -282,7 +282,7 @@ if (workRows.length !== 3) fail(`work must list three rows, found ${String(workR
 const expectedWork = [
   `<li title="Tesla — Vehicle Service (Software, Service, Parts)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Service <span class="aspects">(<a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a>, <a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>, <a class="aspect" href="https://parts.tesla.com/en-US/landingpage" target="_blank" rel="noopener noreferrer">Parts</a>)</span></span></li>`,
   `<li title="Tesla — Vehicle Engineering (SI, Manufacturing, Robotaxi)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering <span class="aspects">(<a class="aspect" href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a>, <a class="aspect" href="https://www.tesla.com/manufacturing" target="_blank" rel="noopener noreferrer">Manufacturing</a>, <a class="aspect" href="https://www.tesla.com/robotaxi" target="_blank" rel="noopener noreferrer">Robotaxi</a>)</span></span></li>`,
-  `<li title="Raytheon — Avionics Networking Test Suite (Avionics)"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — Avionics Networking Test Suite <span class="aspects">(<a class="aspect" href="https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/" target="_blank" rel="noopener noreferrer">Avionics</a>)</span></span></li>`,
+  `<li title="Raytheon — Avionics Networking Test Suite (Avionics)"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — Avionics Networking Test Suite <span class="aspects">(<a class="aspect" href="https://www.rtx.com/collinsaerospace/what-we-do/industries/military-and-defense/avionics#gdpr" target="_blank" rel="noopener noreferrer">Avionics</a>)</span></span></li>`,
 ];
 for (const [index, row] of expectedWork.entries()) {
   if (workRows[index] !== row) fail(`work row ${String(index + 1)} must keep the dash layout: ${row}`);
@@ -355,7 +355,7 @@ if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
 }
 const expectedResearch = [
   `<li title="NASA L’SPACE — Terrain Identification, Asteroid Mapping (PDR, Proposal)"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — Terrain Identification, Asteroid Mapping <span class="aspects">(<a class="aspect" href="https://drive.google.com/file/d/1_4rUkE6szP9zwGZnvw2Pxn4_UPHdr7fI/view?usp=sharing" target="_blank" rel="noopener noreferrer">PDR</a>, <a class="aspect" href="https://drive.google.com/file/d/1ggGNBfAx8vliZn4ClRC5ZWsN55CeIcLg/view?usp=sharing" target="_blank" rel="noopener noreferrer">Proposal</a>)</span></span></li>`,
-  `<li title="Multiscale Flow Physics Lab, UC San Diego — Fire Whirls (Poster)"><span class="entry-name"><a href="https://asanchez.ucsd.edu/" target="_blank" rel="noopener noreferrer">Multiscale Flow Physics Lab, UC San Diego</a></span><span class="entry-detail"> — Fire Whirls <span class="aspects">(<a class="aspect" href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Poster</a>)</span></span></li>`,
+  `<li title="Multiscale Lab — Fire Whirls (Poster)"><span class="entry-name"><a href="https://asanchez.ucsd.edu/" target="_blank" rel="noopener noreferrer">Multiscale Lab</a></span><span class="entry-detail"> — Fire Whirls <span class="aspects">(<a class="aspect" href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Poster</a>)</span></span></li>`,
 ];
 for (const [index, row] of expectedResearch.entries()) {
   if (researchRows[index] !== row) fail(`research row ${String(index + 1)} must keep the dash layout: ${row}`);
