@@ -60,7 +60,7 @@ export const workLines: readonly Paragraph[] = [
       role: "Avionics Networking Test Suite",
       aspects: [
         {
-          href: "https://www.rtx.com/collinsaerospace/what-we-do/industries/military-and-defense/avionics#gdpr",
+          href: "https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/",
           label: "Avionics",
         },
       ],
