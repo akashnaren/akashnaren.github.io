@@ -3,8 +3,6 @@ import {
   description,
   isLink,
   mailHeading,
-  managedByHref,
-  managedByLabel,
   name,
   personalMail,
   profilesHeading,
@@ -211,10 +209,6 @@ function renderMail(): string {
       </section>`;
 }
 
-function renderManagedBy(): string {
-  return `<p class="site-credit"><a href="${escapeHtml(managedByHref)}"${linkAttrs(managedByHref)}>${escapeHtml(managedByLabel)}</a></p>`;
-}
-
 function renderDocLink(href: string, label: string): string {
   const external = /^https?:\/\//i.test(href);
   const existingRel = external ? "noopener noreferrer" : "";
@@ -262,7 +256,6 @@ export function renderSite(): string {
         ${renderProjectsSection()}
         ${renderProfiles()}
         ${renderMail()}
-        ${renderManagedBy()}
       </main>
     </div>
   </div>`;

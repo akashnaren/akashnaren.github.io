@@ -249,22 +249,6 @@ h1 {
   overflow-wrap: anywhere;
 }
 
-.page.home .site-credit {
-  margin-top: var(--section-gap);
-  font-family: var(--sans);
-  font-size: var(--fs-small);
-  line-height: 1.4;
-}
-
-.page.home .site-credit a {
-  color: var(--muted);
-}
-
-.page.home .site-credit a:hover,
-.page.home .site-credit a:focus-visible {
-  color: var(--hover);
-}
-
 a {
   color: var(--link);
   text-decoration: underline;
