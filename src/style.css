@@ -154,6 +154,21 @@ h1 {
   margin-top: 0;
 }
 
+/* #research is the heading. The list is its sibling, so it must not use the max-content track. */
+.page.home #research + .entries.ledger,
+.page.home #research + .entries.ledger li {
+  display: block;
+}
+
+.page.home #research + .entries.ledger li + li {
+  margin-top: var(--row-gap);
+}
+
+.page.home #research + .entries.ledger .entry-name,
+.page.home #research + .entries.ledger .entry-detail {
+  display: inline;
+}
+
 .page.home .entry-name,
 .page.home .entry-detail {
   color: var(--text);
