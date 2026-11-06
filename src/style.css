@@ -164,15 +164,20 @@ h1 {
   min-width: 0;
 }
 
-.page.home a.aspect,
-.page.home .aspect-gap {
-  font-style: italic;
+.page.home .aspect,
+.page.home .aspect a {
+  color: var(--muted);
   font-size: var(--fs-small);
-  letter-spacing: 0.02em;
+  font-style: normal;
+  text-decoration: none;
 }
 
-.page.home .aspect-gap {
-  color: var(--label);
+.page.home .aspect a:hover,
+.page.home .aspect a:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: currentColor;
 }
 
 .page.home .profiles {
@@ -247,22 +252,6 @@ h1 {
   font-size: 1rem;
   line-height: 1.45;
   overflow-wrap: anywhere;
-}
-
-.page.home .site-credit {
-  margin-top: var(--section-gap);
-  font-family: var(--sans);
-  font-size: var(--fs-small);
-  line-height: 1.4;
-}
-
-.page.home .site-credit a {
-  color: var(--muted);
-}
-
-.page.home .site-credit a:hover,
-.page.home .site-credit a:focus-visible {
-  color: var(--hover);
 }
 
 a {

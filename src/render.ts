@@ -3,8 +3,6 @@ import {
   description,
   isLink,
   mailHeading,
-  managedByHref,
-  managedByLabel,
   name,
   personalMail,
   profilesHeading,
@@ -19,6 +17,8 @@ import {
   type Contact,
   type Paragraph,
   type Phrase,
+  type RoleLine,
+  type WorkLine,
 } from "./content.ts";
 
 export type PageMeta = {
@@ -152,20 +152,8 @@ function splitLedger(line: readonly Phrase[]): { label: readonly Phrase[]; detai
 }
 
 function renderDetailPhrase(part: Phrase): string {
-  if (!isLink(part)) {
-    if (part.trim() === "·") return `<span class="aspect-gap">${escapeHtml(part)}</span>`;
-    return escapeHtml(part);
-  }
-  switch (part.className) {
-    case "aspect":
-      return `<a class="aspect" href="${escapeHtml(part.href)}"${linkAttrs(part.href)}>${escapeHtml(part.label)}</a>`;
-    case undefined:
-      return renderDocLink(part.href, part.label);
-    default: {
-      const unexpected: never = part.className;
-      return unexpected;
-    }
-  }
+  if (!isLink(part)) return escapeHtml(part);
+  return renderDocLink(part.href, part.label);
 }
 
 function renderEntry(line: readonly Phrase[], ledger: boolean): string {
@@ -178,13 +166,28 @@ function renderEntry(line: readonly Phrase[], ledger: boolean): string {
   return `<li${title}><span class="entry-name">${label.map(renderPhrase).join("")}</span>${detailHtml}</li>`;
 }
 
-function renderBand(id: string, heading: string, lines: readonly Paragraph[], ledger = false): string {
-  const items = lines.map((line) => renderEntry(line, ledger)).join("\n          ");
+function renderRoleLine(role: RoleLine): string {
+  const aspectLabels = role.aspects.map((aspect) => aspect.label).join(", ");
+  const title = `${role.company.label} — ${role.role} (${aspectLabels})`;
+  const aspectHtml = role.aspects.map(renderPhrase).join(", ");
+  return `<li title="${escapeHtml(title)}"><span class="entry-name">${renderPhrase(role.company)}</span><span class="entry-detail"> — ${escapeHtml(role.role)} <span class="aspect">(${aspectHtml})</span></span></li>`;
+}
+
+function isParagraph(line: WorkLine): line is Paragraph {
+  return Array.isArray(line);
+}
+
+function renderWorkLine(line: WorkLine): string {
+  if (isParagraph(line)) return renderEntry(line, true);
+  return renderRoleLine(line);
+}
+
+function renderBand(id: string, heading: string, items: readonly string[], ledger = false): string {
   const listClass = ledger ? "entries ledger" : "entries";
   return `<section class="section" aria-labelledby="${escapeHtml(id)}">
         <h2 id="${escapeHtml(id)}">${escapeHtml(heading)}</h2>
         <ul class="${listClass}">
-          ${items}
+          ${items.join("\n          ")}
         </ul>
       </section>`;
 }
@@ -209,10 +212,6 @@ function renderMail(): string {
           <li><a class="mail-address" href="${escapeHtml(personalMail.href)}"${linkAttrs(personalMail.href)}>${escapeHtml(personalMail.address)}</a></li>
         </ul>
       </section>`;
-}
-
-function renderManagedBy(): string {
-  return `<p class="site-credit"><a href="${escapeHtml(managedByHref)}"${linkAttrs(managedByHref)}>${escapeHtml(managedByLabel)}</a></p>`;
 }
 
 function renderDocLink(href: string, label: string): string {
@@ -247,7 +246,7 @@ function renderResearchSection(): string {
 }
 
 function renderProjectsSection(): string {
-  return renderBand("projects", projectsHeading, projectLinks, true);
+  return renderBand("projects", projectsHeading, projectLinks.map((line) => renderEntry(line, true)), true);
 }
 
 export function renderSite(): string {
@@ -257,12 +256,11 @@ export function renderSite(): string {
         <header>
           <h1>${escapeHtml(name)}</h1>
         </header>
-        ${renderBand("work", workHeading, workLines, true)}
+        ${renderBand("work", workHeading, workLines.map(renderWorkLine), true)}
         ${renderResearchSection()}
         ${renderProjectsSection()}
         ${renderProfiles()}
         ${renderMail()}
-        ${renderManagedBy()}
       </main>
     </div>
   </div>`;

@@ -93,12 +93,8 @@ mustInclude(
     "Akash Premkumar",
     'class="page home"',
     '<h2 id="work">Work</h2>',
-    'title="Tesla — Vehicle Service Software · Service"',
-    '<span class="entry-detail"> — Vehicle Service <a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a><span class="aspect-gap"> · </span><a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>',
-    'title="Tesla — Vehicle Engineering SI · Manufacturing · Robotaxi"',
-    '<span class="entry-detail"> — Vehicle Engineering <a class="aspect" href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a>',
-    '<a class="aspect" href="https://www.tesla.com/manufacturing" target="_blank" rel="noopener noreferrer">Manufacturing</a>',
-    '<a class="aspect" href="https://www.tesla.com/robotaxi" target="_blank" rel="noopener noreferrer">Robotaxi</a>',
+    'title="Tesla — Vehicle Service (Software, Service)"',
+    'title="Tesla — Vehicle Engineering (SI, Manufacturing, Robotaxi)"',
     "https://www.tesla.com/careers/vehicle-software",
     "https://service.tesla.com/en-US/",
     "https://www.tesla.com/SI",
@@ -216,6 +212,10 @@ mustExclude(
     "asteroid preliminary design review",
     "terrain mapping",
     "Managed by ",
+    "this site is managed by grok bot",
+    "https://x.ai/bot",
+    "site-credit",
+    "aspect-gap",
     "mailto:akashnaren@mail.grokbot.com",
     "akashnaren@mail.grokbot.com",
     "bots' inbox",
@@ -272,34 +272,14 @@ mustExclude(
 if (home.includes('href="/bot"') || home.includes('href="/research"') || home.includes('href="#bot"')) {
   fail("home must inline research and must not link /bot, /research, or #bot");
 }
-const managedPhrase = "this site is managed by grok bot";
-const managedHref = "https://x.ai/bot";
-if (managedPhrase !== managedPhrase.toLowerCase() || !managedPhrase.includes(" by grok ")) {
-  fail("managed-by lock must be lowercase with a real space before grok");
-}
-const contentSource = read("src/content.ts");
-if (!contentSource.includes(`"${managedPhrase}"`) || !contentSource.includes(`"${managedHref}"`)) {
-  fail("src/content.ts must keep the locked managed-by line and https://x.ai/bot");
-}
-if (home.split(managedPhrase).length !== 2) {
-  fail(`home must contain the locked line exactly once: ${managedPhrase}`);
-}
-const managedAnchors = [...home.matchAll(/<a\b([^>]*)>([^<]*)<\/a>/g)].filter((match) => match[2] === managedPhrase);
-if (managedAnchors.length !== 1) {
-  fail(`home must link the locked line once: ${managedPhrase}`);
-}
-const managedAnchorHref = managedAnchors[0][1].match(/\bhref="([^"]*)"/)?.[1] ?? "";
-const xaiBotHrefs = [...home.matchAll(/\bhref="([^"]*)"/g)].map((match) => match[1]).filter((href) => href === managedHref);
-if (managedAnchorHref !== managedHref || xaiBotHrefs.length !== 1) {
-  fail("the locked line must be the only link to https://x.ai/bot");
-}
-const managedAt = home.indexOf(`>${managedPhrase}</a>`);
 const mailAt = home.indexOf('id="mail"');
 const mailSectionEnd = mailAt < 0 ? -1 : home.indexOf("</section>", mailAt);
 const mainClose = home.indexOf("</main>");
-if (mailSectionEnd < 0 || managedAt < mailSectionEnd || mainClose < managedAt) {
-  fail("managed-by line must sit at the bottom of the page, after Mail");
-}
+const afterMail =
+  mailSectionEnd < 0 || mainClose < mailSectionEnd
+    ? "missing"
+    : home.slice(mailSectionEnd + "</section>".length, mainClose);
+if (afterMail.trim() !== "") fail("Mail must be the last content in main");
 if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego|LavaLamp|OpenPi)<svg class="ext"/.test(home)) {
   fail("name links must stay unmarked");
 }
@@ -308,8 +288,8 @@ const workRows = [...workSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => 
 if (workRows.length !== 4) fail(`work must list four rows, found ${String(workRows.length)}`);
 const roleIcon = `<svg class="ext" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.4 2.4h6.2v6.2M9.3 2.7 2.7 9.3" fill="none" stroke="currentColor" stroke-width="1.15"/></svg>`;
 const expectedWork = [
-  `<li title="Tesla — Vehicle Service Software · Service"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Service <a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a><span class="aspect-gap"> · </span><a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a></span></li>`,
-  `<li title="Tesla — Vehicle Engineering SI · Manufacturing · Robotaxi"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering <a class="aspect" href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a><span class="aspect-gap"> · </span><a class="aspect" href="https://www.tesla.com/manufacturing" target="_blank" rel="noopener noreferrer">Manufacturing</a><span class="aspect-gap"> · </span><a class="aspect" href="https://www.tesla.com/robotaxi" target="_blank" rel="noopener noreferrer">Robotaxi</a></span></li>`,
+  `<li title="Tesla — Vehicle Service (Software, Service)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Service <span class="aspect">(<a href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a>, <a href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>)</span></span></li>`,
+  `<li title="Tesla — Vehicle Engineering (SI, Manufacturing, Robotaxi)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering <span class="aspect">(<a href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a>, <a href="https://www.tesla.com/manufacturing" target="_blank" rel="noopener noreferrer">Manufacturing</a>, <a href="https://www.tesla.com/robotaxi" target="_blank" rel="noopener noreferrer">Robotaxi</a>)</span></span></li>`,
   `<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — <a href="https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/" target="_blank" rel="noopener noreferrer">Avionics Networking Test Suite${roleIcon}</a></span></li>`,
   `<li title="NASA L’SPACE — Proposals, Preliminary Design Review"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — <a href="https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing" target="_blank" rel="noopener noreferrer">Proposals, Preliminary Design Review${roleIcon}</a></span></li>`,
 ];
@@ -531,9 +511,36 @@ mustInclude(
   ],
   "css",
 );
-const aspectRule = css.match(/\.page\.home a\.aspect,[^{]*\{[^}]*\}/)?.[0] ?? "";
-if (!aspectRule.includes("font-style:italic") || !aspectRule.includes("font-size:var(--fs-small)")) {
-  fail(`aspect links must stay small and italic: ${aspectRule || "missing"}`);
+function ruleBodies(sheet, selector) {
+  const bodies = [];
+  for (const match of sheet.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+    const selectors = match[1].split(",").map((item) => item.trim());
+    if (selectors.includes(selector)) bodies.push(match[2]);
+  }
+  return bodies.join("");
+}
+
+const aspectBody = ruleBodies(css, ".page.home .aspect");
+const aspectAnchorBody = ruleBodies(css, ".page.home .aspect a");
+if (
+  !aspectBody.includes("color:var(--muted)") ||
+  !aspectBody.includes("font-size:var(--fs-small)") ||
+  aspectBody.includes("italic")
+) {
+  fail(`aspect text must stay small and muted: ${aspectBody || "missing"}`);
+}
+if (
+  !aspectAnchorBody.includes("color:var(--muted)") ||
+  !aspectAnchorBody.includes("font-size:var(--fs-small)") ||
+  !aspectAnchorBody.includes("text-decoration:none") ||
+  aspectAnchorBody.includes("italic")
+) {
+  fail(`aspect links must stay small, muted, and undecorated: ${aspectAnchorBody || "missing"}`);
+}
+const aspectHover = ruleBodies(css, ".page.home .aspect a:hover");
+const aspectFocus = ruleBodies(css, ".page.home .aspect a:focus-visible");
+if (!aspectHover.includes("text-decoration:underline") || !aspectFocus.includes("text-decoration:underline")) {
+  fail(`aspect links must underline on hover and focus: ${aspectHover || "missing"} ${aspectFocus || "missing"}`);
 }
 mustExclude(
   css,
@@ -556,6 +563,8 @@ mustExclude(
     ".mail-kind",
     ".grok-bot-mark",
     ".managed",
+    ".site-credit",
+    ".aspect-gap",
     ".home-foot",
     ".foot{",
     ".collection",
@@ -580,7 +589,7 @@ if (profileRows.length !== 6 || (profilesList.match(/class="contact-mark"/g) ?? 
 if (readdirSync("dist/assets").some((name) => name.endsWith(".map"))) {
   fail("dist must not ship source maps");
 }
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "mail.grokbot.com", "bots' inbox", "Managed by ", "grok-bot-mark", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "Agent-Native UI", "agent-native-ui", "Interfaces for Computer-Use Agents", "The Interface Is a Variable", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Grok Integrations", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights", "personal agents collection", "profile lead", "/fleet/", 'class="collection"', "data-seat"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "mail.grokbot.com", "bots' inbox", "Managed by ", "this site is managed by grok bot", "https://x.ai/bot", "site-credit", "aspect-gap", "grok-bot-mark", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "Agent-Native UI", "agent-native-ui", "Interfaces for Computer-Use Agents", "The Interface Is a Variable", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Grok Integrations", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights", "personal agents collection", "profile lead", "/fleet/", 'class="collection"', "data-seat"], "js");
 
 const manifest = read("dist/site.webmanifest");
 mustInclude(
