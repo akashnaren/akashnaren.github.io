@@ -98,7 +98,7 @@ mustInclude(
     "https://www.rtx.com/raytheon",
     ">Raytheon</a>",
     'title="Raytheon — Avionics Networking Test Suite (Avionics)"',
-    "https://www.rtx.com/collinsaerospace/what-we-do/industries/military-and-defense/avionics#gdpr",
+    "https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/",
     "https://www.lspace.asu.edu/",
     ">NASA L’SPACE</a>",
     'title="NASA L’SPACE — Terrain Identification, Asteroid Mapping (PDR, Proposal)"',
@@ -187,6 +187,7 @@ mustExclude(
     "Academia",
     "CS and Math",
     "Collins",
+    "collinsaerospace",
     /fire-whirl(?!s)/,
     'class="bio"',
     'class="page-link"',
@@ -281,7 +282,7 @@ if (workRows.length !== 3) fail(`work must list three rows, found ${String(workR
 const expectedWork = [
   `<li title="Tesla — Vehicle Service (Software, Service, Parts)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Service <span class="aspects">(<a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a>, <a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>, <a class="aspect" href="https://parts.tesla.com/en-US/landingpage" target="_blank" rel="noopener noreferrer">Parts</a>)</span></span></li>`,
   `<li title="Tesla — Vehicle Engineering (SI, Manufacturing, Robotaxi)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering <span class="aspects">(<a class="aspect" href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a>, <a class="aspect" href="https://www.tesla.com/manufacturing" target="_blank" rel="noopener noreferrer">Manufacturing</a>, <a class="aspect" href="https://www.tesla.com/robotaxi" target="_blank" rel="noopener noreferrer">Robotaxi</a>)</span></span></li>`,
-  `<li title="Raytheon — Avionics Networking Test Suite (Avionics)"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — Avionics Networking Test Suite <span class="aspects">(<a class="aspect" href="https://www.rtx.com/collinsaerospace/what-we-do/industries/military-and-defense/avionics#gdpr" target="_blank" rel="noopener noreferrer">Avionics</a>)</span></span></li>`,
+  `<li title="Raytheon — Avionics Networking Test Suite (Avionics)"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — Avionics Networking Test Suite <span class="aspects">(<a class="aspect" href="https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/" target="_blank" rel="noopener noreferrer">Avionics</a>)</span></span></li>`,
 ];
 for (const [index, row] of expectedWork.entries()) {
   if (workRows[index] !== row) fail(`work row ${String(index + 1)} must keep the dash layout: ${row}`);
