@@ -104,7 +104,6 @@ export const contact: readonly Contact[] = [
 export const projectLinks: readonly Paragraph[] = [
   [{ href: "https://meetlavalamp.com", label: "LavaLamp" }],
   [{ href: "https://rpi-pi4.taild6c87d.ts.net/", label: "OpenPi" }],
-  [{ href: "https://github.com/akashnaren/interface-compiler", label: "Interface Compiler" }],
 ];
 
 export const personalMail = {
