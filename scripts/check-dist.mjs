@@ -212,7 +212,6 @@ mustExclude(
     "https://grok.com",
     "asteroid preliminary design review",
     "terrain mapping",
-    "this site is managed by",
     "Managed by ",
     "mailto:akashnaren@mail.grokbot.com",
     "akashnaren@mail.grokbot.com",
@@ -222,7 +221,6 @@ mustExclude(
     'class="foot home-foot"',
     'class="mail-kind"',
     "grok-bot-mark",
-    'href="https://x.ai/bot"',
     ">Grok Bot</a>",
     "Fire whirl",
     "fire whirl",
@@ -268,8 +266,36 @@ mustExclude(
   "home",
 );
 
-if (home.includes('href="/bot"') || home.includes('href="/research"') || home.includes('href="#bot"') || home.includes("https://x.ai/bot")) {
-  fail("home must inline research and must not link /bot, /research, #bot, or x.ai/bot");
+if (home.includes('href="/bot"') || home.includes('href="/research"') || home.includes('href="#bot"')) {
+  fail("home must inline research and must not link /bot, /research, or #bot");
+}
+const managedPhrase = "this site is managed by grok bot";
+const managedHref = "https://x.ai/bot";
+if (managedPhrase !== managedPhrase.toLowerCase() || !managedPhrase.includes(" by grok ")) {
+  fail("managed-by lock must be lowercase with a real space before grok");
+}
+const contentSource = read("src/content.ts");
+if (!contentSource.includes(`"${managedPhrase}"`) || !contentSource.includes(`"${managedHref}"`)) {
+  fail("src/content.ts must keep the locked managed-by line and https://x.ai/bot");
+}
+if (home.split(managedPhrase).length !== 2) {
+  fail(`home must contain the locked line exactly once: ${managedPhrase}`);
+}
+const managedAnchors = [...home.matchAll(/<a\b([^>]*)>([^<]*)<\/a>/g)].filter((match) => match[2] === managedPhrase);
+if (managedAnchors.length !== 1) {
+  fail(`home must link the locked line once: ${managedPhrase}`);
+}
+const managedAnchorHref = managedAnchors[0][1].match(/\bhref="([^"]*)"/)?.[1] ?? "";
+const xaiBotHrefs = [...home.matchAll(/\bhref="([^"]*)"/g)].map((match) => match[1]).filter((href) => href === managedHref);
+if (managedAnchorHref !== managedHref || xaiBotHrefs.length !== 1) {
+  fail("the locked line must be the only link to https://x.ai/bot");
+}
+const managedAt = home.indexOf(`>${managedPhrase}</a>`);
+const mailAt = home.indexOf('id="mail"');
+const mailSectionEnd = mailAt < 0 ? -1 : home.indexOf("</section>", mailAt);
+const mainClose = home.indexOf("</main>");
+if (mailSectionEnd < 0 || managedAt < mailSectionEnd || mainClose < managedAt) {
+  fail("managed-by line must sit at the bottom of the page, after Mail");
 }
 if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego|LavaLamp|OpenPi)<svg class="ext"/.test(home)) {
   fail("name links must stay unmarked");
@@ -549,7 +575,7 @@ if (profileRows.length !== 6 || (profilesList.match(/class="contact-mark"/g) ?? 
 if (readdirSync("dist/assets").some((name) => name.endsWith(".map"))) {
   fail("dist must not ship source maps");
 }
-mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "mail.grokbot.com", "bots' inbox", "Managed by ", "https://x.ai/bot", "grok-bot-mark", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "Agent-Native UI", "agent-native-ui", "Interfaces for Computer-Use Agents", "The Interface Is a Variable", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights", "personal agents collection", "profile lead", "/fleet/", 'class="collection"', "data-seat"], "js");
+mustExclude(js, ["requestAnimationFrame", "setInterval", "/research/rack/status.json", "webgl", "essay-pdf", "essay-back", "agentmail", "mail.grokbot.com", "bots' inbox", "Managed by ", "grok-bot-mark", "ARC-AGI", "Entity Resolution", "Structured Views for Agent-Native UIs", "Agent-Native UI", "agent-native-ui", "Interfaces for Computer-Use Agents", "The Interface Is a Variable", "reactive-flows", "fragmented records", "hallucination", "screenshots or a flat accessibility tree", ">openpi<", "Internal Tooling", "Part Data Hub", "Cybercab", "Robotaxi", "Grok Integrations", "https://www.tesla.com/robotaxi", "https://grok.com", "asteroid preliminary design review", "terrain mapping", "temporal-buddies5.vercel.app", "Temporal", "sourceMappingURL", "cloudflareinsights", "personal agents collection", "profile lead", "/fleet/", 'class="collection"', "data-seat"], "js");
 
 const manifest = read("dist/site.webmanifest");
 mustInclude(
