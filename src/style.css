@@ -164,6 +164,17 @@ h1 {
   min-width: 0;
 }
 
+.page.home a.aspect,
+.page.home .aspect-gap {
+  font-style: italic;
+  font-size: var(--fs-small);
+  letter-spacing: 0.02em;
+}
+
+.page.home .aspect-gap {
+  color: var(--label);
+}
+
 .page.home .profiles {
   display: flex;
   flex-direction: column;

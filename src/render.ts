@@ -152,8 +152,20 @@ function splitLedger(line: readonly Phrase[]): { label: readonly Phrase[]; detai
 }
 
 function renderDetailPhrase(part: Phrase): string {
-  if (!isLink(part)) return escapeHtml(part);
-  return renderDocLink(part.href, part.label);
+  if (!isLink(part)) {
+    if (part.trim() === "·") return `<span class="aspect-gap">${escapeHtml(part)}</span>`;
+    return escapeHtml(part);
+  }
+  switch (part.className) {
+    case "aspect":
+      return `<a class="aspect" href="${escapeHtml(part.href)}"${linkAttrs(part.href)}>${escapeHtml(part.label)}</a>`;
+    case undefined:
+      return renderDocLink(part.href, part.label);
+    default: {
+      const unexpected: never = part.className;
+      return unexpected;
+    }
+  }
 }
 
 function renderEntry(line: readonly Phrase[], ledger: boolean): string {

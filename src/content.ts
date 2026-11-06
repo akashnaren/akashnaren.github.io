@@ -1,6 +1,7 @@
 export type Link = {
   readonly href: string;
   readonly label: string;
+  readonly className?: "aspect";
 };
 
 export type Phrase = string | Link;
@@ -19,16 +20,30 @@ export const themeColor = "#fffff8";
 
 export const workHeading = "Work";
 
+const aspectGap = " · ";
+
 export const workLines: readonly Paragraph[] = [
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
     " — ",
-    { href: "https://www.tesla.com/careers/vehicle-software", label: "Vehicle Service" },
+    "Vehicle Service ",
+    {
+      href: "https://www.tesla.com/careers/vehicle-software",
+      label: "Software",
+      className: "aspect",
+    },
+    aspectGap,
+    { href: "https://service.tesla.com/en-US/", label: "Service", className: "aspect" },
   ],
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
     " — ",
-    { href: "https://www.tesla.com/SI", label: "Vehicle Engineering" },
+    "Vehicle Engineering ",
+    { href: "https://www.tesla.com/SI", label: "SI", className: "aspect" },
+    aspectGap,
+    { href: "https://www.tesla.com/manufacturing", label: "Manufacturing", className: "aspect" },
+    aspectGap,
+    { href: "https://www.tesla.com/robotaxi", label: "Robotaxi", className: "aspect" },
   ],
   [
     { href: "https://www.rtx.com/raytheon", label: "Raytheon" },
