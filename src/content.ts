@@ -111,6 +111,10 @@ export const personalMail = {
   href: "mailto:akashnaren@gmail.com",
 } as const;
 
+/** Locked bottom line. Lowercase, with a real space before grok. */
+export const managedByLabel = "this site is managed by grok bot";
+export const managedByHref = "https://x.ai/bot";
+
 export function isLink(part: Phrase): part is Link {
   return typeof part === "object";
 }
