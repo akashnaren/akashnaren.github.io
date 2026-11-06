@@ -1,10 +1,15 @@
 export type Link = {
   readonly href: string;
   readonly label: string;
-  readonly className?: "aspect";
 };
 
-export type Phrase = string | Link;
+export type AspectGroup = {
+  readonly kind: "aspects";
+  readonly role: string;
+  readonly aspects: readonly Link[];
+};
+
+export type Phrase = string | Link | AspectGroup;
 
 export type Paragraph = readonly Phrase[];
 
@@ -20,30 +25,31 @@ export const themeColor = "#fffff8";
 
 export const workHeading = "Work";
 
-const aspectGap = " · ";
-
 export const workLines: readonly Paragraph[] = [
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
     " — ",
-    "Vehicle Service ",
     {
-      href: "https://www.tesla.com/careers/vehicle-software",
-      label: "Software",
-      className: "aspect",
+      kind: "aspects",
+      role: "Vehicle Service",
+      aspects: [
+        { href: "https://www.tesla.com/careers/vehicle-software", label: "Software" },
+        { href: "https://service.tesla.com/en-US/", label: "Service" },
+      ],
     },
-    aspectGap,
-    { href: "https://service.tesla.com/en-US/", label: "Service", className: "aspect" },
   ],
   [
     { href: "https://www.tesla.com/", label: "Tesla" },
     " — ",
-    "Vehicle Engineering ",
-    { href: "https://www.tesla.com/SI", label: "SI", className: "aspect" },
-    aspectGap,
-    { href: "https://www.tesla.com/manufacturing", label: "Manufacturing", className: "aspect" },
-    aspectGap,
-    { href: "https://www.tesla.com/robotaxi", label: "Robotaxi", className: "aspect" },
+    {
+      kind: "aspects",
+      role: "Vehicle Engineering",
+      aspects: [
+        { href: "https://www.tesla.com/SI", label: "SI" },
+        { href: "https://www.tesla.com/manufacturing", label: "Manufacturing" },
+        { href: "https://www.tesla.com/robotaxi", label: "Robotaxi" },
+      ],
+    },
   ],
   [
     { href: "https://www.rtx.com/raytheon", label: "Raytheon" },
@@ -126,11 +132,7 @@ export const personalMail = {
   href: "mailto:akashnaren@gmail.com",
 } as const;
 
-/** Locked bottom line. Lowercase, with a real space before grok. */
-export const managedByLabel = "this site is managed by grok bot";
-export const managedByHref = "https://x.ai/bot";
-
 export function isLink(part: Phrase): part is Link {
-  return typeof part === "object";
+  return typeof part === "object" && "href" in part;
 }
 
