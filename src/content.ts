@@ -56,16 +56,14 @@ export const workLines: readonly Paragraph[] = [
     { href: "https://www.rtx.com/raytheon", label: "Raytheon" },
     " — ",
     {
-      href: "https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/",
-      label: "Avionics Networking Test Suite",
-    },
-  ],
-  [
-    { href: "https://www.lspace.asu.edu/", label: "NASA L’SPACE" },
-    " — ",
-    {
-      href: "https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing",
-      label: "Proposals, Preliminary Design Review",
+      kind: "aspects",
+      role: "Avionics Networking Test Suite",
+      aspects: [
+        {
+          href: "https://www.rtx.com/collinsaerospace/what-we-do/industries/military-and-defense/avionics#gdpr",
+          label: "Avionics",
+        },
+      ],
     },
   ],
 ];
@@ -78,15 +76,36 @@ export const researchHeading = "Research";
 
 export const projectsHeading = "Projects";
 
-/** Lab line on the landing page. */
 export const researchLines: readonly Paragraph[] = [
+  [
+    { href: "https://www.lspace.asu.edu/", label: "NASA L’SPACE" },
+    " — ",
+    {
+      kind: "aspects",
+      role: "Terrain Identification, Asteroid Mapping",
+      aspects: [
+        {
+          href: "https://drive.google.com/file/d/1_4rUkE6szP9zwGZnvw2Pxn4_UPHdr7fI/view?usp=sharing",
+          label: "PDR",
+        },
+        {
+          href: "https://drive.google.com/file/d/1ggGNBfAx8vliZn4ClRC5ZWsN55CeIcLg/view?usp=sharing",
+          label: "Proposal",
+        },
+      ],
+    },
+  ],
   [
     {
       href: "https://asanchez.ucsd.edu/",
       label: "Multiscale Flow Physics Lab, UC San Diego",
     },
     " — ",
-    { href: "/fire-whirls-poster.jpg", label: "Research" },
+    {
+      kind: "aspects",
+      role: "Fire Whirls",
+      aspects: [{ href: "/fire-whirls-poster.jpg", label: "Poster" }],
+    },
   ],
 ];
 

@@ -28,20 +28,6 @@ function mustExclude(page, needles, label) {
   process.exit(1);
 }
 
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-/** The link icon sits inside the same anchor as the label. */
-function mustIconInside(page, href, label, where) {
-  const re = new RegExp(
-    `<a href="${escapeRegExp(href)}"[^>]*>${escapeRegExp(label)}<svg class="ext"[\\s\\S]*?</svg></a>`,
-  );
-  if (!re.test(page)) {
-    fail(`${where}: "${label}" (${href}) must include the link icon inside the same anchor`);
-  }
-}
-
 function same(left, right) {
   if (!existsSync(left) || !existsSync(right)) fail(`missing pair ${left} / ${right}`);
   const a = readFileSync(left);
@@ -68,6 +54,8 @@ const leakNeedles = [
   /fishbowl/i,
   /raspberry pi/i,
 ];
+
+const allowedOpenPiHref = "https://rpi-pi4.taild6c87d.ts.net/";
 
 const home = read("dist/index.html");
 const spa = read("dist/404.html");
@@ -109,19 +97,18 @@ mustInclude(
     ">Tesla</a>",
     "https://www.rtx.com/raytheon",
     ">Raytheon</a>",
-    'title="Raytheon — Avionics Networking Test Suite"',
-    '<span class="entry-detail"> — <a href="https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/" target="_blank" rel="noopener noreferrer">Avionics Networking Test Suite<svg class="ext"',
-    "https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/",
+    'title="Raytheon — Avionics Networking Test Suite (Avionics)"',
+    "https://www.rtx.com/collinsaerospace/what-we-do/industries/military-and-defense/avionics#gdpr",
     "https://www.lspace.asu.edu/",
     ">NASA L’SPACE</a>",
-    'title="NASA L’SPACE — Proposals, Preliminary Design Review"',
-    '<span class="entry-detail"> — <a href="https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing" target="_blank" rel="noopener noreferrer">Proposals, Preliminary Design Review<svg class="ext"',
-    "https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing",
+    'title="NASA L’SPACE — Terrain Identification, Asteroid Mapping (PDR, Proposal)"',
+    "https://drive.google.com/file/d/1_4rUkE6szP9zwGZnvw2Pxn4_UPHdr7fI/view?usp=sharing",
+    "https://drive.google.com/file/d/1ggGNBfAx8vliZn4ClRC5ZWsN55CeIcLg/view?usp=sharing",
     '<h2 id="research">Research</h2>',
     "Multiscale Flow Physics Lab, UC San Diego",
     'href="https://asanchez.ucsd.edu/"',
     ">Multiscale Flow Physics Lab, UC San Diego</a>",
-    '<span class="entry-detail"> — <a href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Research<svg class="ext"',
+    'title="Multiscale Flow Physics Lab, UC San Diego — Fire Whirls (Poster)"',
     'href="/fire-whirls-poster.jpg"',
     '<h2 id="profiles">Profiles</h2>',
     ">GitHub</span>",
@@ -148,10 +135,9 @@ mustInclude(
     'class="layout"',
     "<h2 id=\"projects\">Projects</h2>",
     ">OpenPi</a>",
-    'href="https://rpi-pi4.taild6c87d.ts.net/"',
+    `href="${allowedOpenPiHref}"`,
     'href="https://meetlavalamp.com"',
     ">LavaLamp</a>",
-    'class="ext"',
     'rel="noopener noreferrer"',
     'name="color-scheme" content="light"',
     'name="theme-color" content="#fffff8"',
@@ -159,9 +145,8 @@ mustInclude(
   "home",
 );
 
-/** Homepage OpenPi may use this exact Funnel URL. Any other .ts.net host stays banned. */
 mustExclude(
-  home.replaceAll("https://rpi-pi4.taild6c87d.ts.net/", ""),
+  home.replaceAll(allowedOpenPiHref, ""),
   [
     ...leakNeedles,
     "Network Intelligence Platform",
@@ -292,32 +277,18 @@ if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multisc
 }
 const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
 const workRows = [...workSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => match[0]);
-if (workRows.length !== 4) fail(`work must list four rows, found ${String(workRows.length)}`);
-const roleIcon = `<svg class="ext" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.4 2.4h6.2v6.2M9.3 2.7 2.7 9.3" fill="none" stroke="currentColor" stroke-width="1.15"/></svg>`;
+if (workRows.length !== 3) fail(`work must list three rows, found ${String(workRows.length)}`);
 const expectedWork = [
   `<li title="Tesla — Vehicle Service (Software, Service, Parts)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Service <span class="aspects">(<a class="aspect" href="https://www.tesla.com/careers/vehicle-software" target="_blank" rel="noopener noreferrer">Software</a>, <a class="aspect" href="https://service.tesla.com/en-US/" target="_blank" rel="noopener noreferrer">Service</a>, <a class="aspect" href="https://parts.tesla.com/en-US/landingpage" target="_blank" rel="noopener noreferrer">Parts</a>)</span></span></li>`,
   `<li title="Tesla — Vehicle Engineering (SI, Manufacturing, Robotaxi)"><span class="entry-name"><a href="https://www.tesla.com/" target="_blank" rel="noopener noreferrer">Tesla</a></span><span class="entry-detail"> — Vehicle Engineering <span class="aspects">(<a class="aspect" href="https://www.tesla.com/SI" target="_blank" rel="noopener noreferrer">SI</a>, <a class="aspect" href="https://www.tesla.com/manufacturing" target="_blank" rel="noopener noreferrer">Manufacturing</a>, <a class="aspect" href="https://www.tesla.com/robotaxi" target="_blank" rel="noopener noreferrer">Robotaxi</a>)</span></span></li>`,
-  `<li title="Raytheon — Avionics Networking Test Suite"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — <a href="https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/" target="_blank" rel="noopener noreferrer">Avionics Networking Test Suite${roleIcon}</a></span></li>`,
-  `<li title="NASA L’SPACE — Proposals, Preliminary Design Review"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — <a href="https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing" target="_blank" rel="noopener noreferrer">Proposals, Preliminary Design Review${roleIcon}</a></span></li>`,
+  `<li title="Raytheon — Avionics Networking Test Suite (Avionics)"><span class="entry-name"><a href="https://www.rtx.com/raytheon" target="_blank" rel="noopener noreferrer">Raytheon</a></span><span class="entry-detail"> — Avionics Networking Test Suite <span class="aspects">(<a class="aspect" href="https://www.rtx.com/collinsaerospace/what-we-do/industries/military-and-defense/avionics#gdpr" target="_blank" rel="noopener noreferrer">Avionics</a>)</span></span></li>`,
 ];
 for (const [index, row] of expectedWork.entries()) {
   if (workRows[index] !== row) fail(`work row ${String(index + 1)} must keep the dash layout: ${row}`);
 }
-if ((workSection.match(/<a /g) ?? []).length !== 12) {
-  fail("work rows must link Tesla, Software, Service, Parts, Tesla, SI, Manufacturing, Robotaxi, Raytheon, Avionics Networking Test Suite, NASA L’SPACE, and Proposals, Preliminary Design Review");
+if ((workSection.match(/<a /g) ?? []).length !== 10) {
+  fail("work rows must link Tesla, Software, Service, Parts, Tesla, SI, Manufacturing, Robotaxi, Raytheon, and Avionics");
 }
-mustIconInside(
-  workSection,
-  "https://www.aim-online.com/products-overview/tutorials/afdx-arinc664p7-tutorial/",
-  "Avionics Networking Test Suite",
-  "Avionics Networking Test Suite",
-);
-mustIconInside(
-  workSection,
-  "https://drive.google.com/drive/folders/1vi1vVKHAKptMqXB0_mmw7QkfCC6d8Wc_?usp=sharing",
-  "Proposals, Preliminary Design Review",
-  "Proposals, Preliminary Design Review",
-);
 if (workSection.includes("Project Engineer")) fail("NASA L’SPACE work row must not use the title");
 function sameTabHref(href) {
   if (href.startsWith("#")) return true;
@@ -367,9 +338,9 @@ if (home.includes("/src/main.ts")) fail("built home must not be the Vite shell")
 
 const researchSection = home.match(/aria-labelledby="research">[\s\S]*?<\/section>/)?.[0] ?? "";
 const projectsSection = home.match(/aria-labelledby="projects">[\s\S]*?<\/section>/)?.[0] ?? "";
-const researchItems = researchSection.match(/<li[\s>]/g) ?? [];
-if (researchItems.length !== 1) {
-  fail(`research must list only the lab, found ${String(researchItems.length)}`);
+const researchRows = [...researchSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => match[0]);
+if (researchRows.length !== 2) {
+  fail(`research must list 2 rows, found ${String(researchRows.length)}`);
 }
 if (researchSection.includes("Agent-Native UI") || researchSection.includes("agent-native-ui")) {
   fail("Agent-Native UI must not be listed under Research");
@@ -381,22 +352,24 @@ if (projectItems.length !== 2) {
 if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
   fail("research and projects must not include blurbs");
 }
-const lab = researchSection.match(/<li>[\s\S]*?<\/li>/)?.[0] ?? "";
-const expectedLab = `<li><a href="https://asanchez.ucsd.edu/" target="_blank" rel="noopener noreferrer">Multiscale Flow Physics Lab, UC San Diego</a><span class="entry-detail"> — <a href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Research${roleIcon}</a></span></li>`;
-if (lab !== expectedLab) {
-  fail(`research lab row must keep the lab link and add a Research detail: ${expectedLab}`);
+const expectedResearch = [
+  `<li title="NASA L’SPACE — Terrain Identification, Asteroid Mapping (PDR, Proposal)"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — Terrain Identification, Asteroid Mapping <span class="aspects">(<a class="aspect" href="https://drive.google.com/file/d/1_4rUkE6szP9zwGZnvw2Pxn4_UPHdr7fI/view?usp=sharing" target="_blank" rel="noopener noreferrer">PDR</a>, <a class="aspect" href="https://drive.google.com/file/d/1ggGNBfAx8vliZn4ClRC5ZWsN55CeIcLg/view?usp=sharing" target="_blank" rel="noopener noreferrer">Proposal</a>)</span></span></li>`,
+  `<li title="Multiscale Flow Physics Lab, UC San Diego — Fire Whirls (Poster)"><span class="entry-name"><a href="https://asanchez.ucsd.edu/" target="_blank" rel="noopener noreferrer">Multiscale Flow Physics Lab, UC San Diego</a></span><span class="entry-detail"> — Fire Whirls <span class="aspects">(<a class="aspect" href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Poster</a>)</span></span></li>`,
+];
+for (const [index, row] of expectedResearch.entries()) {
+  if (researchRows[index] !== row) fail(`research row ${String(index + 1)} must keep the dash layout: ${row}`);
 }
+const lab = researchRows[1] ?? "";
 if ((lab.match(/<a /g) ?? []).length !== 2) {
-  fail("the lab line must link the lab and Research");
+  fail("the lab line must link the lab and Poster");
 }
-mustIconInside(lab, "/fire-whirls-poster.jpg", "Research", "lab poster");
 if (!lab.includes('rel="noopener noreferrer"') || lab.includes("reactive-flows") || !lab.includes('target="_blank"')) {
   fail("the lab link must open https://asanchez.ucsd.edu/ in a new tab");
 }
 const projectRows = [...projectsSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => match[0]);
 const expectedProjects = [
   `<li title="LavaLamp"><span class="entry-name"><a href="https://meetlavalamp.com" target="_blank" rel="noopener noreferrer">LavaLamp</a></span></li>`,
-  `<li title="OpenPi"><span class="entry-name"><a href="https://rpi-pi4.taild6c87d.ts.net/" target="_blank" rel="noopener noreferrer">OpenPi</a></span></li>`,
+  `<li title="OpenPi"><span class="entry-name"><a href="${allowedOpenPiHref}" target="_blank" rel="noopener noreferrer">OpenPi</a></span></li>`,
 ];
 for (const [index, row] of expectedProjects.entries()) {
   if (projectRows[index] !== row) fail(`project row ${String(index + 1)} must be the name only: ${row}`);

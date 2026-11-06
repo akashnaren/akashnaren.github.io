@@ -42,7 +42,6 @@ function escapeHtml(value: string): string {
     .replaceAll('"', "&quot;");
 }
 
-/** Same-origin scripts, styles, images, and the web manifest. No inline scripts. */
 export const contentSecurityPolicy =
   "default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'";
 
@@ -50,7 +49,6 @@ export function cspMetaTag(): string {
   return `<meta http-equiv="Content-Security-Policy" content="${escapeHtml(contentSecurityPolicy)}" />`;
 }
 
-/** Vite entry. Dev and build overwrite index.html with this, then paint the page. */
 export function renderDevShell(): string {
   const title = escapeHtml(name);
   const desc = escapeHtml(description);
@@ -112,7 +110,6 @@ function isSitePageHref(href: string): boolean {
   return path === "/research" || path === "/research/";
 }
 
-/** In-page anchors stay in this tab. */
 function keepsSameTab(href: string): boolean {
   return href.startsWith("#") || isSitePageHref(href);
 }
@@ -244,30 +241,6 @@ function renderDocLink(href: string, label: string): string {
   return `<a href="${escapeHtml(href)}"${linkAttrs(href, existingRel)}>${escapeHtml(label)}${icon}</a>`;
 }
 
-function renderNamedList(id: string, heading: string, items: string): string {
-  return `<section class="section" aria-labelledby="${escapeHtml(id)}">
-        <h2 id="${escapeHtml(id)}">${escapeHtml(heading)}</h2>
-        <ul class="entries">
-          ${items}
-        </ul>
-      </section>`;
-}
-
-function renderResearchSection(): string {
-  const lab = researchLines.map((line) => {
-    const linkIndex = line.findIndex(isLink);
-    if (linkIndex < 0) return renderEntry(line, false);
-    const link = line[linkIndex];
-    if (!isLink(link)) return renderEntry(line, false);
-    const detail = line.slice(linkIndex + 1);
-    const detailHtml = detail.length
-      ? `<span class="entry-detail">${detail.map(renderDetailPhrase).join("")}</span>`
-      : "";
-    return `<li>${renderPhrase(link)}${detailHtml}</li>`;
-  });
-  return renderNamedList("research", researchHeading, lab.join("\n          "));
-}
-
 function renderProjectsSection(): string {
   return renderBand("projects", projectsHeading, projectLinks, true);
 }
@@ -280,7 +253,7 @@ export function renderSite(): string {
           <h1>${escapeHtml(name)}</h1>
         </header>
         ${renderBand("work", workHeading, workLines, true)}
-        ${renderResearchSection()}
+        ${renderBand("research", researchHeading, researchLines, true)}
         ${renderProjectsSection()}
         ${renderProfiles()}
         ${renderMail()}
