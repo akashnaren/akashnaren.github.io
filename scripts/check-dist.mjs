@@ -55,6 +55,8 @@ const leakNeedles = [
   /raspberry pi/i,
 ];
 
+const allowedOpenPiHref = "https://rpi-pi4.taild6c87d.ts.net/";
+
 const home = read("dist/index.html");
 const spa = read("dist/404.html");
 
@@ -133,7 +135,7 @@ mustInclude(
     'class="layout"',
     "<h2 id=\"projects\">Projects</h2>",
     ">OpenPi</a>",
-    'href="https://rpi-pi4.taild6c87d.ts.net/"',
+    `href="${allowedOpenPiHref}"`,
     'href="https://meetlavalamp.com"',
     ">LavaLamp</a>",
     'rel="noopener noreferrer"',
@@ -143,9 +145,8 @@ mustInclude(
   "home",
 );
 
-/** Homepage OpenPi may use this exact Funnel URL. Any other .ts.net host stays banned. */
 mustExclude(
-  home.replaceAll("https://rpi-pi4.taild6c87d.ts.net/", ""),
+  home.replaceAll(allowedOpenPiHref, ""),
   [
     ...leakNeedles,
     "Network Intelligence Platform",
@@ -368,7 +369,7 @@ if (!lab.includes('rel="noopener noreferrer"') || lab.includes("reactive-flows")
 const projectRows = [...projectsSection.matchAll(/<li[\s\S]*?<\/li>/g)].map((match) => match[0]);
 const expectedProjects = [
   `<li title="LavaLamp"><span class="entry-name"><a href="https://meetlavalamp.com" target="_blank" rel="noopener noreferrer">LavaLamp</a></span></li>`,
-  `<li title="OpenPi"><span class="entry-name"><a href="https://rpi-pi4.taild6c87d.ts.net/" target="_blank" rel="noopener noreferrer">OpenPi</a></span></li>`,
+  `<li title="OpenPi"><span class="entry-name"><a href="${allowedOpenPiHref}" target="_blank" rel="noopener noreferrer">OpenPi</a></span></li>`,
 ];
 for (const [index, row] of expectedProjects.entries()) {
   if (projectRows[index] !== row) fail(`project row ${String(index + 1)} must be the name only: ${row}`);
