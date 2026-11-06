@@ -105,10 +105,10 @@ mustInclude(
     "https://drive.google.com/file/d/1_4rUkE6szP9zwGZnvw2Pxn4_UPHdr7fI/view?usp=sharing",
     "https://drive.google.com/file/d/1ggGNBfAx8vliZn4ClRC5ZWsN55CeIcLg/view?usp=sharing",
     '<h2 id="research">Research</h2>',
-    "Multiscale Lab",
+    "Multiscale Flow Physics Lab, UC San Diego",
     'href="https://asanchez.ucsd.edu/"',
-    ">Multiscale Lab</a>",
-    'title="Multiscale Lab — Fire Whirls (Poster)"',
+    ">Multiscale Flow Physics Lab, UC San Diego</a>",
+    'title="Multiscale Flow Physics Lab, UC San Diego — Fire Whirls (Poster)"',
     'href="/fire-whirls-poster.jpg"',
     '<h2 id="profiles">Profiles</h2>',
     ">GitHub</span>",
@@ -273,7 +273,7 @@ for (const [label, source] of [
   const hit = managedNeedles.find((needle) => source.includes(needle));
   if (hit) fail(`${label} still includes managed-by markup: ${hit}`);
 }
-if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Lab|LavaLamp|OpenPi)<svg class="ext"/.test(home)) {
+if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego|LavaLamp|OpenPi)<svg class="ext"/.test(home)) {
   fail("name links must stay unmarked");
 }
 const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
@@ -355,7 +355,7 @@ if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
 }
 const expectedResearch = [
   `<li title="NASA L’SPACE — Terrain Identification, Asteroid Mapping (PDR, Proposal)"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — Terrain Identification, Asteroid Mapping <span class="aspects">(<a class="aspect" href="https://drive.google.com/file/d/1_4rUkE6szP9zwGZnvw2Pxn4_UPHdr7fI/view?usp=sharing" target="_blank" rel="noopener noreferrer">PDR</a>, <a class="aspect" href="https://drive.google.com/file/d/1ggGNBfAx8vliZn4ClRC5ZWsN55CeIcLg/view?usp=sharing" target="_blank" rel="noopener noreferrer">Proposal</a>)</span></span></li>`,
-  `<li title="Multiscale Lab — Fire Whirls (Poster)"><span class="entry-name"><a href="https://asanchez.ucsd.edu/" target="_blank" rel="noopener noreferrer">Multiscale Lab</a></span><span class="entry-detail"> — Fire Whirls <span class="aspects">(<a class="aspect" href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Poster</a>)</span></span></li>`,
+  `<li title="Multiscale Flow Physics Lab, UC San Diego — Fire Whirls (Poster)"><span class="entry-name"><a href="https://asanchez.ucsd.edu/" target="_blank" rel="noopener noreferrer">Multiscale Flow Physics Lab, UC San Diego</a></span><span class="entry-detail"> — Fire Whirls <span class="aspects">(<a class="aspect" href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Poster</a>)</span></span></li>`,
 ];
 for (const [index, row] of expectedResearch.entries()) {
   if (researchRows[index] !== row) fail(`research row ${String(index + 1)} must keep the dash layout: ${row}`);
@@ -489,6 +489,8 @@ mustInclude(
     "overflow-x:hidden",
     "Charter",
     ".page.home .layout{width:100%;max-width:calc(var(--text-col) + 2 * var(--pad-x))",
+    ".page.home #research+.entries.ledger,.page.home #research+.entries.ledger li{display:block}",
+    ".page.home #research+.entries.ledger .entry-name,.page.home #research+.entries.ledger .entry-detail{display:inline}",
   ],
   "css",
 );
