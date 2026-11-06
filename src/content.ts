@@ -98,7 +98,7 @@ export const researchLines: readonly Paragraph[] = [
   [
     {
       href: "https://asanchez.ucsd.edu/",
-      label: "Multiscale Flow Physics Lab, UC San Diego",
+      label: "Multiscale Lab",
     },
     " — ",
     {
