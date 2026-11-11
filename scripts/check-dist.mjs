@@ -102,14 +102,14 @@ mustInclude(
     "https://www.rtx.com/collinsaerospace/what-we-do/industries/military-and-defense/avionics#gdpr",
     "https://www.lspace.asu.edu/",
     ">NASA L’SPACE</a>",
-    'title="NASA L’SPACE — Terrain Identification, Asteroid Mapping (PDR, Proposal)"',
+    'title="NASA L’SPACE — Research Projects (PDR, Proposal)"',
     "https://drive.google.com/file/d/1_4rUkE6szP9zwGZnvw2Pxn4_UPHdr7fI/view?usp=sharing",
     "https://drive.google.com/file/d/1ggGNBfAx8vliZn4ClRC5ZWsN55CeIcLg/view?usp=sharing",
     '<h2 id="research">Research</h2>',
-    "Multiscale Flow Physics Lab, UC San Diego",
+    "Multiscale Flow Physics Lab",
     'href="https://asanchez.ucsd.edu/"',
-    ">Multiscale Flow Physics Lab, UC San Diego</a>",
-    'title="Multiscale Flow Physics Lab, UC San Diego — Fire Whirls (Poster)"',
+    ">Multiscale Flow Physics Lab</a>",
+    'title="Multiscale Flow Physics Lab — Fire Whirls (Poster)"',
     'href="/fire-whirls-poster.jpg"',
     '<h2 id="profiles">Profiles</h2>',
     ">GitHub</span>",
@@ -274,7 +274,7 @@ for (const [label, source] of [
   const hit = managedNeedles.find((needle) => source.includes(needle));
   if (hit) fail(`${label} still includes managed-by markup: ${hit}`);
 }
-if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab, UC San Diego|LavaLamp|OpenPi)<svg class="ext"/.test(home)) {
+if (/>(?:Tesla|Cybercab \+ Robotaxi Program|Grok|Raytheon|NASA L’SPACE|Multiscale Flow Physics Lab|LavaLamp|OpenPi)<svg class="ext"/.test(home)) {
   fail("name links must stay unmarked");
 }
 const workSection = home.match(/aria-labelledby="work">[\s\S]*?<\/section>/)?.[0] ?? "";
@@ -355,8 +355,8 @@ if (/<p[\s>]/.test(researchSection) || /<p[\s>]/.test(projectsSection)) {
   fail("research and projects must not include blurbs");
 }
 const expectedResearch = [
-  `<li title="NASA L’SPACE — Terrain Identification, Asteroid Mapping (PDR, Proposal)"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — Terrain Identification, Asteroid Mapping <span class="aspects">(<a class="aspect" href="https://drive.google.com/file/d/1_4rUkE6szP9zwGZnvw2Pxn4_UPHdr7fI/view?usp=sharing" target="_blank" rel="noopener noreferrer">PDR</a>, <a class="aspect" href="https://drive.google.com/file/d/1ggGNBfAx8vliZn4ClRC5ZWsN55CeIcLg/view?usp=sharing" target="_blank" rel="noopener noreferrer">Proposal</a>)</span></span></li>`,
-  `<li title="Multiscale Flow Physics Lab, UC San Diego — Fire Whirls (Poster)"><span class="entry-name"><a href="https://asanchez.ucsd.edu/" target="_blank" rel="noopener noreferrer">Multiscale Flow Physics Lab, UC San Diego</a></span><span class="entry-detail"> — Fire Whirls <span class="aspects">(<a class="aspect" href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Poster</a>)</span></span></li>`,
+  `<li title="NASA L’SPACE — Research Projects (PDR, Proposal)"><span class="entry-name"><a href="https://www.lspace.asu.edu/" target="_blank" rel="noopener noreferrer">NASA L’SPACE</a></span><span class="entry-detail"> — Research Projects <span class="aspects">(<a class="aspect" href="https://drive.google.com/file/d/1_4rUkE6szP9zwGZnvw2Pxn4_UPHdr7fI/view?usp=sharing" target="_blank" rel="noopener noreferrer">PDR</a>, <a class="aspect" href="https://drive.google.com/file/d/1ggGNBfAx8vliZn4ClRC5ZWsN55CeIcLg/view?usp=sharing" target="_blank" rel="noopener noreferrer">Proposal</a>)</span></span></li>`,
+  `<li title="Multiscale Flow Physics Lab — Fire Whirls (Poster)"><span class="entry-name"><a href="https://asanchez.ucsd.edu/" target="_blank" rel="noopener noreferrer">Multiscale Flow Physics Lab</a></span><span class="entry-detail"> — Fire Whirls <span class="aspects">(<a class="aspect" href="/fire-whirls-poster.jpg" target="_blank" rel="noopener noreferrer">Poster</a>)</span></span></li>`,
 ];
 for (const [index, row] of expectedResearch.entries()) {
   if (researchRows[index] !== row) fail(`research row ${String(index + 1)} must keep the dash layout: ${row}`);

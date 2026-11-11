@@ -82,7 +82,7 @@ export const researchLines: readonly Paragraph[] = [
     " — ",
     {
       kind: "aspects",
-      role: "Terrain Identification, Asteroid Mapping",
+      role: "Research Projects",
       aspects: [
         {
           href: "https://drive.google.com/file/d/1_4rUkE6szP9zwGZnvw2Pxn4_UPHdr7fI/view?usp=sharing",
@@ -98,7 +98,7 @@ export const researchLines: readonly Paragraph[] = [
   [
     {
       href: "https://asanchez.ucsd.edu/",
-      label: "Multiscale Flow Physics Lab, UC San Diego",
+      label: "Multiscale Flow Physics Lab",
     },
     " — ",
     {
