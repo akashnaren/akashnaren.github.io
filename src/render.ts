@@ -43,7 +43,7 @@ function escapeHtml(value: string): string {
 }
 
 export const contentSecurityPolicy =
-  "default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'";
+  "default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; script-src 'self' https://www.googletagmanager.com 'sha256-LU2QzDVigt8c/qPI4OSrXdouXbBTBxWXKoloB3+onaA='; style-src 'self'; img-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com; font-src 'self'; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com; manifest-src 'self'";
 
 export function cspMetaTag(): string {
   return `<meta http-equiv="Content-Security-Policy" content="${escapeHtml(contentSecurityPolicy)}" />`;
@@ -58,6 +58,16 @@ export function renderDevShell(): string {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="google-site-verification" content="_FQKIy1kMNXEJEOOs5sO2g0oFi9VCUe4d5lkvEPumRE" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QCH628QG8H"></script>
+    <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QCH628QG8H');
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${title}</title>
     <meta name="description" content="${desc}" />
