@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 function fail(message) {
@@ -447,20 +448,47 @@ if (spa.includes('class="sky"') || spa.includes('class="bio"') || spa.includes('
   fail("404 must not pre-paint a page");
 }
 
-function assertNoInlineScripts(page, label) {
+const gtagLoader =
+  '<script async src="https://www.googletagmanager.com/gtag/js?id=G-QCH628QG8H"></script>';
+
+function assertGtagSnippet(page, label) {
+  if (!page.includes(gtagLoader)) fail(`${label} is missing the async gtag.js loader`);
   const tags = [...page.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
+  const inline = [];
   for (const [, attrs, body] of tags) {
-    if (!/\bsrc\s*=/i.test(attrs) || body.trim().length > 0) {
-      fail(`${label} has an inline script`);
-    }
+    const external = /\bsrc\s*=/i.test(attrs);
+    if (external && body.trim().length === 0) continue;
+    inline.push(body);
   }
+  if (inline.length !== 1) fail(`${label} must contain only the gtag config script`);
+  const body = inline[0];
+  if (
+    !body.includes("window.dataLayer = window.dataLayer || [];") ||
+    !body.includes("function gtag(){dataLayer.push(arguments);}") ||
+    !body.includes("gtag('js', new Date());") ||
+    !body.includes("gtag('config', 'G-QCH628QG8H');")
+  ) {
+    fail(`${label} gtag config script does not match the standard snippet`);
+  }
+  const hash = createHash("sha256").update(body).digest("base64");
+  if (!page.includes(`'sha256-${hash}'`)) {
+    fail(`${label} content security policy does not allow the gtag config script`);
+  }
+}
+
+if (
+  !home.includes(
+    '<meta name="google-site-verification" content="_FQKIy1kMNXEJEOOs5sO2g0oFi9VCUe4d5lkvEPumRE" />',
+  )
+) {
+  fail("home is missing the Search Console verification tag");
 }
 
 for (const [page, label] of [
   [home, "home"],
   [spa, "404"],
 ]) {
-  assertNoInlineScripts(page, label);
+  assertGtagSnippet(page, label);
   if (!page.includes('http-equiv="Content-Security-Policy"') || !page.includes("script-src 'self'")) {
     fail(`${label} must include the content security policy`);
   }
