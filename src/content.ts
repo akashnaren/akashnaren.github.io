@@ -57,7 +57,7 @@ export const workLines: readonly Paragraph[] = [
     " — ",
     {
       kind: "aspects",
-      role: "Avionics Networking Test Suite",
+      role: "Avionics Networking",
       aspects: [
         {
           href: "https://www.rtx.com/collinsaerospace/what-we-do/industries/military-and-defense/avionics#gdpr",
